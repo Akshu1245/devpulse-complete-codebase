@@ -117,14 +117,3 @@ QA-TESTER Report:
 - Gaps: [areas still needing tests]
 - TypeScript: [compiles clean: yes/no]
 ```
-
-## TL;DR
-
-Unit tests (Vitest), E2E (Playwright). Owns test coverage, regression suite, flaky test detection, test generation for untested code.
-
-## Related
-
-- `06-qa-lead`
-- `07-dev-backend`
-- `08-dev-frontend`
-- `18-bug-hunter`

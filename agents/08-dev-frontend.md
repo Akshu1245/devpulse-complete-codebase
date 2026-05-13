@@ -140,15 +140,3 @@ DEV-FRONTEND Report:
 - tRPC integration: [queries/mutations used]
 - TypeScript: [compiles clean: yes/no]
 ```
-
-## TL;DR
-
-devpulse-frontend/ Next.js, React, Tailwind. Owns frontend implementation, UI components, client-side state. Primary frontend developer.
-
-## Related
-
-- `03-cpo-product`
-- `05-em-delivery`
-- `11-dev-api`
-- `14-dev-fullstack`
-- `16-docs-writer`

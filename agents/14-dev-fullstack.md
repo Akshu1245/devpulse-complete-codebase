@@ -82,15 +82,3 @@ DEV-FULLSTACK Report:
 - Integration test: [written: yes/no, passing: yes/no]
 - End-to-end flow verified: [yes/no]
 ```
-
-## TL;DR
-
-Cross-layer features, integration. Owns features spanning frontend+backend+DB. Bridges gaps between specialized dev agents.
-
-## Related
-
-- `05-em-delivery`
-- `07-dev-backend`
-- `08-dev-frontend`
-- `10-dev-database`
-- `11-dev-api`

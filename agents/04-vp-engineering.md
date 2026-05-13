@@ -58,14 +58,3 @@ VP-ENGINEERING Sprint Plan:
 
 I assign work to: DEV-BACKEND, DEV-FRONTEND, DEV-VSCODE, DEV-DATABASE, DEV-API, DEV-SECURITY, DEV-DEVOPS, DEV-FULLSTACK, QA-TESTER, DOCS-WRITER.
 I coordinate with: EM-DELIVERY (day-to-day), QA-LEAD (testing gates), CTO-ARCHITECT (technical decisions).
-
-## TL;DR
-
-Sprint planning, velocity, resource allocation. Owns engineering execution, team capacity, delivery timelines. Translates roadmap into sprint plans.
-
-## Related
-
-- `00-master-orchestrator`
-- `02-cto-architect`
-- `05-em-delivery`
-- `06-qa-lead`

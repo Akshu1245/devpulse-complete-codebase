@@ -98,14 +98,3 @@ DEV-SECURITY Report:
 - Auto-fix coverage: [finding types × languages]
 - Risk: [LOW | MEDIUM | HIGH] — [explanation]
 ```
-
-## TL;DR
-
-Scanners, injection prevention, secrets. Owns security infrastructure — SAST, CSP, rate limiting, authentication, secret rotation.
-
-## Related
-
-- `02-cto-architect`
-- `07-dev-backend`
-- `25-dependency-guardian`
-- `26-api-steward`

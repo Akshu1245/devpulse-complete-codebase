@@ -66,15 +66,3 @@ CPO-PRODUCT Feature Spec:
 
 I can request work from: DEV-FRONTEND (UI implementation), DEV-BACKEND (API for features), DOCS-WRITER (user docs).
 I collaborate with: CEO-STRATEGY (roadmap priority), CTO-ARCHITECT (technical feasibility), VP-ENGINEERING (timeline).
-
-## TL;DR
-
-Feature design, user stories, UX. Owns product requirements, user research, feature prioritization. Translates vision into buildable specs.
-
-## Related
-
-- `00-master-orchestrator`
-- `01-ceo-strategy`
-- `04-vp-engineering`
-- `08-dev-frontend`
-- `11-dev-api`

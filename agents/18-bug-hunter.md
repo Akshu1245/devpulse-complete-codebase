@@ -114,14 +114,3 @@ BUG-HUNTER Report:
 - Impact: [users affected, data affected]
 - Resolution: [FIXED | MITIGATED | NEEDS_ARCHITECTURE_CHANGE]
 ```
-
-## TL;DR
-
-Bug finding, root cause, regression tests. Owns bug detection and fixing — traces errors, writes reproduction steps, adds prevention.
-
-## Related
-
-- `06-qa-lead`
-- `15-qa-tester`
-- `20-ops-monitor`
-- `24-error-recovery`

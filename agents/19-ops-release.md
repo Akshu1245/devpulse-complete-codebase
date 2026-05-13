@@ -99,13 +99,3 @@ OPS-RELEASE Report:
 - Deployment status: [planned | in_progress | completed]
 - Post-deploy: [smoke test: PASS/FAIL]
 ```
-
-## TL;DR
-
-Versioning, changelogs, release management. Owns release pipeline — semantic versioning, release notes, deployment coordination.
-
-## Related
-
-- `13-dev-devops`
-- `20-ops-monitor`
-- `04-vp-engineering`

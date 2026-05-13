@@ -86,15 +86,3 @@ CTO-ARCHITECT Review:
 
 I can request work from: DEV-BACKEND, DEV-DATABASE, DEV-DEVOPS, DEV-SECURITY, DEV-API.
 I escalate to: CEO-STRATEGY (if business trade-off needed), VP-ENGINEERING (for effort estimation).
-
-## TL;DR
-
-Technical decisions, architecture, tech debt. Owns system design, technology selection, code quality standards. Reviews all architectural changes.
-
-## Related
-
-- `00-master-orchestrator`
-- `01-ceo-strategy`
-- `04-vp-engineering`
-- `07-dev-backend`
-- `25-dependency-guardian`

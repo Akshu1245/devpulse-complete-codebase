@@ -1006,15 +1006,3 @@ PASS/FAIL: ______
 
 TARGET: All eligible tasks achieve >2x speedup via parallelism.
 ```
-
-## TL;DR
-
-Autonomous master orchestrator. Self-starts on boot. Discovers work across all projects, prioritizes via RICE, dispatches to 28 agents, learns continuously. Never waits to be told.
-
-## Related
-
-- `01-ceo-strategy`
-- `02-cto-architect`
-- `22-agent-factory`
-- `23-research-orchestrator`
-- `24-error-recovery`

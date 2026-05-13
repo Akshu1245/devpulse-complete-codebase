@@ -108,14 +108,3 @@ DEV-DEVOPS Report:
 - Deployment plan: [steps]
 - Rollback plan: [steps]
 ```
-
-## TL;DR
-
-Docker, CI/CD, deployment, infra. Owns infrastructure — containers, pipelines, cloud config, monitoring setup.
-
-## Related
-
-- `02-cto-architect`
-- `07-dev-backend`
-- `19-ops-release`
-- `20-ops-monitor`

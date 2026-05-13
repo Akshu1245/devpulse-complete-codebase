@@ -101,14 +101,3 @@ DEV-API Report:
 - Services consumed: [list]
 - OpenAPI: [spec regenerated: yes/no]
 ```
-
-## TL;DR
-
-server/api/ tRPC routers, contracts. Owns API design, endpoint contracts, input validation, OpenAPI specs.
-
-## Related
-
-- `02-cto-architect`
-- `07-dev-backend`
-- `08-dev-frontend`
-- `26-api-steward`

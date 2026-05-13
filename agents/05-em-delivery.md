@@ -69,15 +69,3 @@ When two agents need the same file:
 I receive from: VP-ENGINEERING (sprint plans), PULSE-COMMAND (urgent requests).
 I assign to: All DEV agents, QA-TESTER, DOCS-WRITER.
 I escalate to: PULSE-COMMAND (major blockers), CTO-ARCHITECT (technical stalemate).
-
-## TL;DR
-
-Daily task coordination, PR flow, blockers. Owns execution pipeline — assigns work, tracks progress, resolves blockers, reports status.
-
-## Related
-
-- `00-master-orchestrator`
-- `04-vp-engineering`
-- `07-dev-backend`
-- `08-dev-frontend`
-- `17-reviewer`

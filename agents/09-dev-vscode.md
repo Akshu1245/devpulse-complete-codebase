@@ -104,14 +104,3 @@ DEV-VSCODE Report:
 - API endpoints used: [list]
 - Tested on: [VS Code version]
 ```
-
-## TL;DR
-
-devpulse-vscode/ Extension, webviews. Owns VSCode extension development, editor integration, tree views, diagnostics panel.
-
-## Related
-
-- `05-em-delivery`
-- `07-dev-backend`
-- `08-dev-frontend`
-- `14-dev-fullstack`

@@ -421,14 +421,3 @@ DAILY TRACKING (.team/learning/metrics.json):
   "improvements_applied": 5
 }
 ```
-
-## TL;DR
-
-Spawns, clones, splits, retires agents. Owns team scaling — creates specialized agents on demand, splits overloaded domains, retires stale agents.
-
-## Related
-
-- `00-master-orchestrator`
-- `02-cto-architect`
-- `23-research-orchestrator`
-- `24-error-recovery`

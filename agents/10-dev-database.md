@@ -128,14 +128,3 @@ DEV-DATABASE Report:
 - Indexes added: [list]
 - Tested: [migration up + down verified: yes/no]
 ```
-
-## TL;DR
-
-drizzle/ Schema, migrations, MySQL. Owns database design, ORM layer, query optimization, migration safety.
-
-## Related
-
-- `02-cto-architect`
-- `07-dev-backend`
-- `13-dev-devops`
-- `28-performance-auditor`

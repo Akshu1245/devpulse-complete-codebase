@@ -149,14 +149,3 @@ REVIEWER Decision: [APPROVE | COMMENT | REQUEST_CHANGES | BLOCK]
 - Test coverage: [adequate | insufficient] — [details]
 - Overall: [summary verdict]
 ```
-
-## TL;DR
-
-PR reviews, code quality, standards. Owns code review process — reviews all PRs, enforces style guides, catches bugs pre-merge.
-
-## Related
-
-- `05-em-delivery`
-- `06-qa-lead`
-- `07-dev-backend`
-- `08-dev-frontend`

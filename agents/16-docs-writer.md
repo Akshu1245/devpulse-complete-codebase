@@ -87,14 +87,3 @@ DOCS-WRITER Report:
 - API docs regenerated: [yes/no]
 - Key changes: [summary of what changed]
 ```
-
-## TL;DR
-
-README, API docs, architecture, wiki. Owns all documentation — generates from code, maintains freshness, writes onboarding guides.
-
-## Related
-
-- `05-em-delivery`
-- `07-dev-backend`
-- `08-dev-frontend`
-- `11-dev-api`

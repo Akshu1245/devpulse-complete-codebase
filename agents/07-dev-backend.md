@@ -119,15 +119,3 @@ DEV-BACKEND Report:
 - Impact: [which services/routes affected]
 - Notes: [anything reviewers should know]
 ```
-
-## TL;DR
-
-server/ Express, tRPC, services. Owns backend implementation, API logic, middleware, database access layer. Primary backend developer.
-
-## Related
-
-- `02-cto-architect`
-- `05-em-delivery`
-- `10-dev-database`
-- `11-dev-api`
-- `13-dev-devops`

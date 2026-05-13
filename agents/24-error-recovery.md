@@ -220,14 +220,3 @@ ERR-004 | Redis ECONNREFUSED | Continuous (no Redis running locally)
   → Blast radius: Caching + job queue operate in memory-only mode
   → Status: DEGRADED (acceptable for dev, critical for production)
 ```
-
-## TL;DR
-
-Error tracking, root cause, auto-retry. Owns failure recovery — traces errors, maps blast radius, auto-retries, escalates if stuck.
-
-## Related
-
-- `00-master-orchestrator`
-- `18-bug-hunter`
-- `20-ops-monitor`
-- `22-agent-factory`

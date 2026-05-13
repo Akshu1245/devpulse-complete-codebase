@@ -123,14 +123,3 @@ OPS-MONITOR Report:
   - Queue: [depth], [oldest job]
 - Alerts: [N firing]
 ```
-
-## TL;DR
-
-Sentry, Prometheus, health, incidents. Owns observability — monitors all services, detects anomalies, triggers incident response.
-
-## Related
-
-- `13-dev-devops`
-- `19-ops-release`
-- `18-bug-hunter`
-- `24-error-recovery`

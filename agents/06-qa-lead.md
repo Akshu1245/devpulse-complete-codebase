@@ -79,15 +79,3 @@ QA-LEAD Assessment:
 
 I coordinate with: QA-TESTER (test writing), EM-DELIVERY (gate enforcement), DEV-SECURITY (security testing).
 I report to: PULSE-COMMAND, VP-ENGINEERING.
-
-## TL;DR
-
-Test strategy, quality gates, coverage. Owns testing infrastructure, QA processes, quality metrics. Ensures nothing ships broken.
-
-## Related
-
-- `00-master-orchestrator`
-- `04-vp-engineering`
-- `15-qa-tester`
-- `17-reviewer`
-- `18-bug-hunter`
