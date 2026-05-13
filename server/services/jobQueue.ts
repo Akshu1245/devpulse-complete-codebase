@@ -156,14 +156,16 @@ export function getJobQueue(): JobQueue {
   if (queue) return queue;
   const redisUrl = process.env.REDIS_URL ?? process.env.DEVPULSE_REDIS_URL;
   if (redisUrl) {
-    // Lazy-load BullMQ only when configured so the dependency tree stays light
-    // for users running the in-memory backend.
-    queue = createBullMQQueue(redisUrl);
-    logger.info(
-      { backend: "bullmq", redisUrl: redisUrl.replace(/:[^@/]*@/, ":***@") },
-      "[JobQueue] using BullMQ backend"
-    );
-    return queue;
+    try {
+      queue = createBullMQQueue(redisUrl);
+      logger.info(
+        { backend: "bullmq", redisUrl: redisUrl.replace(/:[^@/]*@/, ":***@") },
+        "[JobQueue] using BullMQ backend"
+      );
+      return queue;
+    } catch {
+      logger.warn("[JobQueue] BullMQ failed, falling back to in-memory");
+    }
   }
   queue = new MemoryJobQueue();
   logger.info({ backend: "memory" }, "[JobQueue] using in-memory backend");
