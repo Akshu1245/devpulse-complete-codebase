@@ -131,4 +131,75 @@ export class EngagementTracker {
       score: this.calculateScore(),
     };
   }
+
+  getScanStreak(): number {
+    const dayMs = 24 * 60 * 60 * 1000;
+    const scanDays = new Set<number>();
+    for (const r of this.records) {
+      if (r.event === "scan_run") {
+        scanDays.add(Math.floor(r.timestamp / dayMs));
+      }
+    }
+    const sorted = Array.from(scanDays).sort((a, b) => b - a);
+    if (sorted.length === 0) return 0;
+    const today = Math.floor(Date.now() / dayMs);
+    if (sorted[0] !== today && sorted[0] !== today - 1) return 0;
+    let streak = 1;
+    for (let i = 1; i < sorted.length; i++) {
+      if (sorted[i] === sorted[i - 1] - 1) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+    return streak;
+  }
+
+  getLongestStreak(): number {
+    const dayMs = 24 * 60 * 60 * 1000;
+    const scanDays = new Set<number>();
+    for (const r of this.records) {
+      if (r.event === "scan_run") {
+        scanDays.add(Math.floor(r.timestamp / dayMs));
+      }
+    }
+    const sorted = Array.from(scanDays).sort((a, b) => a - b);
+    if (sorted.length === 0) return 0;
+    let longest = 1;
+    let current = 1;
+    for (let i = 1; i < sorted.length; i++) {
+      if (sorted[i] === sorted[i - 1] + 1) {
+        current++;
+        longest = Math.max(longest, current);
+      } else {
+        current = 1;
+      }
+    }
+    return longest;
+  }
+
+  recordOnboardingStep(
+    step: "installed" | "signed_in" | "imported" | "scanned" | "found_issue",
+  ): void {
+    const key = `devpulse.onboarding.${step}`;
+    void this.context.globalState.update(key, Date.now());
+  }
+
+  getOnboardingProgress(): { step: string; complete: boolean; timestamp?: number }[] {
+    const steps: Array<{ step: string; key: string }> = [
+      { step: "installed", key: "devpulse.onboarding.installed" },
+      { step: "signed_in", key: "devpulse.onboarding.signed_in" },
+      { step: "imported", key: "devpulse.onboarding.imported" },
+      { step: "scanned", key: "devpulse.onboarding.scanned" },
+      { step: "found_issue", key: "devpulse.onboarding.found_issue" },
+    ];
+    return steps.map((s) => {
+      const ts = this.context.globalState.get<number>(s.key);
+      return { step: s.step, complete: ts !== undefined, timestamp: ts ?? undefined };
+    });
+  }
+
+  isOnboardingComplete(): boolean {
+    return this.getOnboardingProgress().every((s) => s.complete);
+  }
 }

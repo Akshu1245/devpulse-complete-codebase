@@ -21,6 +21,7 @@ import { CopilotViewPanel } from "./copilotView";
 import { WelcomeViewProvider } from "./welcomeView";
 import { ValueMomentTracker } from "./valueMoments";
 import { EngagementTracker } from "./engagementTracker";
+import { WeeklyDigestCommand } from "./weeklyDigest";
 import { registerGatewayCommand } from "./gatewayTester";
 import { registerShadowApiCommand } from "./shadowApi";
 import { PostmanImportCommand } from "./postmanImport";
@@ -35,10 +36,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const api = new DevPulseApi(getConfiguredBaseUrl, readApiKey);
   const findingsProvider = new FindingsTreeProvider(api);
   const autoFixProvider = new AutoFixTreeProvider(api);
-  const statusBar = new DevPulseStatusBar(api);
-  const heartbeat = new HeartbeatService(api, () => Boolean(cachedApiKey));
   const valueTracker = new ValueMomentTracker(context);
   const engagementTracker = new EngagementTracker(context);
+  const statusBar = new DevPulseStatusBar(api, () => engagementTracker.getScanStreak());
+  const heartbeat = new HeartbeatService(api, () => Boolean(cachedApiKey));
+
+  engagementTracker.recordOnboardingStep("installed");
 
   cachedApiKey = await context.secrets.get(SECRET_API_KEY);
 
@@ -68,6 +71,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         (f: { severity: string }) => f.severity === "critical",
       ).length;
       const high = findings.filter((f: { severity: string }) => f.severity === "high").length;
+      if (secrets > 0 || high > 0) {
+        engagementTracker.recordOnboardingStep("found_issue");
+      }
       if (secrets > 0) {
         void valueTracker.record({
           type: "secret_found",
@@ -292,6 +298,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         const scan = await api.triggerScan(picked.collectionId);
         void vscode.window.showInformationMessage(`DevPulse: scan queued (id ${scan.scanId}).`);
         engagementTracker.record("scan_run");
+        engagementTracker.recordOnboardingStep("scanned");
         await refresh();
       } catch (err) {
         void vscode.window.showErrorMessage(`DevPulse: scan failed — ${errMessage(err)}`);
@@ -336,6 +343,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         // Persist the new key so subsequent calls authenticate correctly.
         await context.secrets.store(SECRET_API_KEY, result.apiKey);
         cachedApiKey = result.apiKey;
+        engagementTracker.recordOnboardingStep("signed_in");
         await applySignedInState(true);
         void vscode.window.showInformationMessage(
           `Your API key: ${result.apiKey} — it has been copied to clipboard.`,
@@ -538,6 +546,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
       if (imported > 0) {
         engagementTracker.record("collection_imported");
+        engagementTracker.recordOnboardingStep("imported");
         let msg = `DevPulse: imported ${imported} collection${imported !== 1 ? "s" : ""}.`;
         if (findings > 0) {
           msg += ` ⚠ ${findings} potential credential${findings !== 1 ? "s" : ""} found — review and rotate immediately.`;
@@ -617,6 +626,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       await runDemoScenarios();
       engagementTracker.record("demo_completed");
     }),
+  );
+
+  // Weekly digest command
+  const weeklyDigest = new WeeklyDigestCommand(api, engagementTracker);
+  context.subscriptions.push(
+    vscode.commands.registerCommand("devpulse.showWeeklyDigest", () => weeklyDigest.execute()),
   );
 
   heartbeat.start();

@@ -16,11 +16,11 @@ export class DevPulseStatusBar {
   private readonly item: vscode.StatusBarItem;
   private findings: Finding[] = [];
 
-  constructor(private readonly api: DevPulseApi) {
-    this.item = vscode.window.createStatusBarItem(
-      vscode.StatusBarAlignment.Right,
-      100
-    );
+  constructor(
+    private readonly api: DevPulseApi,
+    private readonly getStreak?: () => number,
+  ) {
+    this.item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
     this.item.name = "DevPulse";
     this.item.command = "devpulse.openSecurityPanel";
   }
@@ -78,10 +78,15 @@ export class DevPulseStatusBar {
       this.item.backgroundColor = undefined;
     }
 
+    const streak = this.getStreak?.() ?? 0;
+    const streakLine = streak > 1 ? `🔥 Scan streak: ${streak} days` : null;
+
     // Detailed tooltip
     this.item.tooltip = [
       `DevPulse Security Status`,
       ``,
+      streakLine,
+      streakLine ? `` : null,
       `Collections: ${data.collections}`,
       `Open findings: ${data.openFindings} of ${data.totalFindings} total`,
       `  Critical: ${severityCounts.Critical}`,
@@ -119,10 +124,10 @@ export class DevPulseStatusBar {
 
   private getSeverityCounts(findings: Finding[]): Record<Severity, number> {
     return {
-      Critical: findings.filter(f => f.severity === "Critical").length,
-      High: findings.filter(f => f.severity === "High").length,
-      Medium: findings.filter(f => f.severity === "Medium").length,
-      Low: findings.filter(f => f.severity === "Low").length,
+      Critical: findings.filter((f) => f.severity === "Critical").length,
+      High: findings.filter((f) => f.severity === "High").length,
+      Medium: findings.filter((f) => f.severity === "Medium").length,
+      Low: findings.filter((f) => f.severity === "Low").length,
     };
   }
 }

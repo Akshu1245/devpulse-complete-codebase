@@ -182,6 +182,12 @@
         "title": "DevPulse: Open finding in dashboard",
         "icon": "$(link-external)",
         "category": "DevPulse"
+      },
+      {
+        "command": "devpulse.showWeeklyDigest",
+        "title": "DevPulse: Show Weekly Digest",
+        "icon": "$(report)",
+        "category": "DevPulse"
       }
     ],
     "viewsContainers": {
