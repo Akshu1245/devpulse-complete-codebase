@@ -196,7 +196,13 @@ export class FindingsTreeProvider implements vscode.TreeDataProvider<FindingsNod
       const groups: SeverityGroupNode[] = [];
       for (const sev of SEVERITY_ORDER) {
         if (this.severityFilter && sev !== this.severityFilter) continue;
-        const matches = this.findings.filter((f) => f.severity === sev);
+        const matches = this.findings
+          .filter((f) => f.severity === sev)
+          .sort((a, b) => {
+            // Within severity: open first, then in-progress, then resolved
+            const statusOrder = { open: 0, "in-progress": 1, resolved: 2 };
+            return (statusOrder[a.status] ?? 3) - (statusOrder[b.status] ?? 3);
+          });
         if (matches.length > 0) {
           groups.push(new SeverityGroupNode(sev, matches));
         }

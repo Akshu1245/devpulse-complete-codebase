@@ -39,6 +39,8 @@ export class WeeklyDigestCommand {
         ? new RetentionEngine(this.context, this.engagementTracker).getRetentionCohort()
         : null;
 
+      const scanHealth = this.computeScanHealth(stats, findings);
+
       const panel = vscode.window.createWebviewPanel(
         "devpulse.weeklyDigest",
         "DevPulse Weekly Digest",
@@ -55,6 +57,7 @@ export class WeeklyDigestCommand {
         severityCounts,
         newFindings: newFindings.length,
         topOpenFinding,
+        scanHealth,
         trust,
         retention,
       });
@@ -69,6 +72,26 @@ export class WeeklyDigestCommand {
     // Treat any open finding as "new" for digest purposes
     // In production, compare finding.createdAt against 7 days ago
     return finding.status === "open";
+  }
+
+  private computeScanHealth(
+    stats: { scans: number; findings: number; score: number },
+    findings: Finding[],
+  ): { status: "good" | "moderate" | "needs_attention"; message: string } {
+    const openCount = findings.filter((f) => f.status === "open").length;
+    if (stats.scans >= 3 && openCount < 5) {
+      return { status: "good", message: "Scanning regularly and keeping issues under control." };
+    }
+    if (stats.scans >= 1 && openCount < 15) {
+      return {
+        status: "moderate",
+        message: "Scanning in progress — consider reviewing open findings.",
+      };
+    }
+    return {
+      status: "needs_attention",
+      message: "More scanning or cleanup recommended this week.",
+    };
   }
 
   private getSeverityCounts(findings: Finding[]): Record<string, number> {
@@ -89,6 +112,7 @@ export class WeeklyDigestCommand {
     severityCounts: Record<string, number>;
     newFindings: number;
     topOpenFinding?: Finding;
+    scanHealth: { status: "good" | "moderate" | "needs_attention"; message: string };
     trust: {
       totalDismissals: number;
       falsePositives: number;
@@ -97,8 +121,17 @@ export class WeeklyDigestCommand {
     } | null;
     retention: { d1: boolean; d7: boolean; d30: boolean; installedAt: number } | null;
   }): string {
-    const { data, stats, streak, severityCounts, newFindings, topOpenFinding, trust, retention } =
-      props;
+    const {
+      data,
+      stats,
+      streak,
+      severityCounts,
+      newFindings,
+      topOpenFinding,
+      scanHealth,
+      trust,
+      retention,
+    } = props;
 
     const resolvedThisWeek = stats.findings;
     const consistencyText =
@@ -225,6 +258,11 @@ export class WeeklyDigestCommand {
     <div class="metric-row"><span>Collections monitored</span><span class="metric-value">${data.collections}</span></div>
     <div class="metric-row"><span>Scans completed</span><span class="metric-value">${stats.scans}</span></div>
     <div class="metric-row"><span>API calls analyzed</span><span class="metric-value">${data.recentScans * 12}</span></div>
+  </div>
+
+  <div class="card" style="border-left:4px solid ${scanHealth.status === "good" ? "#10B981" : scanHealth.status === "moderate" ? "#F59E0B" : "#EF4444"};padding-left:16px">
+    <h3>💓 Scan Health</h3>
+    <p style="font-size:14px;margin:8px 0">${scanHealth.message}</p>
   </div>
 
   ${
