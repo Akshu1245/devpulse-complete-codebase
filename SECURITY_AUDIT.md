@@ -197,3 +197,7 @@ All exploitable findings have been fixed. The codebase now has a solid security 
 5. [x] Fix MED-003 (rate limiting on MCP registration: 10/hour/user)
 6. [x] Fix LOW-001 (startup warning for default JWT_SECRET)
 7. [x] Add security tests for MCP command validation
+8. [x] Harden: 1MB collection data size limit (DoS prevention)
+9. [x] Harden: MCP command array max 50 args
+10. [x] Harden: SSRF URL validation at MCP registration time (not just invocation)
+11. [x] Harden: In-memory fallback rate limiter when Redis is down (was fail-open)
