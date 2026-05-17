@@ -40,7 +40,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const readApiKey = () => cachedApiKey;
 
   const api = new DevPulseApi(getConfiguredBaseUrl, readApiKey);
-  const findingsProvider = new FindingsTreeProvider(api);
+  const findingsProvider = new FindingsTreeProvider(api, context);
   const autoFixProvider = new AutoFixTreeProvider(api);
   const valueTracker = new ValueMomentTracker(context);
   const engagementTracker = new EngagementTracker(context, api);
@@ -54,6 +54,24 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   // Add heartbeat to subscriptions so it gets cleaned up on deactivation
   context.subscriptions.push(heartbeat);
+
+  // Stale state recovery: refresh when window regains focus (network may have recovered)
+  const windowStateDisposable = vscode.window.onDidChangeWindowState(async (e) => {
+    if (e.focused && cachedApiKey) {
+      const lastActive = context.globalState.get<number>("devpulse.lastActive") ?? Date.now();
+      const minutesAway = (Date.now() - lastActive) / (60 * 1000);
+      // If user was away > 10 minutes, silently refresh to pick up any new findings
+      if (minutesAway > 10) {
+        try {
+          await refresh(false); // respect cache — will still refresh if cache expired
+        } catch {
+          // Silently fail — stale state recovery is best-effort
+        }
+      }
+      void context.globalState.update("devpulse.lastActive", Date.now());
+    }
+  });
+  context.subscriptions.push(windowStateDisposable);
 
   const treeView = vscode.window.createTreeView("devpulse.findings", {
     treeDataProvider: findingsProvider,
@@ -239,6 +257,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       await refresh(true);
     }),
 
+    vscode.commands.registerCommand("devpulse.toggleCompactMode", () => {
+      findingsProvider.toggleCompactMode();
+      const mode = findingsProvider.isCompact() ? "compact" : "expanded";
+      void vscode.window.showInformationMessage(`Findings view: ${mode} mode.`);
+    }),
+
     vscode.commands.registerCommand("devpulse.openDashboard", async () => {
       const base = getConfiguredBaseUrl().replace(/\/+$/, "");
       void vscode.env.openExternal(vscode.Uri.parse(base));
@@ -274,7 +298,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       try {
         const scan = await api.triggerScan(picked.collectionId);
         void vscode.window.showInformationMessage(
-          `Scan queued. Results will appear in the Findings panel.`,
+          `Scanning "${picked.label}" — results will appear in the Findings panel.`,
         );
         engagementTracker.record("scan_run");
         engagementTracker.recordOnboardingStep("scanned");
@@ -674,6 +698,21 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   onboardingTour.onDismiss(() => {
     void context.globalState.update("devpulse.tourDismissed", true);
   });
+
+  // Retention nudges: celebrate habit milestones
+  const retentionTimer = setTimeout(() => {
+    const streak = engagementTracker.getScanStreak();
+    if (streak === 3) {
+      void vscode.window.showInformationMessage(
+        "🔥 3-day scan streak — you're building a solid security habit.",
+      );
+    } else if (streak === 7) {
+      void vscode.window.showInformationMessage(
+        "🎯 7-day scan streak — DevPulse is now part of your workflow.",
+      );
+    }
+  }, 10000);
+  context.subscriptions.push({ dispose: () => clearTimeout(retentionTimer) });
 
   // Onboarding nudges: gentle reminder after 90 seconds if onboarding incomplete
   const onboardingTimer = setTimeout(() => {

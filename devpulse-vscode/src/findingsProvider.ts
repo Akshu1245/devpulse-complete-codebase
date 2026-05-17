@@ -45,8 +45,26 @@ export class FindingsTreeProvider implements vscode.TreeDataProvider<FindingsNod
   private signedIn = false;
   private lastFetchTime = 0;
   private readonly CACHE_MS = 8000; // 8-second cache to avoid redundant API calls
+  private compactMode = false;
 
-  constructor(private readonly api: DevPulseApi) {}
+  constructor(
+    private readonly api: DevPulseApi,
+    private readonly context?: vscode.ExtensionContext,
+  ) {
+    if (context) {
+      this.compactMode = context.globalState.get<boolean>("devpulse.compactMode") ?? false;
+    }
+  }
+
+  toggleCompactMode(): void {
+    this.compactMode = !this.compactMode;
+    void this.context?.globalState.update("devpulse.compactMode", this.compactMode);
+    this._onDidChange.fire();
+  }
+
+  isCompact(): boolean {
+    return this.compactMode;
+  }
 
   setSignedIn(signedIn: boolean): void {
     this.signedIn = signedIn;
@@ -97,17 +115,22 @@ export class FindingsTreeProvider implements vscode.TreeDataProvider<FindingsNod
     }
     const f = node.finding;
     const item = new vscode.TreeItem(f.title, vscode.TreeItemCollapsibleState.None);
-    item.description = `${f.collectionName} · ${STATUS_LABEL[f.status]}`;
-    item.tooltip = [
-      `📌 ${f.title}`,
-      `Severity: ${f.severity}`,
-      `Status: ${f.status}`,
-      `Collection: ${f.collectionName}`,
-      f.category ? `Category: ${f.category}` : null,
-      `ID: ${f.id}`,
-    ]
-      .filter(Boolean)
-      .join("\n");
+    if (this.compactMode) {
+      item.description = `${f.severity} · ${STATUS_LABEL[f.status]}`;
+      item.tooltip = `${f.title}\n${f.severity} · ${f.status}`;
+    } else {
+      item.description = `${f.collectionName} · ${STATUS_LABEL[f.status]}`;
+      item.tooltip = [
+        `${f.title}`,
+        `Severity: ${f.severity}`,
+        `Status: ${f.status}`,
+        `Collection: ${f.collectionName}`,
+        f.category ? `Category: ${f.category}` : null,
+        `ID: ${f.id}`,
+      ]
+        .filter(Boolean)
+        .join("\n");
+    }
     item.contextValue = "finding";
     item.iconPath = SEVERITY_ICON[f.severity];
     item.id = f.id;
