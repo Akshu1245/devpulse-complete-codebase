@@ -78,6 +78,23 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     showCollapseAll: true,
   });
 
+  // Persist tree expand/collapse state for severity groups
+  const expandedKeys = new Set<string>(
+    context.globalState.get<string[]>("devpulse.expandedSeverityGroups") ?? [],
+  );
+  treeView.onDidExpandElement((e) => {
+    if ((e.element as any).kind === "severity") {
+      expandedKeys.add((e.element as any).severity);
+      void context.globalState.update("devpulse.expandedSeverityGroups", Array.from(expandedKeys));
+    }
+  });
+  treeView.onDidCollapseElement((e) => {
+    if ((e.element as any).kind === "severity") {
+      expandedKeys.delete((e.element as any).severity);
+      void context.globalState.update("devpulse.expandedSeverityGroups", Array.from(expandedKeys));
+    }
+  });
+
   const autoFixTreeView = vscode.window.createTreeView("devpulse.autofix", {
     treeDataProvider: autoFixProvider,
     showCollapseAll: true,
@@ -313,11 +330,34 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       if (!picked) return;
       try {
         const scan = await api.triggerScan(picked.collectionId);
+        void context.globalState.update("devpulse.lastScannedCollection", picked.collectionId);
         void vscode.window.showInformationMessage(
           `Scanning "${picked.label}" — results will appear in the Findings panel.`,
         );
         engagementTracker.record("scan_run");
         engagementTracker.recordOnboardingStep("scanned");
+        await refresh(true);
+      } catch (err) {
+        void vscode.window.showErrorMessage(`Scan didn't complete — ${errMessage(err)}`);
+      }
+    }),
+
+    vscode.commands.registerCommand("devpulse.rerunLastScan", async () => {
+      if (!cachedApiKey) {
+        void vscode.window.showWarningMessage("Connect your API key to use this feature.");
+        return;
+      }
+      const lastId = context.globalState.get<string>("devpulse.lastScannedCollection");
+      if (!lastId) {
+        void vscode.window.showWarningMessage("Run a scan first, then you can rerun it quickly.");
+        return;
+      }
+      try {
+        await api.triggerScan(lastId);
+        void vscode.window.showInformationMessage(
+          "Rerunning last scan — results will appear shortly.",
+        );
+        engagementTracker.record("scan_run");
         await refresh(true);
       } catch (err) {
         void vscode.window.showErrorMessage(`Scan didn't complete — ${errMessage(err)}`);

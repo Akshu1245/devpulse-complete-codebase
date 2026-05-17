@@ -97,8 +97,14 @@
       },
       {
         "command": "devpulse.runScan",
-        "title": "DevPulse: Run scan",
+        "title": "DevPulse: Run Scan",
         "icon": "$(play)",
+        "category": "DevPulse"
+      },
+      {
+        "command": "devpulse.rerunLastScan",
+        "title": "DevPulse: Rerun Last Scan",
+        "icon": "$(debug-restart)",
         "category": "DevPulse"
       },
       {
@@ -452,6 +458,12 @@
         "command": "devpulse.runScan",
         "key": "ctrl+shift+s",
         "mac": "cmd+shift+s",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "devpulse.rerunLastScan",
+        "key": "ctrl+shift+r",
+        "mac": "cmd+shift+r",
         "when": "editorTextFocus"
       },
       {

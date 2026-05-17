@@ -25,6 +25,13 @@ export class WeeklyDigestCommand {
       const severityCounts = this.getSeverityCounts(findings);
       const newFindings = findings.filter((f) => f.status === "open" && this.isRecent(f));
 
+      const topOpenFinding = findings
+        .filter((f) => f.status === "open")
+        .sort((a, b) => {
+          const sevOrder = { Critical: 0, High: 1, Medium: 2, Low: 3 };
+          return (sevOrder[a.severity] ?? 4) - (sevOrder[b.severity] ?? 4);
+        })[0];
+
       const trust = this.context
         ? new RetentionEngine(this.context, this.engagementTracker).getTrustSignals()
         : null;
@@ -47,6 +54,7 @@ export class WeeklyDigestCommand {
         segment,
         severityCounts,
         newFindings: newFindings.length,
+        topOpenFinding,
         trust,
         retention,
       });
@@ -80,6 +88,7 @@ export class WeeklyDigestCommand {
     segment: string;
     severityCounts: Record<string, number>;
     newFindings: number;
+    topOpenFinding?: Finding;
     trust: {
       totalDismissals: number;
       falsePositives: number;
@@ -88,7 +97,8 @@ export class WeeklyDigestCommand {
     } | null;
     retention: { d1: boolean; d7: boolean; d30: boolean; installedAt: number } | null;
   }): string {
-    const { data, stats, streak, severityCounts, newFindings, trust, retention } = props;
+    const { data, stats, streak, severityCounts, newFindings, topOpenFinding, trust, retention } =
+      props;
 
     const resolvedThisWeek = stats.findings;
     const consistencyText =
@@ -193,6 +203,17 @@ export class WeeklyDigestCommand {
     <div class="metric-row"><span>Resolved this week</span><span class="metric-value">${resolvedThisWeek}</span></div>
     <div class="metric-row"><span>Still open</span><span class="metric-value">${data.openFindings}</span></div>
   </div>
+
+  ${
+    topOpenFinding
+      ? `
+  <div class="card" style="border-left:4px solid ${topOpenFinding.severity === "Critical" ? "#DC2626" : topOpenFinding.severity === "High" ? "#EA580C" : "#CA8A04"};padding-left:16px">
+    <h3>🚨 Most Important Unresolved</h3>
+    <p style="font-size:14px;margin:8px 0"><strong>${escapeHtml(topOpenFinding.title)}</strong> <span class="tag ${topOpenFinding.severity === "Critical" ? "tag-critical" : topOpenFinding.severity === "High" ? "tag-high" : "tag-medium"}">${topOpenFinding.severity}</span></p>
+    <p style="font-size:12px;color:#888;margin:4px 0">${escapeHtml(topOpenFinding.collectionName)}</p>
+  </div>`
+      : ""
+  }
 
   <div class="card">
     <h3>🎯 Top Priority Open Findings</h3>

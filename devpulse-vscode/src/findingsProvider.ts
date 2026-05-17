@@ -47,6 +47,7 @@ export class FindingsTreeProvider implements vscode.TreeDataProvider<FindingsNod
   private readonly CACHE_MS = 8000; // 8-second cache to avoid redundant API calls
   private compactMode = false;
   private severityFilter: Severity | null = null;
+  private expandedSeverityGroups = new Set<string>();
 
   constructor(
     private readonly api: DevPulseApi,
@@ -56,6 +57,8 @@ export class FindingsTreeProvider implements vscode.TreeDataProvider<FindingsNod
       this.compactMode = context.globalState.get<boolean>("devpulse.compactMode") ?? false;
       this.severityFilter =
         context.globalState.get<Severity | null>("devpulse.severityFilter") ?? null;
+      const expanded = context.globalState.get<string[]>("devpulse.expandedSeverityGroups") ?? [];
+      this.expandedSeverityGroups = new Set(expanded);
     }
   }
 
@@ -117,9 +120,12 @@ export class FindingsTreeProvider implements vscode.TreeDataProvider<FindingsNod
       return item;
     }
     if (node.kind === "severity") {
+      const isExpanded = this.expandedSeverityGroups.has(node.severity);
       const item = new vscode.TreeItem(
         `${node.severity} (${node.findings.length})`,
-        vscode.TreeItemCollapsibleState.Expanded,
+        isExpanded
+          ? vscode.TreeItemCollapsibleState.Expanded
+          : vscode.TreeItemCollapsibleState.Collapsed,
       );
       item.iconPath = SEVERITY_ICON[node.severity];
       item.contextValue = "severityGroup";
