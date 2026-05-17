@@ -24,6 +24,11 @@ import { nanoid } from "nanoid";
 import * as db from "../db";
 import type { WebhookEndpoint } from "../../drizzle/schema";
 import { logger } from "../_core/logger";
+import { logSecurityEvent } from "./securityEvents";
+import { getJobQueue } from "./jobQueue";
+
+const MAX_WEBHOOK_RETRIES = 3;
+const WEBHOOK_RETRY_DELAYS_MS = [3 * 60 * 1000, 15 * 60 * 1000, 60 * 60 * 1000]; // 3min, 15min, 1hr
 
 const SSRF_BLOCKED_HOSTS = [
   "127.0.0.1",
@@ -58,10 +63,12 @@ function validateWebhookUrl(rawUrl: string): string | undefined {
   }
   const hostname = parsed.hostname.toLowerCase();
   if (SSRF_BLOCKED_HOSTS.includes(hostname)) {
+    logSecurityEvent("ssrf_url_blocked", { url: rawUrl, hostname, reason: "blocked_host" });
     return `Host ${hostname} is blocked`;
   }
   for (const cidr of SSRF_BLOCKED_CIDRS) {
     if (cidr.test(hostname)) {
+      logSecurityEvent("ssrf_url_blocked", { url: rawUrl, hostname, reason: "blocked_cidr" });
       return `Host ${hostname} is blocked (internal network)`;
     }
   }
@@ -110,9 +117,7 @@ const AUTO_DISABLE_AFTER_FAILURES = 20;
 const DELIVERY_TIMEOUT_MS = 5_000;
 
 function sign(body: string, secret: string): string {
-  return (
-    "sha256=" + crypto.createHmac("sha256", secret).update(body).digest("hex")
-  );
+  return "sha256=" + crypto.createHmac("sha256", secret).update(body).digest("hex");
 }
 
 /**
@@ -121,18 +126,11 @@ function sign(body: string, secret: string): string {
  * side channel. Returns false if lengths differ (which is safe because
  * timingSafeEqual throws on length mismatch).
  */
-export function verifySignature(
-  body: string,
-  signatureHeader: string,
-  secret: string
-): boolean {
+export function verifySignature(body: string, signatureHeader: string, secret: string): boolean {
   const expected = sign(body, secret);
   if (expected.length !== signatureHeader.length) return false;
   try {
-    return crypto.timingSafeEqual(
-      Buffer.from(expected),
-      Buffer.from(signatureHeader)
-    );
+    return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signatureHeader));
   } catch {
     return false;
   }
@@ -160,7 +158,7 @@ export interface DeliveryResult {
 export async function deliver(
   userId: number,
   event: WebhookEvent,
-  data: Record<string, unknown>
+  data: Record<string, unknown>,
 ): Promise<DeliveryResult[]> {
   let endpoints: WebhookEndpoint[] = [];
   try {
@@ -180,16 +178,14 @@ export async function deliver(
   };
   const body = JSON.stringify(payload);
 
-  const results = await Promise.all(
-    endpoints.map(ep => deliverToEndpoint(ep, payload, body))
-  );
+  const results = await Promise.all(endpoints.map((ep) => deliverToEndpoint(ep, payload, body)));
   return results;
 }
 
 async function deliverToEndpoint(
   endpoint: WebhookEndpoint,
   payload: WebhookPayload,
-  body: string
+  body: string,
 ): Promise<DeliveryResult> {
   const deliveryId = nanoid();
   const signature = sign(body, endpoint.secret);
@@ -203,7 +199,10 @@ async function deliverToEndpoint(
   const urlError = validateWebhookUrl(endpoint.url);
   if (urlError) {
     errorMessage = `SSRF blocked: ${urlError}`;
-    logger.warn({ endpointId: endpoint.id, url: endpoint.url, reason: urlError }, "[webhookDelivery] SSRF blocked");
+    logger.warn(
+      { endpointId: endpoint.id, url: endpoint.url, reason: urlError },
+      "[webhookDelivery] SSRF blocked",
+    );
   } else {
     try {
       const res = await fetch(endpoint.url, {
@@ -253,8 +252,43 @@ async function deliverToEndpoint(
       await db.recordWebhookFailure(
         endpoint.id,
         httpStatus ?? null,
-        nextFailures >= AUTO_DISABLE_AFTER_FAILURES
+        nextFailures >= AUTO_DISABLE_AFTER_FAILURES,
       );
+
+      // Schedule retry with exponential backoff
+      const attempt = payload as unknown as { _retryAttempt?: number };
+      const retryAttempt = (attempt._retryAttempt ?? 0) + 1;
+      if (retryAttempt <= MAX_WEBHOOK_RETRIES) {
+        const delayMs =
+          WEBHOOK_RETRY_DELAYS_MS[Math.min(retryAttempt - 1, WEBHOOK_RETRY_DELAYS_MS.length - 1)];
+        const queue = getJobQueue();
+        queue.enqueue(
+          "webhook_retry",
+          {
+            endpointId: endpoint.id,
+            event: payload.event,
+            payload: { ...payload, _retryAttempt: retryAttempt },
+            scheduledFor: Date.now() + delayMs,
+          },
+          { delayMs },
+        );
+        logger.info(
+          { endpointId: endpoint.id, retryAttempt, delayMs },
+          "[webhookDelivery] scheduled retry",
+        );
+      } else {
+        // Dead letter: exhausted all retries
+        logSecurityEvent("webhook_delivery_dead_letter", {
+          endpointId: endpoint.id,
+          event: payload.event,
+          lastError: errorMessage,
+          attempts: retryAttempt,
+        });
+        logger.error(
+          { endpointId: endpoint.id, event: payload.event, error: errorMessage },
+          "[webhookDelivery] exhausted retries, moved to dead letter",
+        );
+      }
     }
   } catch (err) {
     logger.warn({ err: err }, "[webhookDelivery] failed to persist audit row");

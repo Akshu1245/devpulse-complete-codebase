@@ -9,6 +9,7 @@ import { toNumber } from "../utils/decimal";
 import { scanCollectionForCredentials } from "../services/collectionCredentialScan";
 import { scanCollectionForGateway } from "../services/gatewayCollectionScan";
 import { logger } from "../_core/logger";
+import { logSecurityEvent } from "../services/securityEvents";
 
 /** Reject keys that could enable prototype pollution */
 function hasPollutionKeys(value: unknown): boolean {
@@ -48,6 +49,15 @@ export const collectionsRouter = router({
         });
       }
       if (hasPollutionKeys(input.data)) {
+        logSecurityEvent(
+          "prototype_pollution_blocked",
+          { keys: Object.keys(input.data) },
+          {
+            userId: ctx.user.id,
+            ip: ctx.req.ip,
+            userAgent: ctx.req.headers["user-agent"] as string,
+          },
+        );
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Collection data contains prohibited keys",

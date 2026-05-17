@@ -15,6 +15,7 @@ import { discoverMcpTools, classifyToolRisk, type McpTransport } from "../servic
 import { validateMcpUrl } from "../services/mcpInvocationGateway";
 import { logger } from "../_core/logger";
 import { TRPCError } from "@trpc/server";
+import { logSecurityEvent } from "../services/securityEvents";
 
 // In-memory rate limiter for MCP registration — 10 attempts per hour per user
 const mcpRegAttempts = new Map<number, { count: number; resetAt: number }>();
@@ -153,6 +154,15 @@ export const mcpGovernanceRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       if (!checkMcpRegistrationLimit(ctx.user.id)) {
+        logSecurityEvent(
+          "mcp_registration_rate_limited",
+          { userId: ctx.user.id },
+          {
+            userId: ctx.user.id,
+            ip: ctx.req.ip,
+            userAgent: ctx.req.headers["user-agent"] as string,
+          },
+        );
         throw new TRPCError({
           code: "TOO_MANY_REQUESTS",
           message: "MCP server registration limit reached (10 per hour). Please try again later.",

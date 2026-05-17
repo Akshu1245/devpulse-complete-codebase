@@ -14,6 +14,7 @@
 import crypto from "crypto";
 import * as db from "../db";
 import { logger } from "../_core/logger";
+import { logSecurityEvent } from "./securityEvents";
 import { discoverMcpTools } from "./mcpTransport";
 
 /* ─── Types ────────────────────────────────────────────────────────────── */
@@ -162,8 +163,15 @@ export async function invokeMCPTool(req: InvocationRequest): Promise<InvocationR
  * link-local, decimal/octal/hex encoded IPs, and empty/zero hosts.
  */
 export function validateMcpUrl(url: string): void {
-  const parsed = new URL(url);
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    logSecurityEvent("ssrf_url_blocked", { url, reason: "invalid_url" });
+    throw new Error("Invalid URL format");
+  }
   if (parsed.protocol !== "https:") {
+    logSecurityEvent("ssrf_url_blocked", { url, protocol: parsed.protocol });
     throw new Error(`MCP servers must use HTTPS: got ${parsed.protocol}`);
   }
 

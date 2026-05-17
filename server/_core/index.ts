@@ -38,6 +38,8 @@ import { startRedTeamScheduler } from "../services/redTeamScheduler";
 import { registerJobWorkers } from "../services/jobs";
 import { verifyWebhookSignature } from "../utils/security";
 import { handleGitHubWebhook } from "../api/github";
+import { redis } from "./cache";
+import { getDb } from "../db";
 
 // ============================================================================
 // CORS ORIGIN ALLOWLIST
@@ -348,9 +350,18 @@ async function startServer() {
     }),
   );
 
-  // ── Body parsers with 50MB limit for collection uploads ───────────────────
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  // ── Body parsers ─────────────────────────────────────────────────────────
+  // Default: 5MB. Override per-route below for legitimate large payloads.
+  app.use(express.json({ limit: "5mb" }));
+  app.use(express.urlencoded({ limit: "5mb", extended: true }));
+
+  // Collection endpoints: 1MB max (prevents DoS via massive JSON)
+  app.use("/api/trpc/collections", express.json({ limit: "1mb" }));
+
+  // GitHub webhooks & internal gateway audit: 1MB
+  app.use("/webhooks/github", express.json({ limit: "1mb" }));
+  app.use("/api/internal/gateway-audit", express.json({ limit: "1mb" }));
+  app.use("/api/internal/shadow-ai-events", express.json({ limit: "1mb" }));
 
   // ── Access log (after body parsers so log fires once per request, but
   // before app routes so 404s are still captured). ─────────────────────────
@@ -390,13 +401,50 @@ async function startServer() {
   app.use("/api/oauth", authLimiter);
 
   // ── Health check endpoint ──────────────────────────────────────────────────
-  app.get("/api/health", (_req, res) => {
-    res.json({
-      status: "ok",
+  app.get("/api/health", async (_req, res) => {
+    const checks: Record<string, "ok" | "error"> = {};
+    let allOk = true;
+
+    // Database check
+    try {
+      const db = await getDb();
+      if (db) {
+        // lightweight query — just verify connection is alive
+        await db.execute("SELECT 1");
+        checks.database = "ok";
+      } else {
+        checks.database = "error";
+        allOk = false;
+      }
+    } catch {
+      checks.database = "error";
+      allOk = false;
+    }
+
+    // Redis check
+    try {
+      await redis.ping();
+      checks.redis = "ok";
+    } catch {
+      checks.redis = "error";
+      allOk = false;
+    }
+
+    // Memory check
+    const mem = process.memoryUsage();
+    const heapUsedMB = Math.round(mem.heapUsed / 1024 / 1024);
+    const heapTotalMB = Math.round(mem.heapTotal / 1024 / 1024);
+    checks.memory = heapUsedMB < heapTotalMB * 0.9 ? "ok" : "error";
+    if (checks.memory === "error") allOk = false;
+
+    res.status(allOk ? 200 : 503).json({
+      status: allOk ? "ok" : "degraded",
       timestamp: new Date().toISOString(),
       uptime: Math.round(process.uptime()),
       version: process.env.npm_package_version ?? "1.0.0",
       environment: process.env.NODE_ENV ?? "development",
+      checks,
+      memory: { heapUsedMB, heapTotalMB },
     });
   });
 
@@ -410,10 +458,7 @@ async function startServer() {
   // ── GitHub App webhook endpoint ───────────────────────────────────────────
   app.post("/webhooks/github", express.json(), async (req, res) => {
     const signature = (req.headers["x-hub-signature-256"] as string) || "";
-    const result = await handleGitHubWebhook(
-      JSON.stringify(req.body),
-      signature,
-    );
+    const result = await handleGitHubWebhook(JSON.stringify(req.body), signature);
     res.status(result.status).json(result.body);
   });
 

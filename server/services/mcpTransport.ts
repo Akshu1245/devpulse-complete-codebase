@@ -13,6 +13,7 @@
 import { spawn, ChildProcess } from "child_process";
 import { fetchWithTimeout } from "../utils/fetchWithTimeout";
 import { logger } from "../_core/logger";
+import { logSecurityEvent } from "./securityEvents";
 
 /* ─── Types ────────────────────────────────────────────────────────────── */
 
@@ -75,6 +76,7 @@ function validateStdioCommand(command: string[]): void {
   if (command.length === 0) throw new Error("stdio command is empty");
   for (const arg of command) {
     if (BLOCKED_COMMAND_PATTERNS.some((p) => p.test(arg))) {
+      logSecurityEvent("rce_command_blocked", { command, blockedArg: arg });
       throw new Error("MCP stdio command contains blocked characters or patterns");
     }
   }
@@ -82,6 +84,7 @@ function validateStdioCommand(command: string[]): void {
   const allowedBinaries = new Set(["node", "npm", "npx", "python", "python3", "uv"]);
   const binaryName = command[0].replace(/^.*[\\/]/, ""); // strip path
   if (!allowedBinaries.has(binaryName)) {
+    logSecurityEvent("rce_command_blocked", { command, blockedBinary: binaryName });
     throw new Error(`MCP stdio binary "${binaryName}" is not in the allowed list`);
   }
 }
