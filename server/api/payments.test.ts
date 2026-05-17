@@ -1,4 +1,4 @@
-// @ts-nocheck  
+// @ts-nocheck
 /**
  * Payments Router Tests - Phase 21 Testing
  * Tests for Razorpay payment integration
@@ -9,25 +9,21 @@ import type { TrpcContext } from "../_core/context";
 import { generateCsrfToken } from "../utils/security";
 
 vi.mock("../payments", () => ({
-  createSubscription: vi.fn(
-    async (userId: number, email: string, plan: string) => ({
-      subscriptionId: `sub_${Date.now()}`,
-      customerId: `cust_${Date.now()}`,
-      shortUrl: "https://razorpay.com/pay/test",
-      status: "created",
-      planName: plan === "enterprise" ? "DevPulse Enterprise" : "DevPulse Pro",
-      amount: plan === "enterprise" ? 499900 : 99900,
-      currency: "INR",
-      keyId: "rzp_test_key",
-      features: ["Feature 1", "Feature 2"],
-    })
-  ),
-  cancelSubscription: vi.fn(
-    async (subscriptionId: string, cancelAtCycleEnd: boolean) => ({
-      status: cancelAtCycleEnd ? "active" : "cancelled",
-      id: subscriptionId,
-    })
-  ),
+  createSubscription: vi.fn(async (userId: number, email: string, plan: string) => ({
+    subscriptionId: `sub_${Date.now()}`,
+    customerId: `cust_${Date.now()}`,
+    shortUrl: "https://razorpay.com/pay/test",
+    status: "created",
+    planName: plan === "enterprise" ? "DevPulse Enterprise" : "DevPulse Pro",
+    amount: plan === "enterprise" ? 499900 : 99900,
+    currency: "INR",
+    keyId: "rzp_test_key",
+    features: ["Feature 1", "Feature 2"],
+  })),
+  cancelSubscription: vi.fn(async (subscriptionId: string, cancelAtCycleEnd: boolean) => ({
+    status: cancelAtCycleEnd ? "active" : "cancelled",
+    id: subscriptionId,
+  })),
   getSubscriptionDetails: vi.fn(async (subscriptionId: string) => ({
     id: subscriptionId,
     status: "active",
@@ -71,6 +67,8 @@ vi.mock("../db", async () => ({
   updatePaymentRefundStatus: vi.fn(async () => {}),
   getCollectionsByUserId: vi.fn(async () => []),
   getRecentScans: vi.fn(async () => []),
+  getEffectivePlan: vi.fn(async (userId: number) => "free"),
+  getTrialStatus: vi.fn(async (userId: number) => ({ active: false, remainingDays: 0 })),
 }));
 
 function createAuthContext(userId: number = 1) {
@@ -113,9 +111,7 @@ describe("payments router", () => {
       } as unknown as TrpcContext;
       const caller = appRouter.createCaller(ctx);
 
-      await expect(
-        caller.payment.createSubscription({ plan: "pro" })
-      ).rejects.toThrow();
+      await expect(caller.payment.createSubscription({ plan: "pro" })).rejects.toThrow();
     });
 
     it("throws for invalid plan", async () => {
@@ -124,9 +120,7 @@ describe("payments router", () => {
 
       // Zod rejects the unknown plan value before the router's custom check;
       // either behaviour is acceptable, we just want a 4xx-style rejection.
-      await expect(
-        caller.payment.createSubscription({ plan: "invalid" as any })
-      ).rejects.toThrow();
+      await expect(caller.payment.createSubscription({ plan: "invalid" as any })).rejects.toThrow();
     });
 
     it("successfully creates pro subscription", async () => {
@@ -162,9 +156,9 @@ describe("payments router", () => {
       const { getSubscriptionByUserId } = await import("../db");
       vi.mocked(getSubscriptionByUserId).mockResolvedValueOnce(null);
 
-      await expect(
-        caller.payment.cancel({ immediately: false })
-      ).rejects.toThrow("No active subscription found");
+      await expect(caller.payment.cancel({ immediately: false })).rejects.toThrow(
+        "No active subscription found",
+      );
     });
 
     it("cancels subscription at cycle end when immediately=false", async () => {
@@ -272,12 +266,13 @@ describe("payments router", () => {
       const { ctx } = createAuthContext();
       const caller = appRouter.createCaller(ctx);
 
-      const { getSubscriptionByUserId } = await import("../db");
+      const { getSubscriptionByUserId, getEffectivePlan } = await import("../db");
       vi.mocked(getSubscriptionByUserId).mockResolvedValueOnce({
         id: "sub_123",
         plan: "pro",
         status: "active",
       });
+      vi.mocked(getEffectivePlan).mockResolvedValueOnce("pro");
 
       const result = await caller.payment.getCurrentPlan();
 

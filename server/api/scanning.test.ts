@@ -1,4 +1,4 @@
-// @ts-nocheck  
+// @ts-nocheck
 /**
  * Scanning Router Tests - Phase 21 Testing
  * Tests for security scanning functionality
@@ -15,18 +15,14 @@ vi.mock("../db", async () => {
   const mockFindings = new Map();
 
   return {
-    getCollectionById: vi.fn(
-      async (id: string) => mockCollections.get(id) || null
-    ),
+    getCollectionById: vi.fn(async (id: string) => mockCollections.get(id) || null),
     createScan: vi.fn(async (...args: any[]) => {
       const id = `scan_${Date.now()}`;
       mockScans.set(id, { id, status: "completed", ...args[2] });
       return { id };
     }),
     getScansByCollectionId: vi.fn(async (collectionId: string) => {
-      return Array.from(mockScans.values()).filter(
-        s => s.collectionId === collectionId
-      );
+      return Array.from(mockScans.values()).filter((s) => s.collectionId === collectionId);
     }),
     getScanById: vi.fn(async (id: string) => mockScans.get(id) || null),
     createFinding: vi.fn(async (...args: any[]) => {
@@ -35,7 +31,7 @@ vi.mock("../db", async () => {
       return { id };
     }),
     getFindingsByScanId: vi.fn(async (scanId: string) => {
-      return Array.from(mockFindings.values()).filter(f => f.scanId === scanId);
+      return Array.from(mockFindings.values()).filter((f) => f.scanId === scanId);
     }),
     getFindingById: vi.fn(async (id: string) => mockFindings.get(id) || null),
     updateFindingStatus: vi.fn(async () => {}),
@@ -77,10 +73,9 @@ vi.mock("../websocket", () => ({
 }));
 
 vi.mock("../_core/cache", () => ({
+  redis: {},
   invalidateUserCache: vi.fn(),
-  getOrSetCache: vi.fn(async (_: string, __: number, fn: () => Promise<any>) =>
-    fn()
-  ),
+  getOrSetCache: vi.fn(async (_: string, __: number, fn: () => Promise<any>) => fn()),
   CACHE_TTL: { SCAN_RESULTS: 60 },
   cacheKeys: { scanResults: (id: string) => `scan:${id}` },
 }));
@@ -143,7 +138,7 @@ describe("scanning router", () => {
       const caller = appRouter.createCaller(ctx);
 
       await expect(
-        caller.scanning.startScan({ collectionId: "col_123", scanType: "full" })
+        caller.scanning.startScan({ collectionId: "col_123", scanType: "full" }),
       ).rejects.toThrowError(expect.objectContaining({ code: "UNAUTHORIZED" }));
     });
 
@@ -152,7 +147,7 @@ describe("scanning router", () => {
       const caller = appRouter.createCaller(ctx);
 
       await expect(
-        caller.scanning.startScan({ collectionId: "col_123", scanType: "full" })
+        caller.scanning.startScan({ collectionId: "col_123", scanType: "full" }),
       ).rejects.toThrow();
     });
 
@@ -168,7 +163,7 @@ describe("scanning router", () => {
         caller.scanning.startScan({
           collectionId: "nonexistent",
           scanType: "full",
-        })
+        }),
       ).rejects.toThrow("Collection not found or access denied");
     });
 
@@ -185,7 +180,7 @@ describe("scanning router", () => {
       });
 
       await expect(
-        caller.scanning.startScan({ collectionId: "col_123", scanType: "full" })
+        caller.scanning.startScan({ collectionId: "col_123", scanType: "full" }),
       ).rejects.toThrow("Collection not found or access denied");
     });
 
@@ -247,7 +242,7 @@ describe("scanning router", () => {
           collectionId: "col_123",
           page: 1,
           pageSize: 20,
-        })
+        }),
       ).rejects.toThrowError(expect.objectContaining({ code: "UNAUTHORIZED" }));
     });
 
@@ -255,9 +250,7 @@ describe("scanning router", () => {
       const { ctx } = createAuthContext(1, "editor");
       const caller = appRouter.createCaller(ctx);
 
-      const { getCollectionById, getScansByCollectionId } = await import(
-        "../db"
-      );
+      const { getCollectionById, getScansByCollectionId } = await import("../db");
       vi.mocked(getCollectionById).mockResolvedValueOnce({
         id: "col_123",
         userId: 1,
@@ -277,9 +270,7 @@ describe("scanning router", () => {
       const { ctx } = createAuthContext(1, "editor");
       const caller = appRouter.createCaller(ctx);
 
-      const { getCollectionById, getScansByCollectionId } = await import(
-        "../db"
-      );
+      const { getCollectionById, getScansByCollectionId } = await import("../db");
       vi.mocked(getCollectionById).mockResolvedValueOnce({
         id: "col_123",
         userId: 1,
@@ -318,7 +309,7 @@ describe("scanning router", () => {
 
       expect(result.scans.length).toBe(2);
       expect(result.total).toBe(2);
-      result.scans.forEach(scan => {
+      result.scans.forEach((scan) => {
         expect(scan.scanType).toBe("full");
       });
     });
@@ -329,9 +320,9 @@ describe("scanning router", () => {
       const { ctx } = createNonAuthContext();
       const caller = appRouter.createCaller(ctx);
 
-      await expect(
-        caller.scanning.getScan({ scanId: "scan_123" })
-      ).rejects.toThrowError(expect.objectContaining({ code: "UNAUTHORIZED" }));
+      await expect(caller.scanning.getScan({ scanId: "scan_123" })).rejects.toThrowError(
+        expect.objectContaining({ code: "UNAUTHORIZED" }),
+      );
     });
 
     it("throws when scan does not exist", async () => {
@@ -341,9 +332,9 @@ describe("scanning router", () => {
       const { getScanById } = await import("../db");
       vi.mocked(getScanById).mockResolvedValueOnce(null);
 
-      await expect(
-        caller.scanning.getScan({ scanId: "nonexistent" })
-      ).rejects.toThrow("Scan not found or access denied");
+      await expect(caller.scanning.getScan({ scanId: "nonexistent" })).rejects.toThrow(
+        "Scan not found or access denied",
+      );
     });
 
     it("returns scan with findings", async () => {
@@ -382,7 +373,7 @@ describe("scanning router", () => {
         caller.scanning.updateFindingStatus({
           findingId: "f_123",
           status: "resolved",
-        })
+        }),
       ).rejects.toThrowError(expect.objectContaining({ code: "UNAUTHORIZED" }));
     });
 
@@ -397,7 +388,7 @@ describe("scanning router", () => {
         caller.scanning.updateFindingStatus({
           findingId: "nonexistent",
           status: "resolved",
-        })
+        }),
       ).rejects.toThrow("Finding not found");
     });
 
@@ -416,7 +407,7 @@ describe("scanning router", () => {
         caller.scanning.updateFindingStatus({
           findingId: "f_123",
           status: "resolved",
-        })
+        }),
       ).rejects.toThrow("Finding not found");
     });
 

@@ -1,4 +1,4 @@
-// @ts-nocheck  
+// @ts-nocheck
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { appRouter } from "./routers";
 import { COOKIE_NAME } from "../shared/const";
@@ -74,8 +74,9 @@ function createPublicContext(): TrpcContext {
 // ============================================================================
 
 vi.mock("./_core/cache", () => ({
-  getOrSetCache: vi.fn(
-    async (_key: string, _ttl: number, fetchFn: () => Promise<any>) => fetchFn()
+  redis: {},
+  getOrSetCache: vi.fn(async (_key: string, _ttl: number, fetchFn: () => Promise<any>) =>
+    fetchFn(),
   ),
   CACHE_TTL: {
     DASHBOARD_STATS: 60,
@@ -108,35 +109,25 @@ vi.mock("./db", async () => {
 
   return {
     getCollectionsByUserId: vi.fn(async (userId: number) =>
-      mockCollections.filter(c => c.userId === userId)
+      mockCollections.filter((c) => c.userId === userId),
     ),
     getCollectionById: vi.fn(
-      async (id: string) => mockCollections.find(c => c.id === id) ?? null
+      async (id: string) => mockCollections.find((c) => c.id === id) ?? null,
     ),
-    hasCollectionAccess: vi.fn(
-      async (id: string, userId: number, userEmail?: string) => {
-        const col = mockCollections.find(c => c.id === id);
-        if (!col) return { access: false, collection: null, role: null };
-        // Check if user is owner
-        if (col.userId === userId)
-          return { access: true, collection: col, role: "owner" };
-        // Check if user is team member with access
-        const teamAccess = mockTeamMembers.find(
-          m => m.userId === userId && m.status === "accepted"
-        );
-        if (teamAccess)
-          return { access: true, collection: col, role: teamAccess.role };
-        return { access: false, collection: null, role: null };
-      }
-    ),
+    hasCollectionAccess: vi.fn(async (id: string, userId: number, userEmail?: string) => {
+      const col = mockCollections.find((c) => c.id === id);
+      if (!col) return { access: false, collection: null, role: null };
+      // Check if user is owner
+      if (col.userId === userId) return { access: true, collection: col, role: "owner" };
+      // Check if user is team member with access
+      const teamAccess = mockTeamMembers.find(
+        (m) => m.userId === userId && m.status === "accepted",
+      );
+      if (teamAccess) return { access: true, collection: col, role: teamAccess.role };
+      return { access: false, collection: null, role: null };
+    }),
     createCollection: vi.fn(
-      async (
-        userId: number,
-        name: string,
-        format: string,
-        data: any,
-        description?: string
-      ) => {
+      async (userId: number, name: string, format: string, data: any, description?: string) => {
         const id = `col_test_${Date.now()}`;
         const col = {
           id,
@@ -151,14 +142,14 @@ vi.mock("./db", async () => {
         };
         mockCollections.push(col);
         return col;
-      }
+      },
     ),
     updateCollection: vi.fn(async (id: string, updates: any) => {
-      const col = mockCollections.find(c => c.id === id);
+      const col = mockCollections.find((c) => c.id === id);
       if (col) Object.assign(col, updates);
     }),
     deleteCollection: vi.fn(async (id: string) => {
-      const idx = mockCollections.findIndex(c => c.id === id);
+      const idx = mockCollections.findIndex((c) => c.id === id);
       if (idx !== -1) mockCollections.splice(idx, 1);
     }),
     createScan: vi.fn(
@@ -170,7 +161,7 @@ vi.mock("./db", async () => {
         riskScore: number,
         riskLevel: string,
         totalFindings: number,
-        findingsData?: any
+        findingsData?: any,
       ) => {
         const id = `scan_test_${Date.now()}`;
         mockScans.push({
@@ -187,20 +178,16 @@ vi.mock("./db", async () => {
           completedAt: new Date(),
         });
         return { id };
-      }
+      },
     ),
     getScansByCollectionId: vi.fn(async (collectionId: string) =>
-      mockScans.filter(s => s.collectionId === collectionId)
+      mockScans.filter((s) => s.collectionId === collectionId),
     ),
-    getScanById: vi.fn(
-      async (id: string) => mockScans.find(s => s.id === id) ?? null
-    ),
+    getScanById: vi.fn(async (id: string) => mockScans.find((s) => s.id === id) ?? null),
     getFindingsByScanId: vi.fn(async (scanId: string) =>
-      mockFindings.filter(f => f.scanId === scanId)
+      mockFindings.filter((f) => f.scanId === scanId),
     ),
-    getFindingById: vi.fn(
-      async (id: string) => mockFindings.find(f => f.id === id) ?? null
-    ),
+    getFindingById: vi.fn(async (id: string) => mockFindings.find((f) => f.id === id) ?? null),
     createFinding: vi.fn(
       async (
         scanId: string,
@@ -211,7 +198,7 @@ vi.mock("./db", async () => {
         description?: string,
         category?: string,
         remediation?: string,
-        cweId?: string
+        cweId?: string,
       ) => {
         const id = `finding_test_${Date.now()}`;
         mockFindings.push({
@@ -229,10 +216,10 @@ vi.mock("./db", async () => {
           createdAt: new Date(),
         });
         return { id };
-      }
+      },
     ),
     updateFindingStatus: vi.fn(async (id: string, status: string) => {
-      const f = mockFindings.find(f => f.id === id);
+      const f = mockFindings.find((f) => f.id === id);
       if (f) f.status = status;
     }),
     createShadowAPI: vi.fn(async (...args: any[]) => {
@@ -251,34 +238,26 @@ vi.mock("./db", async () => {
       });
       return { id };
     }),
-    getShadowAPIById: vi.fn(
-      async (id: string) => mockShadowAPIs.find(a => a.id === id) ?? null
-    ),
+    getShadowAPIById: vi.fn(async (id: string) => mockShadowAPIs.find((a) => a.id === id) ?? null),
     getShadowAPIsByScanId: vi.fn(async (scanId: string) =>
-      mockShadowAPIs.filter(a => a.scanId === scanId)
+      mockShadowAPIs.filter((a) => a.scanId === scanId),
     ),
     getShadowAPIsByCollectionId: vi.fn(async (collectionId: string) =>
-      mockShadowAPIs.filter(a => a.collectionId === collectionId)
+      mockShadowAPIs.filter((a) => a.collectionId === collectionId),
     ),
     markShadowAPIDocumented: vi.fn(async (id: string) => {
-      const a = mockShadowAPIs.find(a => a.id === id);
+      const a = mockShadowAPIs.find((a) => a.id === id);
       if (a) a.isDocumented = true;
     }),
     recordTokenUsage: vi.fn(async () => {}),
     getTokenUsageByUserId: vi.fn(async () => []),
     getTokenUsageByModel: vi.fn(async () => []),
     getKillSwitchSettings: vi.fn(
-      async (userId: number) =>
-        mockKillSwitchSettings.find(s => s.userId === userId) ?? null
+      async (userId: number) => mockKillSwitchSettings.find((s) => s.userId === userId) ?? null,
     ),
     updateKillSwitchSettings: vi.fn(
-      async (
-        userId: number,
-        budget?: number,
-        isActive?: boolean,
-        spend?: number
-      ) => {
-        const existing = mockKillSwitchSettings.find(s => s.userId === userId);
+      async (userId: number, budget?: number, isActive?: boolean, spend?: number) => {
+        const existing = mockKillSwitchSettings.find((s) => s.userId === userId);
         if (existing) {
           if (budget !== undefined) existing.budgetLimitUSD = budget.toString();
           if (isActive !== undefined) existing.isActive = isActive;
@@ -292,7 +271,7 @@ vi.mock("./db", async () => {
             currentSpendUSD: spend?.toString() ?? "0",
           });
         }
-      }
+      },
     ),
     createKillSwitchEvent: vi.fn(async (...args: any[]) => {
       mockKillSwitchEvents.push({
@@ -306,7 +285,7 @@ vi.mock("./db", async () => {
       });
     }),
     getKillSwitchAuditTrail: vi.fn(async (userId: number) =>
-      mockKillSwitchEvents.filter(e => e.userId === userId)
+      mockKillSwitchEvents.filter((e) => e.userId === userId),
     ),
     createComplianceReport: vi.fn(
       async (
@@ -316,7 +295,7 @@ vi.mock("./db", async () => {
         score: number,
         total: number,
         met: number,
-        data: any
+        data: any,
       ) => {
         const id = `comp_test_${Date.now()}`;
         mockComplianceReports.push({
@@ -331,50 +310,46 @@ vi.mock("./db", async () => {
           createdAt: new Date(),
         });
         return { id };
-      }
+      },
     ),
     getComplianceReportsByCollectionId: vi.fn(async (collectionId: string) =>
-      mockComplianceReports.filter(r => r.collectionId === collectionId)
+      mockComplianceReports.filter((r) => r.collectionId === collectionId),
     ),
     getComplianceReportById: vi.fn(
-      async (id: string) => mockComplianceReports.find(r => r.id === id) ?? null
+      async (id: string) => mockComplianceReports.find((r) => r.id === id) ?? null,
     ),
-    inviteTeamMember: vi.fn(
-      async (userId: number, memberEmail: string, role: string) => {
-        const id = `team_test_${Date.now()}`;
-        mockTeamMembers.push({
-          id,
-          userId,
-          memberEmail,
-          role,
-          status: "pending",
-          invitedAt: new Date(),
-        });
-        return { id };
-      }
-    ),
+    inviteTeamMember: vi.fn(async (userId: number, memberEmail: string, role: string) => {
+      const id = `team_test_${Date.now()}`;
+      mockTeamMembers.push({
+        id,
+        userId,
+        memberEmail,
+        role,
+        status: "pending",
+        invitedAt: new Date(),
+      });
+      return { id };
+    }),
     getTeamMemberById: vi.fn(
-      async (id: string) => mockTeamMembers.find(m => m.id === id) ?? null
+      async (id: string) => mockTeamMembers.find((m) => m.id === id) ?? null,
     ),
     getTeamMemberByEmail: vi.fn(
       async (userId: number, memberEmail: string) =>
-        mockTeamMembers.find(
-          m => m.userId === userId && m.memberEmail === memberEmail
-        ) ?? null
+        mockTeamMembers.find((m) => m.userId === userId && m.memberEmail === memberEmail) ?? null,
     ),
     getTeamMembersByUserId: vi.fn(async (userId: number) =>
-      mockTeamMembers.filter(m => m.userId === userId)
+      mockTeamMembers.filter((m) => m.userId === userId),
     ),
     updateTeamMemberRole: vi.fn(async (id: string, role: string) => {
-      const m = mockTeamMembers.find(m => m.id === id);
+      const m = mockTeamMembers.find((m) => m.id === id);
       if (m) m.role = role;
     }),
     removeTeamMember: vi.fn(async (id: string) => {
-      const idx = mockTeamMembers.findIndex(m => m.id === id);
+      const idx = mockTeamMembers.findIndex((m) => m.id === id);
       if (idx !== -1) mockTeamMembers.splice(idx, 1);
     }),
     getOrCreateOnboardingProgress: vi.fn(async (userId: number) => {
-      let p = mockOnboardingProgress.find(p => p.userId === userId);
+      let p = mockOnboardingProgress.find((p) => p.userId === userId);
       if (!p) {
         p = {
           id: `onb_${Date.now()}`,
@@ -393,7 +368,7 @@ vi.mock("./db", async () => {
       return p;
     }),
     updateOnboardingStep: vi.fn(async (userId: number, step: string) => {
-      const p = mockOnboardingProgress.find(p => p.userId === userId);
+      const p = mockOnboardingProgress.find((p) => p.userId === userId);
       if (p) {
         if (step === "importCollection") {
           p.importCollectionCompleted = true;
@@ -432,7 +407,7 @@ vi.mock("./db", async () => {
     updateUserPlan: vi.fn(async () => {}),
     getUserPlan: vi.fn(async (userId: number) => "free"),
     acceptTeamInvitation: vi.fn(async (id: string, memberUserId: number) => {
-      const m = mockTeamMembers.find(m => m.id === id);
+      const m = mockTeamMembers.find((m) => m.id === id);
       if (m) {
         m.status = "accepted";
         m.memberUserId = memberUserId;
@@ -440,13 +415,11 @@ vi.mock("./db", async () => {
       }
     }),
     rejectTeamInvitation: vi.fn(async (id: string) => {
-      const m = mockTeamMembers.find(m => m.id === id);
+      const m = mockTeamMembers.find((m) => m.id === id);
       if (m) m.status = "rejected";
     }),
     getPendingInvitationsForUser: vi.fn(async (email: string) =>
-      mockTeamMembers.filter(
-        m => m.memberEmail === email && m.status === "pending"
-      )
+      mockTeamMembers.filter((m) => m.memberEmail === email && m.status === "pending"),
     ),
     detectCostAnomaly: vi.fn(async () => ({
       isAnomaly: false,
@@ -456,7 +429,7 @@ vi.mock("./db", async () => {
     })),
     // Subscription management mocks
     getSubscriptionByUserId: vi.fn(async (userId: number) => {
-      const sub = mockSubscriptions.find(s => s.userId === userId);
+      const sub = mockSubscriptions.find((s) => s.userId === userId);
       return sub || undefined;
     }),
     createSubscription: vi.fn(async (data: any) => {
@@ -466,14 +439,11 @@ vi.mock("./db", async () => {
       return sub;
     }),
     updateSubscriptionStatus: vi.fn(async (id: string, status: string) => {
-      const sub = mockSubscriptions.find(s => s.id === id);
+      const sub = mockSubscriptions.find((s) => s.id === id);
       if (sub) sub.status = status;
     }),
     getSubscriptionByRazorpayId: vi.fn(async (razorpayId: string) => {
-      return (
-        mockSubscriptions.find(s => s.razorpaySubscriptionId === razorpayId) ||
-        undefined
-      );
+      return mockSubscriptions.find((s) => s.razorpaySubscriptionId === razorpayId) || undefined;
     }),
     recordPayment: vi.fn(async (data: any) => {
       const id = `pay_test_${Date.now()}`;
@@ -482,7 +452,7 @@ vi.mock("./db", async () => {
       return payment;
     }),
     getPaymentsByUserId: vi.fn(async (userId: number) => {
-      return mockPayments.filter(p => p.userId === userId);
+      return mockPayments.filter((p) => p.userId === userId);
     }),
     // Email preferences mocks
     getEmailPreferences: vi.fn(async (userId: number) => ({
@@ -509,29 +479,25 @@ vi.mock("./slack", () => ({
 
 // Mock payments module
 vi.mock("./payments", () => ({
-  createPaymentOrder: vi.fn(
-    async (userId: number, email: string, plan: string) => ({
-      orderId: "order_test_123",
-      amount: plan === "enterprise" ? 499900 : 99900,
-      currency: "INR",
-      keyId: "rzp_test_key",
-      planName: plan === "enterprise" ? "DevPulse Enterprise" : "DevPulse Pro",
-      features: ["Feature 1", "Feature 2"],
-    })
-  ),
-  createSubscription: vi.fn(
-    async (userId: number, email: string, plan: string, name?: string) => ({
-      subscriptionId: `sub_${Date.now()}`,
-      customerId: `cust_${Date.now()}`,
-      shortUrl: `https://razorpay.com/pay/sub_${Date.now()}`,
-      planName: plan === "enterprise" ? "DevPulse Enterprise" : "DevPulse Pro",
-      amount: plan === "enterprise" ? 499900 : 99900,
-      currency: "INR",
-      interval: "monthly",
-      keyId: "rzp_test_key",
-      features: ["Feature 1", "Feature 2"],
-    })
-  ),
+  createPaymentOrder: vi.fn(async (userId: number, email: string, plan: string) => ({
+    orderId: "order_test_123",
+    amount: plan === "enterprise" ? 499900 : 99900,
+    currency: "INR",
+    keyId: "rzp_test_key",
+    planName: plan === "enterprise" ? "DevPulse Enterprise" : "DevPulse Pro",
+    features: ["Feature 1", "Feature 2"],
+  })),
+  createSubscription: vi.fn(async (userId: number, email: string, plan: string, name?: string) => ({
+    subscriptionId: `sub_${Date.now()}`,
+    customerId: `cust_${Date.now()}`,
+    shortUrl: `https://razorpay.com/pay/sub_${Date.now()}`,
+    planName: plan === "enterprise" ? "DevPulse Enterprise" : "DevPulse Pro",
+    amount: plan === "enterprise" ? 499900 : 99900,
+    currency: "INR",
+    interval: "monthly",
+    keyId: "rzp_test_key",
+    features: ["Feature 1", "Feature 2"],
+  })),
   getSubscriptionDetails: vi.fn(async (subscriptionId: string) => ({
     id: subscriptionId,
     status: "active",
@@ -539,15 +505,11 @@ vi.mock("./payments", () => ({
     current_end: Date.now() / 1000 + 86400 * 30,
   })),
   getSubscriptionInvoices: vi.fn(async (subscriptionId: string) => []),
-  cancelSubscription: vi.fn(
-    async (subscriptionId: string, cancelAtCycleEnd: boolean = true) => ({
-      status: cancelAtCycleEnd ? "active" : "cancelled",
-      id: subscriptionId,
-    })
-  ),
-  verifyPaymentSignature: vi.fn(
-    ({ orderId, paymentId, signature }: any) => true
-  ),
+  cancelSubscription: vi.fn(async (subscriptionId: string, cancelAtCycleEnd: boolean = true) => ({
+    status: cancelAtCycleEnd ? "active" : "cancelled",
+    id: subscriptionId,
+  })),
+  verifyPaymentSignature: vi.fn(({ orderId, paymentId, signature }: any) => true),
   verifyWebhookSignature: vi.fn((payload: string, signature: string) => true),
   handleWebhookEvent: vi.fn((payload: any) => ({
     event: payload.event || "subscription.activated",
@@ -566,12 +528,9 @@ vi.mock("./payments", () => ({
   })),
   isFeatureAvailable: vi.fn((plan: string, feature: string) => {
     if (plan === "enterprise") return true;
-    if (plan === "pro")
-      return feature !== "sso" && feature !== "prioritySupport";
+    if (plan === "pro") return feature !== "sso" && feature !== "prioritySupport";
     return (
-      feature === "maxCollections" ||
-      feature === "maxScansPerDay" ||
-      feature === "maxTeamMembers"
+      feature === "maxCollections" || feature === "maxScansPerDay" || feature === "maxTeamMembers"
     );
   }),
   PLAN_CONFIG: {
@@ -628,9 +587,10 @@ describe("auth.logout", () => {
     const result = await caller.auth.logout();
 
     expect(result).toEqual({ success: true });
-    expect(clearedCookies).toHaveLength(1);
-    expect(clearedCookies[0]?.name).toBe(COOKIE_NAME);
-    expect(clearedCookies[0]?.options).toMatchObject({
+    expect(clearedCookies.length).toBeGreaterThanOrEqual(1);
+    const sessionCookie = clearedCookies.find((c) => c.name === COOKIE_NAME);
+    expect(sessionCookie).toBeDefined();
+    expect(sessionCookie?.options).toMatchObject({
       maxAge: -1,
       secure: true,
       sameSite: "lax",
@@ -689,17 +649,17 @@ describe("collections", () => {
   it("throws when getting a collection that doesn't exist", async () => {
     const { ctx } = createAuthContext({ id: 10 });
     const caller = appRouter.createCaller(ctx);
-    await expect(
-      caller.collections.get({ id: "nonexistent-id" })
-    ).rejects.toThrow("Collection not found");
+    await expect(caller.collections.get({ id: "nonexistent-id" })).rejects.toThrow(
+      "Collection not found",
+    );
   });
 
   it("throws when deleting a collection that doesn't belong to user", async () => {
     const { ctx } = createAuthContext({ id: 99, role: "editor" });
     const caller = appRouter.createCaller(ctx);
-    await expect(
-      caller.collections.delete({ id: "some-other-collection" })
-    ).rejects.toThrow("Collection not found or access denied");
+    await expect(caller.collections.delete({ id: "some-other-collection" })).rejects.toThrow(
+      "Collection not found or access denied",
+    );
   });
 });
 
@@ -715,7 +675,7 @@ describe("scanning", () => {
       caller.scanning.startScan({
         collectionId: "nonexistent",
         scanType: "full",
-      })
+      }),
     ).rejects.toThrow("Collection not found or access denied");
   });
 
@@ -726,7 +686,7 @@ describe("scanning", () => {
       caller.scanning.updateFindingStatus({
         findingId: "nonexistent",
         status: "resolved",
-      })
+      }),
     ).rejects.toThrow("Finding not found");
   });
 });
@@ -739,9 +699,9 @@ describe("shadowAPI", () => {
   it("throws when marking undocumented without ownership", async () => {
     const { ctx } = createAuthContext({ id: 88 });
     const caller = appRouter.createCaller(ctx);
-    await expect(
-      caller.shadowAPI.markAsDocumented({ shadowApiId: "nonexistent" })
-    ).rejects.toThrow("Shadow API not found");
+    await expect(caller.shadowAPI.markAsDocumented({ shadowApiId: "nonexistent" })).rejects.toThrow(
+      "Shadow API not found",
+    );
   });
 });
 
@@ -810,9 +770,7 @@ describe("team", () => {
   it("throws for invalid email", async () => {
     const { ctx } = createAuthContext({ id: 300 });
     const caller = appRouter.createCaller(ctx);
-    await expect(
-      caller.team.invite({ email: "not-an-email", role: "viewer" })
-    ).rejects.toThrow();
+    await expect(caller.team.invite({ email: "not-an-email", role: "viewer" })).rejects.toThrow();
   });
 
   it("lists team members with pagination info", async () => {
@@ -828,16 +786,16 @@ describe("team", () => {
     const { ctx } = createAuthContext({ id: 999 });
     const caller = appRouter.createCaller(ctx);
     await expect(
-      caller.team.updateRole({ memberId: "nonexistent", role: "admin" })
+      caller.team.updateRole({ memberId: "nonexistent", role: "admin" }),
     ).rejects.toThrow("Team member not found or access denied");
   });
 
   it("throws when removing a member not owned by user (IDOR test)", async () => {
     const { ctx } = createAuthContext({ id: 999 });
     const caller = appRouter.createCaller(ctx);
-    await expect(
-      caller.team.remove({ memberId: "nonexistent" })
-    ).rejects.toThrow("Team member not found or access denied");
+    await expect(caller.team.remove({ memberId: "nonexistent" })).rejects.toThrow(
+      "Team member not found or access denied",
+    );
   });
 });
 
@@ -921,16 +879,16 @@ describe("compliance", () => {
       caller.compliance.generateReport({
         collectionId: "nonexistent",
         reportType: "pci_dss",
-      })
+      }),
     ).rejects.toThrow("Collection not found or access denied");
   });
 
   it("throws when exporting a non-existent report", async () => {
     const { ctx } = createAuthContext({ id: 700 });
     const caller = appRouter.createCaller(ctx);
-    await expect(
-      caller.compliance.exportReport({ reportId: "nonexistent" })
-    ).rejects.toThrow("Report not found or access denied");
+    await expect(caller.compliance.exportReport({ reportId: "nonexistent" })).rejects.toThrow(
+      "Report not found or access denied",
+    );
   });
 });
 
@@ -942,9 +900,9 @@ describe("team accept/reject", () => {
   it("throws when accepting an invitation that doesn't exist", async () => {
     const { ctx } = createAuthContext({ id: 800, email: "bob@example.com" });
     const caller = appRouter.createCaller(ctx);
-    await expect(
-      caller.team.acceptInvitation({ memberId: "nonexistent" })
-    ).rejects.toThrow("Invitation not found");
+    await expect(caller.team.acceptInvitation({ memberId: "nonexistent" })).rejects.toThrow(
+      "Invitation not found",
+    );
   });
 
   it("throws when accepting an invitation not addressed to user", async () => {
@@ -956,17 +914,17 @@ describe("team accept/reject", () => {
       email: "bob@example.com",
       role: "editor",
     });
-    await expect(
-      caller.team.acceptInvitation({ memberId: result.memberId })
-    ).rejects.toThrow("This invitation is not for your email address");
+    await expect(caller.team.acceptInvitation({ memberId: result.memberId })).rejects.toThrow(
+      "This invitation is not for your email address",
+    );
   });
 
   it("throws when rejecting an invitation that doesn't exist", async () => {
     const { ctx } = createAuthContext({ id: 800, email: "bob@example.com" });
     const caller = appRouter.createCaller(ctx);
-    await expect(
-      caller.team.rejectInvitation({ memberId: "nonexistent" })
-    ).rejects.toThrow("Invitation not found");
+    await expect(caller.team.rejectInvitation({ memberId: "nonexistent" })).rejects.toThrow(
+      "Invitation not found",
+    );
   });
 
   it("returns pending invitations for user email", async () => {

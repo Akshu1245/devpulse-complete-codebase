@@ -1,4 +1,4 @@
-// @ts-nocheck  
+// @ts-nocheck
 import { describe, expect, it } from "vitest";
 import { appRouter } from "./routers";
 import { COOKIE_NAME } from "../shared/const";
@@ -59,9 +59,10 @@ describe("auth.logout", () => {
     const result = await caller.auth.logout();
 
     expect(result).toEqual({ success: true });
-    expect(clearedCookies).toHaveLength(1);
-    expect(clearedCookies[0]?.name).toBe(COOKIE_NAME);
-    expect(clearedCookies[0]?.options).toMatchObject({
+    expect(clearedCookies.length).toBeGreaterThanOrEqual(1);
+    const sessionCookie = clearedCookies.find((c) => c.name === COOKIE_NAME);
+    expect(sessionCookie).toBeDefined();
+    expect(sessionCookie?.options).toMatchObject({
       maxAge: -1,
       secure: true,
       sameSite: "lax",

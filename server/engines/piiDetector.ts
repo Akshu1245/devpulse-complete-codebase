@@ -56,35 +56,27 @@ export interface PiiAssessment {
 // ─────────────────────────────────────────────────────────────────────────
 
 const PII_PATTERNS: Record<PiiType, RegExp> = {
-  email:
-    /\b[a-z0-9._%+\-—]+@[a-z0-9.\-—]+\.[a-z]{2,}\b/gi,
+  email: /\b[a-z0-9._%+\-—]+@[a-z0-9.\-—]+\.[a-z]{2,}\b/gi,
 
-  phone:
-    /(?:\+?\d{1,3}[-.\s]?)?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,4}\b/g,
+  phone: /(?:\+?\d{1,3}[-.\s]?)?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,4}\b/g,
 
-  credit_card:
-    /\b(?:\d{4}[- ]?){3}\d{4}\b/g,
+  credit_card: /\b(?:\d{4}[- ]?){3}\d{4}\b/g,
 
-  ssn:
-    /\b\d{3}-?\d{2}-?\d{4}\b/g,
+  ssn: /\b\d{3}-?\d{2}-?\d{4}\b/g,
 
-  aadhaar:
-    /\b[2-9]{1}[0-9]{3}[ ]?[0-9]{4}[ ]?[0-9]{4}\b/g,
+  aadhaar: /\b[2-9]{1}[0-9]{3}[ ]?[0-9]{4}[ ]?[0-9]{4}\b/g,
 
-  pan_card:
-    /\b[A-Z]{5}[0-9]{4}[A-Z]{1}\b/g,
+  pan_card: /\b[A-Z]{5}[0-9]{4}[A-Z]{1}\b/g,
 
-  upi_id:
-    /\b[a-z0-9._\-]{2,}@[a-z]{2,}\b/gi,
+  upi_id: /\b[a-z0-9._\-]{2,}@[a-z]{2,}(?!\.[a-z])\b/gi,
 
   api_key:
     /(?:sk-|ak-|pk-|dp_|rk-|rk_live_|sk_live_|ghp_|gho_|ghu_|ghs_|ghr_|xai-|hf_)[a-zA-Z0-9_-]{20,}/g,
 
-  jwt_token:
-    /\beyJ[a-zA-Z0-9_\-]{10,}\.[a-zA-Z0-9_\-]{10,}\.[a-zA-Z0-9_\-]{10,}\b/g,
+  jwt_token: /\beyJ[a-zA-Z0-9_\-]{10,}\.[a-zA-Z0-9_\-]{10,}\.[a-zA-Z0-9_\-]{10,}\b/g,
 
   private_key:
-    /-----BEGIN (?:RSA |EC )?PRIVATE KEY-----[a-zA-Z0-9+/\n\r=\s]+-----END (?:RSA |EC )?PRIVATE KEY-----/g,
+    /-----BEGIN (?:RSA |EC )?PRIVATE KEY-----[a-zA-Z0-9+/\n\r=.\s]+-----END (?:RSA |EC )?PRIVATE KEY-----/g,
 };
 
 // Additional broader patterns for API key detection (not brand-specific)
@@ -112,7 +104,7 @@ const REDACTION_MARKERS: Record<PiiType, string> = {
 
 export function detectPII(
   text: string,
-  config: PiiDetectorConfig = { enabledTypes: Object.keys(PII_PATTERNS) as PiiType[] }
+  config: PiiDetectorConfig = { enabledTypes: Object.keys(PII_PATTERNS) as PiiType[] },
 ): PiiAssessment {
   const matches: PiiMatch[] = [];
   const seenTypes = new Set<PiiType>();
@@ -184,9 +176,7 @@ export function detectPII(
   for (const match of sorted) {
     const marker = REDACTION_MARKERS[match.type];
     redacted =
-      redacted.slice(0, match.offset) +
-      marker +
-      redacted.slice(match.offset + match.value.length);
+      redacted.slice(0, match.offset) + marker + redacted.slice(match.offset + match.value.length);
   }
 
   return {
