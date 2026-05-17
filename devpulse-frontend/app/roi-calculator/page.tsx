@@ -3,12 +3,6 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 
-export const metadata = {
-  title: "ROI Calculator — DevPulse",
-  description:
-    "Calculate the cost of not securing your AI agents. Compare DevPulse vs doing nothing.",
-};
-
 export default function ROICalculator() {
   const [monthlySpend, setMonthlySpend] = useState(5000);
   const [incidentsPerYear, setIncidentsPerYear] = useState(2);
