@@ -4,22 +4,10 @@ import type { DevPulseApi, Finding, FindingStatus, Severity } from "./api";
 const SEVERITY_ORDER: Severity[] = ["Critical", "High", "Medium", "Low"];
 
 const SEVERITY_ICON: Record<Severity, vscode.ThemeIcon> = {
-  Critical: new vscode.ThemeIcon(
-    "error",
-    new vscode.ThemeColor("errorForeground")
-  ),
-  High: new vscode.ThemeIcon(
-    "warning",
-    new vscode.ThemeColor("editorWarning.foreground")
-  ),
-  Medium: new vscode.ThemeIcon(
-    "info",
-    new vscode.ThemeColor("editorInfo.foreground")
-  ),
-  Low: new vscode.ThemeIcon(
-    "circle-outline",
-    new vscode.ThemeColor("disabledForeground")
-  ),
+  Critical: new vscode.ThemeIcon("error", new vscode.ThemeColor("errorForeground")),
+  High: new vscode.ThemeIcon("warning", new vscode.ThemeColor("editorWarning.foreground")),
+  Medium: new vscode.ThemeIcon("info", new vscode.ThemeColor("editorInfo.foreground")),
+  Low: new vscode.ThemeIcon("circle-outline", new vscode.ThemeColor("disabledForeground")),
 };
 
 const STATUS_LABEL: Record<FindingStatus, string> = {
@@ -34,7 +22,7 @@ class SeverityGroupNode {
   readonly kind = "severity" as const;
   constructor(
     readonly severity: Severity,
-    readonly findings: Finding[]
+    readonly findings: Finding[],
   ) {}
 }
 
@@ -48,12 +36,8 @@ class MessageNode {
   constructor(readonly label: string) {}
 }
 
-export class FindingsTreeProvider
-  implements vscode.TreeDataProvider<FindingsNode>
-{
-  private readonly _onDidChange = new vscode.EventEmitter<
-    FindingsNode | undefined | void
-  >();
+export class FindingsTreeProvider implements vscode.TreeDataProvider<FindingsNode> {
+  private readonly _onDidChange = new vscode.EventEmitter<FindingsNode | undefined | void>();
   readonly onDidChangeTreeData = this._onDidChange.event;
 
   private findings: Finding[] = [];
@@ -88,28 +72,22 @@ export class FindingsTreeProvider
 
   getTreeItem(node: FindingsNode): vscode.TreeItem {
     if (node.kind === "message") {
-      const item = new vscode.TreeItem(
-        node.label,
-        vscode.TreeItemCollapsibleState.None
-      );
+      const item = new vscode.TreeItem(node.label, vscode.TreeItemCollapsibleState.None);
       item.contextValue = "message";
       return item;
     }
     if (node.kind === "severity") {
       const item = new vscode.TreeItem(
         `${node.severity} (${node.findings.length})`,
-        vscode.TreeItemCollapsibleState.Expanded
+        vscode.TreeItemCollapsibleState.Expanded,
       );
       item.iconPath = SEVERITY_ICON[node.severity];
       item.contextValue = "severityGroup";
-      item.description = `${node.findings.filter(f => f.status === "open").length} open`;
+      item.description = `${node.findings.filter((f) => f.status === "open").length} open`;
       return item;
     }
     const f = node.finding;
-    const item = new vscode.TreeItem(
-      f.title,
-      vscode.TreeItemCollapsibleState.None
-    );
+    const item = new vscode.TreeItem(f.title, vscode.TreeItemCollapsibleState.None);
     item.description = `${f.collectionName} · ${STATUS_LABEL[f.status]}`;
     item.tooltip = [
       `📌 ${f.title}`,
@@ -130,6 +108,10 @@ export class FindingsTreeProvider
     return item;
   }
 
+  getFindingsSnapshot(): Finding[] {
+    return this.findings;
+  }
+
   getChildren(node?: FindingsNode): FindingsNode[] {
     if (!node) {
       if (!this.signedIn) {
@@ -143,7 +125,7 @@ export class FindingsTreeProvider
       }
       const groups: SeverityGroupNode[] = [];
       for (const sev of SEVERITY_ORDER) {
-        const matches = this.findings.filter(f => f.severity === sev);
+        const matches = this.findings.filter((f) => f.severity === sev);
         if (matches.length > 0) {
           groups.push(new SeverityGroupNode(sev, matches));
         }
@@ -151,7 +133,7 @@ export class FindingsTreeProvider
       return groups;
     }
     if (node.kind === "severity") {
-      return node.findings.map(f => new FindingNode(f));
+      return node.findings.map((f) => new FindingNode(f));
     }
     return [];
   }

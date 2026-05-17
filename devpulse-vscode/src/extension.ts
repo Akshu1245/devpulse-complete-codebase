@@ -19,6 +19,7 @@ import { SettingsWebviewPanel } from "./settingsWebview";
 import { AutoFixTreeProvider, extractSuggestionFromNode } from "./autofixProvider";
 import { CopilotViewPanel } from "./copilotView";
 import { WelcomeViewProvider } from "./welcomeView";
+import { ValueMomentTracker } from "./valueMoments";
 import { registerGatewayCommand } from "./gatewayTester";
 import { registerShadowApiCommand } from "./shadowApi";
 import { PostmanImportCommand } from "./postmanImport";
@@ -35,6 +36,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const autoFixProvider = new AutoFixTreeProvider(api);
   const statusBar = new DevPulseStatusBar(api);
   const heartbeat = new HeartbeatService(api, () => Boolean(cachedApiKey));
+  const valueTracker = new ValueMomentTracker(context);
 
   cachedApiKey = await context.secrets.get(SECRET_API_KEY);
 
@@ -58,6 +60,26 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         autoFixProvider.refresh(),
         statusBar.refresh(Boolean(cachedApiKey)),
       ]);
+      // Track potential value moments after scan
+      const findings = findingsProvider.getFindingsSnapshot?.() ?? [];
+      const secrets = findings.filter(
+        (f: { severity: string }) => f.severity === "critical",
+      ).length;
+      const high = findings.filter((f: { severity: string }) => f.severity === "high").length;
+      if (secrets > 0) {
+        void valueTracker.record({
+          type: "secret_found",
+          value: secrets,
+          description: `Found ${secrets} critical security issue(s)`,
+        });
+      }
+      if (high > 0) {
+        void valueTracker.record({
+          type: "threat_blocked",
+          value: high,
+          description: `Found ${high} high-severity issue(s)`,
+        });
+      }
     } finally {
       refreshInFlight = false;
     }
