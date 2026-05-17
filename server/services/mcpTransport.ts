@@ -39,17 +39,14 @@ export interface McpDiscoverResult {
 interface StdioSession {
   proc: ChildProcess;
   nextId: number;
-  pending: Map<
-    number,
-    { resolve: (v: unknown) => void; reject: (e: Error) => void }
-  >;
+  pending: Map<number, { resolve: (v: unknown) => void; reject: (e: Error) => void }>;
   buffer: string;
 }
 
 function stdioRequest(
   session: StdioSession,
   method: string,
-  params?: Record<string, unknown>
+  params?: Record<string, unknown>,
 ): Promise<unknown> {
   return new Promise((resolve, reject) => {
     const id = session.nextId++;
@@ -59,12 +56,43 @@ function stdioRequest(
   });
 }
 
-async function discoverViaStdio(command: string[]): Promise<McpDiscoverResult> {
+/** Blocklist of dangerous command names and path traversal patterns */
+const BLOCKED_COMMAND_PATTERNS = [
+  /\.\./, // path traversal
+  /^\/bin\/sh$/i, // shell interpreters
+  /^\/bin\/bash$/i,
+  /^cmd\.exe$/i,
+  /^powershell\.exe$/i,
+  /^sh$/i,
+  /^bash$/i,
+  /^zsh$/i,
+  /^cmd$/i,
+  /^powershell$/i,
+  /[;&|`$(){}[\]\\]/, // shell metacharacters in any arg
+];
+
+function validateStdioCommand(command: string[]): void {
   if (command.length === 0) throw new Error("stdio command is empty");
+  for (const arg of command) {
+    if (BLOCKED_COMMAND_PATTERNS.some((p) => p.test(arg))) {
+      throw new Error("MCP stdio command contains blocked characters or patterns");
+    }
+  }
+  // Only allow known-safe binary names (allowlist approach)
+  const allowedBinaries = new Set(["node", "npm", "npx", "python", "python3", "uv"]);
+  const binaryName = command[0].replace(/^.*[\\/]/, ""); // strip path
+  if (!allowedBinaries.has(binaryName)) {
+    throw new Error(`MCP stdio binary "${binaryName}" is not in the allowed list`);
+  }
+}
+
+async function discoverViaStdio(command: string[]): Promise<McpDiscoverResult> {
+  validateStdioCommand(command);
 
   const proc = spawn(command[0], command.slice(1), {
     stdio: ["pipe", "pipe", "pipe"],
     env: { ...process.env },
+    shell: false, // never invoke via shell
   });
 
   const session: StdioSession = {
@@ -110,12 +138,12 @@ async function discoverViaStdio(command: string[]): Promise<McpDiscoverResult> {
       stderr += chunk.toString("utf-8");
     });
 
-    proc.on("error", err => {
+    proc.on("error", (err) => {
       clearTimeout(timeout);
       reject(err);
     });
 
-    proc.on("close", code => {
+    proc.on("close", (code) => {
       clearTimeout(timeout);
       for (const [, p] of session.pending) {
         p.reject(new Error(`MCP server exited with code ${code}${stderr ? ": " + stderr : ""}`));
@@ -132,28 +160,28 @@ async function discoverViaStdio(command: string[]): Promise<McpDiscoverResult> {
       .then(() => {
         // Send initialized notification
         proc.stdin?.write(
-          JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized" }) + "\n"
+          JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized" }) + "\n",
         );
         return stdioRequest(session, "tools/list");
       })
-      .then(result => {
+      .then((result) => {
         clearTimeout(timeout);
         proc.kill();
 
         const tools = Array.isArray((result as { tools?: McpToolDef[] }).tools)
-          ? ((result as { tools: McpToolDef[] }).tools)
+          ? (result as { tools: McpToolDef[] }).tools
           : [];
 
         resolve({
           server: { name: command.join(" "), version: "unknown" },
-          tools: tools.map(t => ({
+          tools: tools.map((t) => ({
             name: t.name,
             description: t.description,
             inputSchema: t.inputSchema ?? {},
           })),
         });
       })
-      .catch(err => {
+      .catch((err) => {
         clearTimeout(timeout);
         proc.kill();
         reject(err);
@@ -168,7 +196,7 @@ async function discoverViaStdio(command: string[]): Promise<McpDiscoverResult> {
 async function httpJsonRpc(
   url: string,
   method: string,
-  params?: Record<string, unknown>
+  params?: Record<string, unknown>,
 ): Promise<unknown> {
   const res = await fetchWithTimeout(url, {
     method: "POST",
@@ -211,7 +239,7 @@ async function discoverViaHttp(url: string): Promise<McpDiscoverResult> {
 
   return {
     server: init.serverInfo ?? { name: url, version: "unknown" },
-    tools: (result.tools ?? []).map(t => ({
+    tools: (result.tools ?? []).map((t) => ({
       name: t.name,
       description: t.description,
       inputSchema: t.inputSchema ?? {},
@@ -246,27 +274,30 @@ async function discoverViaSse(url: string): Promise<McpDiscoverResult> {
             protocolVersion: "2024-11-05",
             capabilities: {},
             clientInfo: { name: "devpulse", version: "1.0.0" },
-          }).then(() => {
-            return sendSseCommand(postUrl, sessionId!, "tools/list", {});
-          }).then((result) => {
-            clearTimeout(timeout);
-            eventSource.close();
-            const tools = Array.isArray((result as { tools?: McpToolDef[] }).tools)
-              ? ((result as { tools: McpToolDef[] }).tools)
-              : [];
-            resolve({
-              server: { name: url, version: "unknown" },
-              tools: tools.map((t) => ({
-                name: t.name,
-                description: t.description,
-                inputSchema: t.inputSchema ?? {},
-              })),
+          })
+            .then(() => {
+              return sendSseCommand(postUrl, sessionId!, "tools/list", {});
+            })
+            .then((result) => {
+              clearTimeout(timeout);
+              eventSource.close();
+              const tools = Array.isArray((result as { tools?: McpToolDef[] }).tools)
+                ? (result as { tools: McpToolDef[] }).tools
+                : [];
+              resolve({
+                server: { name: url, version: "unknown" },
+                tools: tools.map((t) => ({
+                  name: t.name,
+                  description: t.description,
+                  inputSchema: t.inputSchema ?? {},
+                })),
+              });
+            })
+            .catch((err) => {
+              clearTimeout(timeout);
+              eventSource.close();
+              reject(err);
             });
-          }).catch((err) => {
-            clearTimeout(timeout);
-            eventSource.close();
-            reject(err);
-          });
         }
       } catch {
         // non-JSON SSE event — ignore
@@ -285,7 +316,7 @@ async function sendSseCommand(
   postUrl: string,
   sessionId: string | null,
   method: string,
-  params?: Record<string, unknown>
+  params?: Record<string, unknown>,
 ): Promise<unknown> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -314,7 +345,7 @@ async function sendSseCommand(
 export async function discoverMcpTools(
   transport: McpTransport,
   url: string,
-  command?: string[]
+  command?: string[],
 ): Promise<McpDiscoverResult> {
   switch (transport) {
     case "stdio": {
@@ -347,18 +378,49 @@ export async function discoverMcpTools(
 export type McpRiskClass = "safe" | "elevated" | "unsafe" | "unknown";
 
 const UNSAFE_KEYWORDS = [
-  /write/i, /delete/i, /remove/i, /create/i, /update/i, /patch/i,
-  /execute/i, /run/i, /exec/i, /shell/i, /bash/i, /command/i,
-  /payment/i, /charge/i, /refund/i, /send/i, /transfer/i,
-  /publish/i, /deploy/i, /release/i,
-  /email/i, /mail/i, /notify/i, /alert/i,
-  /grant/i, /revoke/i, /permission/i,
+  /write/i,
+  /delete/i,
+  /remove/i,
+  /create/i,
+  /update/i,
+  /patch/i,
+  /execute/i,
+  /run/i,
+  /exec/i,
+  /shell/i,
+  /bash/i,
+  /command/i,
+  /payment/i,
+  /charge/i,
+  /refund/i,
+  /send/i,
+  /transfer/i,
+  /publish/i,
+  /deploy/i,
+  /release/i,
+  /email/i,
+  /mail/i,
+  /notify/i,
+  /alert/i,
+  /grant/i,
+  /revoke/i,
+  /permission/i,
 ];
 
 const ELEVATED_KEYWORDS = [
-  /read/i, /get/i, /fetch/i, /list/i, /query/i, /search/i,
-  /file/i, /data/i, /export/i, /download/i,
-  /access/i, /login/i, /auth/i,
+  /read/i,
+  /get/i,
+  /fetch/i,
+  /list/i,
+  /query/i,
+  /search/i,
+  /file/i,
+  /data/i,
+  /export/i,
+  /download/i,
+  /access/i,
+  /login/i,
+  /auth/i,
 ];
 
 export function classifyToolRisk(tool: McpToolDef): McpRiskClass {
@@ -369,7 +431,7 @@ export function classifyToolRisk(tool: McpToolDef): McpRiskClass {
   const schemaStr = schema ? JSON.stringify(schema).toLowerCase() : "";
 
   if (
-    UNSAFE_KEYWORDS.some(r => r.test(combined)) ||
+    UNSAFE_KEYWORDS.some((r) => r.test(combined)) ||
     schemaStr.includes("shell") ||
     schemaStr.includes("command") ||
     schemaStr.includes("exec")
@@ -377,7 +439,7 @@ export function classifyToolRisk(tool: McpToolDef): McpRiskClass {
     return "unsafe";
   }
 
-  if (ELEVATED_KEYWORDS.some(r => r.test(combined))) {
+  if (ELEVATED_KEYWORDS.some((r) => r.test(combined))) {
     return "elevated";
   }
 
