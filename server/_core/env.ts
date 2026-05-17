@@ -134,6 +134,15 @@ const parsed = (() => {
   return EnvSchema.parse({});
 })();
 
+// Warn if JWT_SECRET uses the insecure dev default
+if (!isProduction && parsed.JWT_SECRET === "dev-secret-do-not-use-in-production") {
+  console.warn(
+    "\n⚠️  SECURITY WARNING: JWT_SECRET is using the default dev value.\n" +
+      "   Session tokens are trivially forgeable. Set JWT_SECRET to a\n" +
+      "   32+ character random string before deploying to production.\n",
+  );
+}
+
 export const ENV = {
   cookieSecret: parsed.JWT_SECRET,
   ownerOpenId: parsed.OWNER_OPEN_ID,

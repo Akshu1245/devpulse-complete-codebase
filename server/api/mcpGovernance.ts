@@ -10,18 +10,29 @@ import crypto from "crypto";
 import { router, protectedProcedure } from "../_core/trpc";
 import { getDb } from "../db";
 import { eq, desc, and } from "drizzle-orm";
-import {
-  mcpServers,
-  mcpTools,
-  mcpInvocationLog,
-} from "../../drizzle/schema";
-import {
-  discoverMcpTools,
-  classifyToolRisk,
-  type McpTransport,
-} from "../services/mcpTransport";
+import { mcpServers, mcpTools, mcpInvocationLog } from "../../drizzle/schema";
+import { discoverMcpTools, classifyToolRisk, type McpTransport } from "../services/mcpTransport";
 import { logger } from "../_core/logger";
 import { TRPCError } from "@trpc/server";
+
+// In-memory rate limiter for MCP registration — 10 attempts per hour per user
+const mcpRegAttempts = new Map<number, { count: number; resetAt: number }>();
+const MCP_REG_LIMIT = 10;
+const MCP_REG_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+
+function checkMcpRegistrationLimit(userId: number): boolean {
+  const now = Date.now();
+  const entry = mcpRegAttempts.get(userId);
+  if (!entry || now > entry.resetAt) {
+    mcpRegAttempts.set(userId, { count: 1, resetAt: now + MCP_REG_WINDOW_MS });
+    return true;
+  }
+  if (entry.count >= MCP_REG_LIMIT) {
+    return false;
+  }
+  entry.count += 1;
+  return true;
+}
 
 export const mcpGovernanceRouter = router({
   // List all MCP servers registered to the current user.
@@ -46,18 +57,10 @@ export const mcpGovernanceRouter = router({
       const owner = await db
         .select({ id: mcpServers.id })
         .from(mcpServers)
-        .where(
-          and(
-            eq(mcpServers.id, input.serverId),
-            eq(mcpServers.userId, ctx.user.id)
-          )
-        )
+        .where(and(eq(mcpServers.id, input.serverId), eq(mcpServers.userId, ctx.user.id)))
         .limit(1);
       if (owner.length === 0) return { tools: [] };
-      const rows = await db
-        .select()
-        .from(mcpTools)
-        .where(eq(mcpTools.serverId, input.serverId));
+      const rows = await db.select().from(mcpTools).where(eq(mcpTools.serverId, input.serverId));
       return { tools: rows };
     }),
 
@@ -66,7 +69,7 @@ export const mcpGovernanceRouter = router({
     .input(
       z.object({
         limit: z.number().int().positive().max(500).default(100),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const db = await getDb();
@@ -97,10 +100,10 @@ export const mcpGovernanceRouter = router({
       .from(mcpServers)
       .where(eq(mcpServers.userId, ctx.user.id));
     const totalServers = allServers.length;
-    const activeServers = allServers.filter(s => s.isActive).length;
+    const activeServers = allServers.filter((s) => s.isActive).length;
 
     // 2. Unsafe-tool counts (joined to keep it user-scoped).
-    const userServerIds = allServers.map(s => s.id);
+    const userServerIds = allServers.map((s) => s.id);
     let unsafeTools = 0;
     if (userServerIds.length > 0) {
       // Drizzle's `inArray` from drizzle-orm — we use a manual filter to
@@ -109,12 +112,7 @@ export const mcpGovernanceRouter = router({
         const unsafeRows = await db
           .select({ id: mcpTools.id })
           .from(mcpTools)
-          .where(
-            and(
-              eq(mcpTools.serverId, serverId),
-              eq(mcpTools.riskClass, "unsafe")
-            )
-          );
+          .where(and(eq(mcpTools.serverId, serverId), eq(mcpTools.riskClass, "unsafe")));
         unsafeTools += unsafeRows.length;
       }
     }
@@ -129,7 +127,7 @@ export const mcpGovernanceRouter = router({
       .where(eq(mcpInvocationLog.userId, ctx.user.id));
     const cutoff = Date.now() - 24 * 60 * 60 * 1000;
     const invocations24h = recent.filter(
-      r => r.createdAt && r.createdAt.getTime() >= cutoff
+      (r) => r.createdAt && r.createdAt.getTime() >= cutoff,
     ).length;
 
     return {
@@ -150,9 +148,16 @@ export const mcpGovernanceRouter = router({
         url: z.string().url().optional(),
         transport: z.enum(["stdio", "streamable-http", "sse"]),
         command: z.array(z.string()).optional(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
+      if (!checkMcpRegistrationLimit(ctx.user.id)) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "MCP server registration limit reached (10 per hour). Please try again later.",
+        });
+      }
+
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
@@ -178,11 +183,7 @@ export const mcpGovernanceRouter = router({
       }> = [];
 
       try {
-        const result = await discoverMcpTools(
-          input.transport,
-          input.url ?? "",
-          input.command
-        );
+        const result = await discoverMcpTools(input.transport, input.url ?? "", input.command);
         tools = result.tools;
 
         // Update server name from discovery if available
@@ -194,7 +195,7 @@ export const mcpGovernanceRouter = router({
                 serverName: result.server.name,
                 serverVersion: result.server.version,
                 toolCount: tools.length,
-                tools: tools.map(t => t.name),
+                tools: tools.map((t) => t.name),
               },
               lastSeenAt: new Date(),
             })
@@ -229,16 +230,13 @@ export const mcpGovernanceRouter = router({
 
       // Update risk score based on tool classification
       if (riskScore > 0) {
-        await db
-          .update(mcpServers)
-          .set({ riskScore })
-          .where(eq(mcpServers.id, serverId));
+        await db.update(mcpServers).set({ riskScore }).where(eq(mcpServers.id, serverId));
       }
 
       return {
         serverId,
         toolCount: tools.length,
-        tools: tools.map(t => ({
+        tools: tools.map((t) => ({
           name: t.name,
           riskClass: classifyToolRisk(t),
         })),
@@ -255,12 +253,7 @@ export const mcpGovernanceRouter = router({
       const server = await db
         .select()
         .from(mcpServers)
-        .where(
-          and(
-            eq(mcpServers.id, input.serverId),
-            eq(mcpServers.userId, ctx.user.id)
-          )
-        )
+        .where(and(eq(mcpServers.id, input.serverId), eq(mcpServers.userId, ctx.user.id)))
         .limit(1);
 
       if (server.length === 0) {
@@ -275,10 +268,7 @@ export const mcpGovernanceRouter = router({
       }> = [];
 
       try {
-        const result = await discoverMcpTools(
-          srv.transport as McpTransport,
-          srv.url ?? "",
-        );
+        const result = await discoverMcpTools(srv.transport as McpTransport, srv.url ?? "");
         tools = result.tools;
 
         await db
@@ -288,7 +278,7 @@ export const mcpGovernanceRouter = router({
               serverName: result.server.name,
               serverVersion: result.server.version,
               toolCount: tools.length,
-              tools: tools.map(t => t.name),
+              tools: tools.map((t) => t.name),
             },
             lastSeenAt: new Date(),
           })
@@ -302,9 +292,7 @@ export const mcpGovernanceRouter = router({
       }
 
       // Upsert tools (delete old, insert new)
-      await db
-        .delete(mcpTools)
-        .where(eq(mcpTools.serverId, input.serverId));
+      await db.delete(mcpTools).where(eq(mcpTools.serverId, input.serverId));
 
       let riskScore = 0;
       for (const tool of tools) {
@@ -327,10 +315,7 @@ export const mcpGovernanceRouter = router({
       }
 
       if (riskScore > 0) {
-        await db
-          .update(mcpServers)
-          .set({ riskScore })
-          .where(eq(mcpServers.id, input.serverId));
+        await db.update(mcpServers).set({ riskScore }).where(eq(mcpServers.id, input.serverId));
       }
 
       return { toolCount: tools.length };
@@ -342,7 +327,7 @@ export const mcpGovernanceRouter = router({
       z.object({
         serverId: z.string().min(1).max(64),
         isActive: z.boolean(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const db = await getDb();
@@ -351,12 +336,7 @@ export const mcpGovernanceRouter = router({
       const server = await db
         .select({ id: mcpServers.id })
         .from(mcpServers)
-        .where(
-          and(
-            eq(mcpServers.id, input.serverId),
-            eq(mcpServers.userId, ctx.user.id)
-          )
-        )
+        .where(and(eq(mcpServers.id, input.serverId), eq(mcpServers.userId, ctx.user.id)))
         .limit(1);
 
       if (server.length === 0) {
@@ -377,7 +357,7 @@ export const mcpGovernanceRouter = router({
       z.object({
         toolId: z.string().min(1).max(64),
         isApproved: z.boolean(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const db = await getDb();
@@ -397,12 +377,7 @@ export const mcpGovernanceRouter = router({
       const server = await db
         .select({ id: mcpServers.id })
         .from(mcpServers)
-        .where(
-          and(
-            eq(mcpServers.id, tool[0].serverId),
-            eq(mcpServers.userId, ctx.user.id)
-          )
-        )
+        .where(and(eq(mcpServers.id, tool[0].serverId), eq(mcpServers.userId, ctx.user.id)))
         .limit(1);
 
       if (server.length === 0) {

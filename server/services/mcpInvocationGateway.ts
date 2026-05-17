@@ -37,23 +37,38 @@ export interface InvocationResult {
 /* ─── Tool classification ──────────────────────────────────────────────── */
 
 const RISKY_KEYWORDS = [
-  "exec", "shell", "bash", "eval", "spawn", "kill", "delete",
-  "remove", "rm", "drop", "truncate", "sudo", "admin", "root",
-  "write", "create", "update", "modify", "grant", "revoke",
+  "exec",
+  "shell",
+  "bash",
+  "eval",
+  "spawn",
+  "kill",
+  "delete",
+  "remove",
+  "rm",
+  "drop",
+  "truncate",
+  "sudo",
+  "admin",
+  "root",
+  "write",
+  "create",
+  "update",
+  "modify",
+  "grant",
+  "revoke",
 ];
 
 function isToolRisky(toolName: string, args: Record<string, unknown>): boolean {
   const name = toolName.toLowerCase();
-  if (RISKY_KEYWORDS.some(k => name.includes(k))) return true;
+  if (RISKY_KEYWORDS.some((k) => name.includes(k))) return true;
   const argStr = JSON.stringify(args).toLowerCase();
-  return RISKY_KEYWORDS.some(k => argStr.includes(`"${k}`));
+  return RISKY_KEYWORDS.some((k) => argStr.includes(`"${k}`));
 }
 
 /* ─── Main gateway ─────────────────────────────────────────────────────── */
 
-export async function invokeMCPTool(
-  req: InvocationRequest
-): Promise<InvocationResult> {
+export async function invokeMCPTool(req: InvocationRequest): Promise<InvocationResult> {
   const startedAt = Date.now();
 
   // 1. Look up the tool in the governance DB
@@ -86,7 +101,7 @@ export async function invokeMCPTool(
   if (isToolRisky(req.toolName, req.args)) {
     logger.warn(
       { toolName: req.toolName, userId: req.userId },
-      "[MCP Gateway] approved-but-risky tool invocation"
+      "[MCP Gateway] approved-but-risky tool invocation",
     );
   }
 
@@ -96,7 +111,7 @@ export async function invokeMCPTool(
       serverRow.url || "",
       serverRow.transport as "stdio" | "streamable-http",
       req.toolName,
-      req.args
+      req.args,
     );
 
     const durationMs = Date.now() - startedAt;
@@ -141,22 +156,83 @@ export async function invokeMCPTool(
 
 /* ─── Transport execution ──────────────────────────────────────────────── */
 
+/**
+ * Hardened URL validation to prevent SSRF.
+ * Blocks: localhost, loopback (IPv4 + IPv6), private ranges,
+ * link-local, decimal/octal/hex encoded IPs, and empty/zero hosts.
+ */
 function validateMcpUrl(url: string): void {
   const parsed = new URL(url);
   if (parsed.protocol !== "https:") {
     throw new Error(`MCP servers must use HTTPS: got ${parsed.protocol}`);
   }
-  const hostname = parsed.hostname;
+
+  const hostname = parsed.hostname.toLowerCase();
+
+  // Block localhost variants
+  if (hostname === "localhost" || hostname.endsWith(".localhost")) {
+    throw new Error("MCP server URLs must not point to private/internal addresses");
+  }
+
+  // Block empty / zero hosts
+  if (hostname === "" || hostname === "0.0.0.0") {
+    throw new Error("MCP server URLs must not point to private/internal addresses");
+  }
+
+  // Block IPv6 loopback and link-local
   if (
-    hostname === "localhost" ||
-    hostname === "127.0.0.1" ||
     hostname === "::1" ||
-    hostname.startsWith("169.254.") ||
-    hostname.startsWith("10.") ||
-    hostname.startsWith("172.16.") ||
-    hostname.startsWith("192.168.")
+    hostname === "0:0:0:0:0:0:0:1" ||
+    hostname === "0000:0000:0000:0000:0000:0000:0000:0001" ||
+    hostname.startsWith("fe80:") ||
+    hostname.startsWith("fc") ||
+    hostname.startsWith("fd")
   ) {
     throw new Error("MCP server URLs must not point to private/internal addresses");
+  }
+
+  // Block IPv4 private + link-local ranges
+  if (
+    hostname.startsWith("127.") ||
+    hostname.startsWith("10.") ||
+    hostname.startsWith("169.254.") ||
+    hostname.startsWith("192.168.") ||
+    /^172\.(1[6-9]|2\d|3[01])\./.test(hostname)
+  ) {
+    throw new Error("MCP server URLs must not point to private/internal addresses");
+  }
+
+  // Block decimal/octal/hex encoded IPv4 (e.g. 2130706433 = 127.0.0.1)
+  // Pure numeric hostname or with 0x/00 prefix
+  if (/^0x[0-9a-f]+$/i.test(hostname) || /^0[0-7]+$/i.test(hostname) || /^\d+$/.test(hostname)) {
+    throw new Error("MCP server URLs must not point to private/internal addresses");
+  }
+
+  // Block IPv4 addresses with fewer than 4 octets (e.g. 127.1 or 0177.0.0.01)
+  const ipv4Pattern = /^(\d{1,3}\.){1,3}\d{1,3}$/;
+  if (ipv4Pattern.test(hostname)) {
+    const parts = hostname.split(".");
+    const octets = parts.map((p) => {
+      // Strip leading zeros to catch octal tricks, then parse
+      const clean = p.replace(/^0+/, "") || "0";
+      return parseInt(clean, 10);
+    });
+    // If any octet is loopback/private after normalization, block
+    if (
+      octets[0] === 127 ||
+      octets[0] === 10 ||
+      octets[0] === 0 ||
+      (octets[0] === 192 && octets[1] === 168) ||
+      (octets[0] === 169 && octets[1] === 254) ||
+      (octets[0] === 172 && octets[1] >= 16 && octets[1] <= 31)
+    ) {
+      throw new Error("MCP server URLs must not point to private/internal addresses");
+    }
+  }
+
+  // Block URL-encoded variants that might bypass hostname checks
+  if (/%/.test(hostname)) {
+    throw new Error("MCP server URLs must not contain encoded characters in hostname");
   }
 }
 
@@ -164,19 +240,22 @@ async function executeToolCall(
   url: string,
   transport: "stdio" | "streamable-http",
   toolName: string,
-  args: Record<string, unknown>
+  args: Record<string, unknown>,
 ): Promise<unknown> {
   if (transport === "streamable-http") {
     validateMcpUrl(url);
     return executeHttpToolCall(url, toolName, args);
   }
-  return executeHttpToolCall(url, toolName, args);
+  // stdio transport requires command execution via spawn — not yet implemented.
+  // After RCE-001 fix, stdio commands are validated but actual invocation
+  // needs a secured subprocess wrapper (tracked as future work).
+  throw new Error("stdio tool invocation is not yet implemented — use streamable-http");
 }
 
 async function executeHttpToolCall(
   url: string,
   toolName: string,
-  args: Record<string, unknown>
+  args: Record<string, unknown>,
 ): Promise<unknown> {
   const response = await fetch(url, {
     method: "POST",
@@ -192,11 +271,11 @@ async function executeHttpToolCall(
   if (!response.ok) {
     const text = await response.text().catch(() => "");
     throw new Error(
-      `MCP tool call failed: ${response.status} ${response.statusText} ${text.slice(0, 200)}`
+      `MCP tool call failed: ${response.status} ${response.statusText} ${text.slice(0, 200)}`,
     );
   }
 
-  const data = await response.json() as {
+  const data = (await response.json()) as {
     result?: { content?: Array<{ text?: string }> };
     error?: { message: string };
   };
