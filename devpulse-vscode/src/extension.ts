@@ -30,6 +30,7 @@ import { registerShadowApiCommand } from "./shadowApi";
 import { PostmanImportCommand } from "./postmanImport";
 import { ScanCurrentFileCommand } from "./scanCurrentFile";
 import { AnalyticsDashboard } from "./analyticsDashboard";
+import { RetentionEngine } from "./retentionEngine";
 import { dismissFinding } from "./dismissFinding";
 
 const SECRET_API_KEY = "devpulse.apiKey";
@@ -43,6 +44,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const autoFixProvider = new AutoFixTreeProvider(api);
   const valueTracker = new ValueMomentTracker(context);
   const engagementTracker = new EngagementTracker(context, api);
+  const retentionEngine = new RetentionEngine(context, engagementTracker);
   const statusBar = new DevPulseStatusBar(api, () => engagementTracker.getScanStreak());
   const heartbeat = new HeartbeatService(api, () => Boolean(cachedApiKey));
 
@@ -544,6 +546,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         { placeHolder: "Why are you dismissing this finding?" },
       );
       if (!reason) return;
+      retentionEngine.recordDismissal(reason);
       const details = await vscode.window.showInputBox({
         prompt: "Optional: Add more details about why you are dismissing this finding.",
       });
