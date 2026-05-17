@@ -155,6 +155,30 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  vscode-extension:
+    name: Package VS Code Extension
+    runs-on: ubuntu-latest
+    needs: [lint-typecheck]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Build VS Code extension
+        working-directory: devpulse-vscode
+        run: |
+          pnpm exec esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node --minify
+          pnpm exec tsc --noEmit -p ./
+      - name: Package VS Code extension
+        working-directory: devpulse-vscode
+        run: pnpm exec @vscode/vsce package --no-dependencies
+      - uses: actions/upload-artifact@v4
+        with:
+          name: devpulse-vscode
+          path: devpulse-vscode/*.vsix
+
   security-scan:
     name: Trivy Security Scan
     runs-on: ubuntu-latest

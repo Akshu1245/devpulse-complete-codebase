@@ -11,6 +11,8 @@ import { ToastProvider } from "@/components/Toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://devpulse.in";
+
 export const metadata: Metadata = {
   title: "DevPulse — AI Runtime Governance Platform",
   description:
@@ -23,12 +25,26 @@ export const metadata: Metadata = {
     "prompt injection",
     "shadow API detection",
     "PCI DSS compliance",
+    "AI governance",
+    "LLM runtime security",
+    "AI agent protection",
   ],
+  metadataBase: new URL(SITE_URL),
+  alternates: { canonical: "/" },
+  robots: { index: true, follow: true },
   openGraph: {
     title: "DevPulse — Secure Your AI Agents",
     description:
       "Real-time security scanning, cost anomaly detection, and PII redaction for production LLM applications.",
     type: "website",
+    siteName: "DevPulse",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DevPulse — AI Runtime Governance Platform",
+    description: "Real-time AI Agent Security Scanning, Cost Monitoring & Compliance.",
+    creator: "@devpulsehq",
   },
 };
 

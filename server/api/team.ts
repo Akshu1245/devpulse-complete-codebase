@@ -11,30 +11,25 @@ export const teamRouter = router({
       z.object({
         email: z.string().email(),
         role: z.enum(["admin", "editor", "viewer"]),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       const existing = await db.getTeamMemberByEmail(ctx.user.id, input.email);
       if (existing) {
         throw new TRPCError({
           code: "CONFLICT",
-          message:
-            "An invitation has already been sent to this email address",
+          message: "An invitation has already been sent to this email address",
         });
       }
 
-      const member = await db.inviteTeamMember(
-        ctx.user.id,
-        input.email,
-        input.role
-      );
+      const member = await db.inviteTeamMember(ctx.user.id, input.email, input.role);
 
       await sendTeamInviteEmail({
         toEmail: input.email,
         inviterName: ctx.user.name ?? "A DevPulse user",
         role: input.role,
         token: member.id,
-      }).catch(err => logger.warn({ err: err }, "[Team] Email send failed"));
+      }).catch((err) => logger.warn({ err: err }, "[Team] Email send failed"));
 
       return { success: true, memberId: member.id };
     }),
@@ -46,7 +41,7 @@ export const teamRouter = router({
           page: z.number().int().min(1).default(1),
           pageSize: z.number().int().min(1).max(100).default(20),
         })
-        .optional()
+        .optional(),
     )
     .query(async ({ input, ctx }) => {
       const members = await db.getTeamMembersByUserId(ctx.user.id);
@@ -56,7 +51,7 @@ export const teamRouter = router({
       const paginated = members.slice((page - 1) * pageSize, page * pageSize);
 
       return {
-        members: paginated.map(m => ({
+        members: paginated.map((m) => ({
           id: m.id,
           email: m.memberEmail,
           role: m.role,
@@ -75,7 +70,7 @@ export const teamRouter = router({
       z.object({
         memberId: z.string(),
         role: z.enum(["admin", "editor", "viewer"]),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       const member = await db.getTeamMemberById(input.memberId);
@@ -86,6 +81,10 @@ export const teamRouter = router({
         });
       }
       await db.updateTeamMemberRole(input.memberId, input.role);
+      await db.createAuditLogEntry(ctx.user.id, "team_role_updated", {
+        memberId: input.memberId,
+        role: input.role,
+      });
       return { success: true };
     }),
 
@@ -100,6 +99,9 @@ export const teamRouter = router({
         });
       }
       await db.removeTeamMember(input.memberId);
+      await db.createAuditLogEntry(ctx.user.id, "team_member_removed", {
+        memberId: input.memberId,
+      });
       return { success: true };
     }),
 
@@ -117,7 +119,7 @@ export const teamRouter = router({
         toEmail: member.memberEmail,
         inviterName: ctx.user.name ?? "A DevPulse user",
         role: member.role,
-      }).catch(err => logger.warn({ err: err }, "[Team] Email send failed"));
+      }).catch((err) => logger.warn({ err: err }, "[Team] Email send failed"));
       return { success: true };
     }),
 
@@ -177,7 +179,7 @@ export const teamRouter = router({
     if (!ctx.user.email) return { invitations: [] };
     const invitations = await db.getPendingInvitationsForUser(ctx.user.email);
     return {
-      invitations: invitations.map(inv => ({
+      invitations: invitations.map((inv) => ({
         id: inv.id,
         role: inv.role,
         invitedAt: inv.invitedAt,

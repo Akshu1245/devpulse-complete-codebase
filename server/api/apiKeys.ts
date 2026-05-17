@@ -34,10 +34,7 @@ export const apiKeysRouter = router({
 
       await db.updateUserApiKey(ctx.user.id, apiKey);
 
-      logger.info(
-        { userId: ctx.user.id, keyPrefix: apiKey.slice(0, 8) },
-        "[ApiKeys] Key created",
-      );
+      logger.info({ userId: ctx.user.id, keyPrefix: apiKey.slice(0, 8) }, "[ApiKeys] Key created");
 
       return {
         apiKey,
@@ -76,11 +73,9 @@ export const apiKeysRouter = router({
   revoke: adminProcedure.mutation(async ({ ctx }) => {
     const apiKey = generateApiKey();
     await db.updateUserApiKey(ctx.user.id, apiKey);
+    await db.createAuditLogEntry(ctx.user.id, "api_key_revoked", {});
 
-    logger.info(
-      { userId: ctx.user.id },
-      "[ApiKeys] Key rotated",
-    );
+    logger.info({ userId: ctx.user.id }, "[ApiKeys] Key rotated");
 
     return { apiKey };
   }),

@@ -8,11 +8,7 @@
  */
 
 import { ENV } from "./env";
-import {
-  ExternalServiceError,
-  InternalError,
-  RuntimePolicyError,
-} from "./errors";
+import { ExternalServiceError, InternalError, RuntimePolicyError } from "./errors";
 import { fetchWithTimeout } from "../utils/fetchWithTimeout";
 import { logger } from "./logger";
 
@@ -86,7 +82,7 @@ function resolveMiniMaxApiUrl() {
     if (!ENV.forgeApiKey) {
       throw new InternalError(
         "No LLM API key configured. Set MINIMAX_API_KEY (recommended) or BUILT_IN_FORGE_API_KEY.",
-        { safeMessage: "AI features are temporarily unavailable. Please try again shortly." }
+        { safeMessage: "AI features are temporarily unavailable. Please try again shortly." },
       );
     }
     _cachedResolveApiUrl = {
@@ -103,7 +99,7 @@ function resolveMiniMaxApiUrl() {
 
 async function miniMaxInvoke(
   params: InvokeParams,
-  options: ProviderInvokeOptions = {}
+  options: ProviderInvokeOptions = {},
 ): Promise<InvokeResult> {
   const { url, key, model: defaultModel, provider } = resolveMiniMaxApiUrl();
   const model = options.model ?? defaultModel;
@@ -158,7 +154,7 @@ async function miniMaxInvoke(
       {
         safeMessage: "AI request failed. Please try again.",
         context: { provider, model, status: response.status, body: errorText },
-      }
+      },
     );
   }
 
@@ -181,8 +177,7 @@ export const minimaxProvider: LLMProvider = {
   name: "minimax",
   defaultModel: ENV.minimaxModel || "MiniMax-M2.7",
   invoke: miniMaxInvoke,
-  supportsModel: (model: string) =>
-    model.startsWith("MiniMax") || model.startsWith("minimax"),
+  supportsModel: (model: string) => model.startsWith("MiniMax") || model.startsWith("minimax"),
   supportsVision: () => false,
   supportsPromptCaching: () => false,
 };
@@ -249,6 +244,36 @@ export async function registerOptionalProviders() {
       logger.warn({ err }, "[Providers] Failed to load Gemini provider");
     }
   }
+
+  // Cohere
+  if (process.env.COHERE_API_KEY) {
+    try {
+      const { cohereProvider } = await import("../services/cohereProvider");
+      providerRegistry.register(cohereProvider);
+    } catch (err) {
+      logger.warn({ err }, "[Providers] Failed to load Cohere provider");
+    }
+  }
+
+  // Mistral
+  if (process.env.MISTRAL_API_KEY) {
+    try {
+      const { mistralProvider } = await import("../services/mistralProvider");
+      providerRegistry.register(mistralProvider);
+    } catch (err) {
+      logger.warn({ err }, "[Providers] Failed to load Mistral provider");
+    }
+  }
+
+  // Groq
+  if (process.env.GROQ_API_KEY) {
+    try {
+      const { groqProvider } = await import("../services/groqProvider");
+      providerRegistry.register(groqProvider);
+    } catch (err) {
+      logger.warn({ err }, "[Providers] Failed to load Groq provider");
+    }
+  }
 }
 
 /* ─── Main routing entry point ─────────────────────────────────────────── */
@@ -267,14 +292,13 @@ export async function routeLLM(
     model?: string;
     userId?: number;
     killSwitchActive?: boolean;
-  }
+  },
 ): Promise<InvokeResult> {
   // Kill-switch check (inline, before any provider dispatch)
   if (params.killSwitchActive) {
-    throw new RuntimePolicyError(
-      "LLM API request blocked by DevPulse Kill Switch.",
-      { context: { userId: params.userId, policy: "kill_switch" } }
-    );
+    throw new RuntimePolicyError("LLM API request blocked by DevPulse Kill Switch.", {
+      context: { userId: params.userId, policy: "kill_switch" },
+    });
   }
 
   // Kill-switch DB lookup if userId is provided
@@ -283,10 +307,9 @@ export async function routeLLM(
       const { getKillSwitchSettings } = await import("../db");
       const ks = await getKillSwitchSettings(params.userId);
       if (ks?.isActive) {
-        throw new RuntimePolicyError(
-          "LLM API request blocked by DevPulse Kill Switch.",
-          { context: { userId: params.userId, policy: "kill_switch" } }
-        );
+        throw new RuntimePolicyError("LLM API request blocked by DevPulse Kill Switch.", {
+          context: { userId: params.userId, policy: "kill_switch" },
+        });
       }
     } catch (err) {
       if (err instanceof RuntimePolicyError) throw err;
@@ -316,13 +339,14 @@ export async function routeLLM(
     killSwitchActive: params.killSwitchActive,
   });
 
-  // Auto-track token usage
-  if (params.userId && result.usage) {
+  // Auto-track token usage (only for MiniMax — Anthropic/Gemini/Bedrock track internally)
+  if (params.userId && result.usage && provider === minimaxProvider) {
     const { prompt_tokens, completion_tokens } = result.usage;
-    const cost = (prompt_tokens / 1_000_000) * MINIMAX_PRICING.prompt +
+    const cost =
+      (prompt_tokens / 1_000_000) * MINIMAX_PRICING.prompt +
       (completion_tokens / 1_000_000) * MINIMAX_PRICING.completion;
 
-    import("../db").then(async db => {
+    import("../db").then(async (db) => {
       try {
         await db.recordTokenUsage(
           params.userId!,
@@ -330,7 +354,7 @@ export async function routeLLM(
           prompt_tokens,
           completion_tokens,
           0,
-          cost
+          cost,
         );
       } catch (err) {
         logger.warn({ err }, "[LLM] Failed to record token usage");
@@ -346,8 +370,6 @@ export async function routeLLM(
  * Callers that import `invokeLLM` from `_core/llm.ts` now get this
  * routed version automatically when they upgrade.
  */
-export async function invokeLLM(
-  params: InvokeParams & { userId?: number }
-): Promise<InvokeResult> {
+export async function invokeLLM(params: InvokeParams & { userId?: number }): Promise<InvokeResult> {
   return routeLLM(params);
 }

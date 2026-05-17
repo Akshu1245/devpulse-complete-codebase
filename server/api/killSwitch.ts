@@ -12,21 +12,20 @@ export const killSwitchRouter = router({
     .input(
       z.object({
         budgetLimitUSD: z.number().positive().max(1_000_000),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
-      await db.updateKillSwitchSettings(
-        ctx.user.id,
-        input.budgetLimitUSD,
-        undefined
-      );
+      await db.updateKillSwitchSettings(ctx.user.id, input.budgetLimitUSD, undefined);
       await db.createKillSwitchEvent(
         ctx.user.id,
         "budget_set",
         input.budgetLimitUSD,
         undefined,
-        "Budget limit set by user"
+        "Budget limit set by user",
       );
+      await db.createAuditLogEntry(ctx.user.id, "kill_switch_budget_set", {
+        budgetLimitUSD: input.budgetLimitUSD,
+      });
       return { success: true };
     }),
 
@@ -40,15 +39,16 @@ export const killSwitchRouter = router({
         "triggered",
         toNumberOrNull(settings?.budgetLimitUSD) ?? undefined,
         toNumberOrNull(settings?.currentSpendUSD) ?? undefined,
-        input.reason
+        input.reason,
       );
+      await db.createAuditLogEntry(ctx.user.id, "kill_switch_triggered", { reason: input.reason });
       await sendSlackKillSwitchAlert({
         userId: ctx.user.id,
         userName: ctx.user.name ?? "Unknown",
         reason: input.reason,
         currentSpend: toNumber(settings?.currentSpendUSD),
         budgetLimit: toNumber(settings?.budgetLimitUSD),
-      }).catch(err => logger.warn({ err: err }, "[KillSwitch] Slack alert failed"));
+      }).catch((err) => logger.warn({ err: err }, "[KillSwitch] Slack alert failed"));
       // Also dispatch a kill_switch.triggered webhook for any user
       // endpoints subscribed to that event (Phase 25). Fire-and-forget.
       deliverWebhook(ctx.user.id, "kill_switch.triggered", {
@@ -56,9 +56,7 @@ export const killSwitchRouter = router({
         currentSpend: toNumber(settings?.currentSpendUSD),
         budgetLimit: toNumber(settings?.budgetLimitUSD),
         triggeredBy: "user",
-      }).catch(err =>
-        logger.warn({ err: err }, "[KillSwitch] webhook dispatch failed")
-      );
+      }).catch((err) => logger.warn({ err: err }, "[KillSwitch] webhook dispatch failed"));
       return { success: true };
     }),
 
@@ -72,8 +70,9 @@ export const killSwitchRouter = router({
         "reset",
         toNumberOrNull(settings?.budgetLimitUSD) ?? undefined,
         toNumberOrNull(settings?.currentSpendUSD) ?? undefined,
-        input.reason
+        input.reason,
       );
+      await db.createAuditLogEntry(ctx.user.id, "kill_switch_reset", { reason: input.reason });
 
       // Send recovery email
       if (ctx.user.email) {
@@ -83,9 +82,7 @@ export const killSwitchRouter = router({
           resetAt: new Date().toLocaleString(),
           newBudgetLimit: toNumber(settings?.budgetLimitUSD, 100),
           dashboardUrl: `${process.env.APP_URL || "http://localhost:3000"}/kill-switch`,
-        }).catch(err =>
-          logger.warn({ err: err }, "[KillSwitch] Recovery email failed")
-        );
+        }).catch((err) => logger.warn({ err: err }, "[KillSwitch] Recovery email failed"));
       }
 
       return { success: true };
@@ -115,7 +112,7 @@ export const killSwitchRouter = router({
           page: z.number().int().min(1).default(1),
           pageSize: z.number().int().min(1).max(100).default(20),
         })
-        .optional()
+        .optional(),
     )
     .query(async ({ input, ctx }) => {
       const events = await db.getKillSwitchAuditTrail(ctx.user.id);
@@ -125,7 +122,7 @@ export const killSwitchRouter = router({
       const paginated = events.slice((page - 1) * pageSize, page * pageSize);
 
       return {
-        events: paginated.map(e => ({
+        events: paginated.map((e) => ({
           id: e.id,
           eventType: e.eventType,
           budgetLimit: toNumberOrNull(e.budgetLimit) ?? undefined,

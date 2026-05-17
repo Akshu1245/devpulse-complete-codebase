@@ -63,6 +63,10 @@ export const approvalsRouter = router({
       await dbClient.execute(
         sql`UPDATE pending_approvals SET status = 'approved', resolved_at = NOW(), resolved_by = ${ctx.user.id}, resolution_note = ${input.note ?? ""} WHERE approval_id = ${input.approvalId}`,
       );
+      await db.createAuditLogEntry(ctx.user.id, "approval_approved", {
+        approvalId: input.approvalId,
+        note: input.note,
+      });
 
       logger.info({ approvalId: input.approvalId, userId: ctx.user.id }, "[Approvals] Approved");
 
@@ -89,6 +93,10 @@ export const approvalsRouter = router({
         SET status = 'rejected', resolved_at = NOW(), resolved_by = ${ctx.user.id}, resolution_note = ${input.note ?? ""}
         WHERE approval_id = ${input.approvalId}
       `);
+      await db.createAuditLogEntry(ctx.user.id, "approval_rejected", {
+        approvalId: input.approvalId,
+        note: input.note,
+      });
 
       logger.info({ approvalId: input.approvalId, userId: ctx.user.id }, "[Approvals] Rejected");
 

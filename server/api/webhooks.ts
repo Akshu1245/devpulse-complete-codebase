@@ -85,7 +85,7 @@ export const webhooksRouter = router({
    */
   listSupportedEvents: protectedProcedure.query(() => {
     return {
-      events: SUPPORTED_EVENTS.map(e => ({
+      events: SUPPORTED_EVENTS.map((e) => ({
         name: e,
         description: describeEvent(e),
       })),
@@ -101,7 +101,7 @@ export const webhooksRouter = router({
       z.object({
         url: z.string().url().max(1024),
         events: z.array(eventSchema).min(1),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       // SSRF guard: a compromised account cannot use the webhook system as
@@ -133,8 +133,7 @@ export const webhooksRouter = router({
         ) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message:
-              "Webhook URL may not target localhost or a private network address.",
+            message: "Webhook URL may not target localhost or a private network address.",
           });
         }
         try {
@@ -143,8 +142,7 @@ export const webhooksRouter = router({
             if (isPrivateIp(addr.address)) {
               throw new TRPCError({
                 code: "BAD_REQUEST",
-                message:
-                  "Webhook hostname resolves to a private network address.",
+                message: "Webhook hostname resolves to a private network address.",
               });
             }
           }
@@ -154,8 +152,7 @@ export const webhooksRouter = router({
           // "registered but never delivers" state.
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message:
-              "Could not resolve the webhook hostname. Check the URL and try again.",
+            message: "Could not resolve the webhook hostname. Check the URL and try again.",
           });
         }
       }
@@ -188,7 +185,7 @@ export const webhooksRouter = router({
    */
   list: protectedProcedure.query(async ({ ctx }) => {
     const rows = await db.listWebhookEndpointsByUserId(ctx.user.id);
-    return rows.map(row => ({
+    return rows.map((row) => ({
       id: row.id,
       url: row.url,
       events: Array.isArray(row.events) ? row.events : [],
@@ -234,6 +231,7 @@ export const webhooksRouter = router({
         });
       }
       await db.deleteWebhookEndpoint(input.id);
+      await db.createAuditLogEntry(ctx.user.id, "webhook_deleted", { endpointId: input.id });
       return { success: true };
     }),
 
@@ -242,38 +240,36 @@ export const webhooksRouter = router({
    * receiver before relying on it in production. The payload is clearly
    * marked as a test event.
    */
-  test: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ input, ctx }) => {
-      const endpoint = await db.getWebhookEndpointById(input.id);
-      if (!endpoint || endpoint.userId !== ctx.user.id) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Webhook endpoint not found",
-        });
-      }
-
-      // Use the first event the endpoint subscribes to so we don't fire
-      // for a type it filters out.
-      const events = Array.isArray(endpoint.events) ? endpoint.events : [];
-      const event = (events[0] ?? "scan.complete") as WebhookEvent;
-
-      const results = await deliver(ctx.user.id, event, {
-        test: true,
-        message: "This is a test delivery from DevPulse.",
-        endpointId: endpoint.id,
-        triggeredBy: ctx.user.id,
+  test: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ input, ctx }) => {
+    const endpoint = await db.getWebhookEndpointById(input.id);
+    if (!endpoint || endpoint.userId !== ctx.user.id) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Webhook endpoint not found",
       });
+    }
 
-      return {
-        delivered: results.length,
-        results: results.map(r => ({
-          status: r.status,
-          httpStatus: r.httpStatus,
-          error: r.error,
-        })),
-      };
-    }),
+    // Use the first event the endpoint subscribes to so we don't fire
+    // for a type it filters out.
+    const events = Array.isArray(endpoint.events) ? endpoint.events : [];
+    const event = (events[0] ?? "scan.complete") as WebhookEvent;
+
+    const results = await deliver(ctx.user.id, event, {
+      test: true,
+      message: "This is a test delivery from DevPulse.",
+      endpointId: endpoint.id,
+      triggeredBy: ctx.user.id,
+    });
+
+    return {
+      delivered: results.length,
+      results: results.map((r) => ({
+        status: r.status,
+        httpStatus: r.httpStatus,
+        error: r.error,
+      })),
+    };
+  }),
 
   /**
    * Inspect recent delivery attempts for an endpoint (success or failure).
@@ -290,7 +286,7 @@ export const webhooksRouter = router({
         });
       }
       const rows = await db.listWebhookDeliveries(input.id, 50);
-      return rows.map(row => ({
+      return rows.map((row) => ({
         id: row.id,
         event: row.event,
         status: row.status,
