@@ -16,6 +16,24 @@ const STATUS_LABEL: Record<FindingStatus, string> = {
   resolved: "✓ Resolved",
 };
 
+const REMEDIATION_HINTS: Record<string, string> = {
+  "Broken Authentication": "Review auth flow and enforce token expiration.",
+  "Sensitive Data Exposure": "Encrypt data in transit and at rest.",
+  Injection: "Use parameterized queries and validate input.",
+  "Security Misconfiguration": "Harden default configs and disable unused features.",
+  "Insecure Deserialization": "Validate serialized data before parsing.",
+  "XML External Entities": "Disable XXE in XML parsers.",
+  "Access Control": "Enforce least-privilege access checks.",
+  "Cross-Site Scripting": "Sanitize output and use CSP headers.",
+  "Insecure Dependencies": "Update vulnerable packages and audit regularly.",
+  default: "Review the finding details and apply a fix.",
+};
+
+function getRemediationHint(category: string | null): string | undefined {
+  if (!category) return undefined;
+  return REMEDIATION_HINTS[category] ?? REMEDIATION_HINTS.default;
+}
+
 type FindingsNode = SeverityGroupNode | FindingNode | MessageNode;
 
 class SeverityGroupNode {
@@ -134,9 +152,10 @@ export class FindingsTreeProvider implements vscode.TreeDataProvider<FindingsNod
     }
     const f = node.finding;
     const item = new vscode.TreeItem(f.title, vscode.TreeItemCollapsibleState.None);
+    const remediationHint = getRemediationHint(f.category);
     if (this.compactMode) {
       item.description = `${f.severity} · ${STATUS_LABEL[f.status]}`;
-      item.tooltip = `${f.title}\n${f.severity} · ${f.status}`;
+      item.tooltip = `${f.title}\n${f.severity} · ${f.status}${remediationHint ? "\n\n💡 " + remediationHint : ""}`;
     } else {
       item.description = `${f.collectionName} · ${STATUS_LABEL[f.status]}`;
       item.tooltip = [
@@ -146,6 +165,7 @@ export class FindingsTreeProvider implements vscode.TreeDataProvider<FindingsNod
         `Collection: ${f.collectionName}`,
         f.category ? `Category: ${f.category}` : null,
         `ID: ${f.id}`,
+        remediationHint ? `\n💡 Suggestion: ${remediationHint}` : null,
       ]
         .filter(Boolean)
         .join("\n");
