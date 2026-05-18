@@ -210,7 +210,9 @@ export class FindingsTreeProvider implements vscode.TreeDataProvider<FindingsNod
       }
       if (this.findings.length === 0) {
         return [
-          new MessageNode("No findings yet. Import a collection or run a scan to get started."),
+          new MessageNode(
+            "All clear — no security issues found. Run a scan to check again, or your APIs are in great shape.",
+          ),
         ];
       }
       const groups: SeverityGroupNode[] = [];

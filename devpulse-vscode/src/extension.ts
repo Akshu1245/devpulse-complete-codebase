@@ -133,6 +133,24 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
           description: `Found ${high} high-severity issue(s)`,
         });
       }
+      // Workflow continuity: gentle reminder for stale unresolved findings
+      const openCritical = findings.filter(
+        (f) => f.severity === "Critical" && f.status === "open",
+      ).length;
+      const openHigh = findings.filter((f) => f.severity === "High" && f.status === "open").length;
+      if (openCritical > 0 || openHigh > 0) {
+        const total = openCritical + openHigh;
+        const lastReminded =
+          context.globalState.get<number>("devpulse.lastContinuityReminder") ?? 0;
+        const hoursSince = (Date.now() - lastReminded) / (1000 * 60 * 60);
+        if (hoursSince >= 24) {
+          dedupedShowMessage(
+            `You have ${total} unresolved ${openCritical > 0 ? "critical" : "high"}-severity finding${total !== 1 ? "s" : ""}. A quick review keeps your APIs safer.`,
+            "info",
+          );
+          void context.globalState.update("devpulse.lastContinuityReminder", Date.now());
+        }
+      }
     } catch (err) {
       // Calm recovery: show once, guide user gently
       statusBar.showError("Could not refresh data — will retry automatically");
@@ -393,9 +411,16 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         }
         engagementTracker.record("finding_status_changed");
         await refresh(true);
-        void vscode.window.showInformationMessage(
-          `Resolved ${resolved} finding${resolved !== 1 ? "s" : ""}.`,
-        );
+        const remaining = findingsProvider
+          .getFindingsSnapshot()
+          .filter(
+            (f) => f.status === "open" && (f.severity === "Critical" || f.severity === "High"),
+          ).length;
+        const msg =
+          remaining > 0
+            ? `Resolved ${resolved} finding${resolved !== 1 ? "s" : ""}. ${remaining} critical/high still open — keep going!`
+            : `Resolved ${resolved} finding${resolved !== 1 ? "s" : ""}. All critical and high issues are cleared — great work!`;
+        dedupedShowMessage(msg, "info");
       },
     ),
     vscode.commands.registerCommand("devpulse.markFindingInProgress", async (node: unknown) =>
