@@ -344,6 +344,12 @@ export class SecurityWebviewPanel {
             <button class="filter-btn" data-filter="Medium">Medium (${severityCounts.Medium})</button>
             <button class="filter-btn" data-filter="Low">Low (${severityCounts.Low})</button>
           </div>
+          <div class="status-filter-bar" id="status-filter-bar" style="margin-top:6px">
+            <button class="filter-btn filter-btn-ghost" data-status="all">All statuses</button>
+            <button class="filter-btn filter-btn-ghost" data-status="open">Open (${openCount})</button>
+            <button class="filter-btn filter-btn-ghost" data-status="in-progress">In Progress (${progressCount})</button>
+            <button class="filter-btn filter-btn-ghost" data-status="resolved">Resolved (${resolvedCount})</button>
+          </div>
         </div>
         ${
           findings.length === 0
@@ -380,7 +386,7 @@ export class SecurityWebviewPanel {
                               ? "conf-med"
                               : "conf-low";
                         return `
-                      <tr class="finding-row" data-severity="${escapeHtml(f.severity)}" data-id="${escapeHtml(f.id)}">
+                      <tr class="finding-row" data-severity="${escapeHtml(f.severity)}" data-status="${escapeHtml(f.status)}" data-id="${escapeHtml(f.id)}">
                         <td><span class="badge badge-${f.severity.toLowerCase()}">${escapeHtml(f.severity.slice(0, 1))}</span></td>
                         <td class="col-title">
                           ${escapeHtml(f.title)}
@@ -579,6 +585,8 @@ export class SecurityWebviewPanel {
     }
     .filter-btn:hover { border-color: var(--vscode-focusBorder, #007fd4); color: var(--vscode-editor-foreground); }
     .filter-btn.active { background: var(--vscode-button-background, #0e639c); color: var(--vscode-button-foreground, #fff); border-color: transparent; }
+    .filter-btn-ghost { opacity: 0.7; font-size: 10px; padding: 2px 8px; }
+    .status-filter-bar { display: flex; gap: 4px; flex-wrap: wrap; }
 
     .table-wrapper {
       overflow-x: auto; border-radius: 6px;
@@ -814,7 +822,7 @@ export class SecurityWebviewPanel {
           tbody.innerHTML = findings.map(function (f) {
             var confidence = f.severity === "Critical" ? "High confidence" : f.severity === "High" ? "Likely issue" : "Review suggested";
             var confClass = f.severity === "Critical" ? "conf-high" : f.severity === "High" ? "conf-med" : "conf-low";
-            return '<tr class="finding-row" data-severity="' + escapeHtml(f.severity) + '" data-id="' + escapeHtml(f.id) + '">' +
+            return '<tr class="finding-row" data-severity="' + escapeHtml(f.severity) + '" data-status="' + escapeHtml(f.status) + '" data-id="' + escapeHtml(f.id) + '">' +
               '<td><span class="badge badge-' + f.severity.toLowerCase() + '">' + escapeHtml(f.severity.charAt(0)) + '</span></td>' +
               '<td class="col-title">' + escapeHtml(f.title) + '<div class="confidence ' + confClass + '">' + confidence + '</div></td>' +
               '<td>' + escapeHtml(f.collectionName) + '</td>' +
@@ -912,24 +920,43 @@ export class SecurityWebviewPanel {
       // Filter buttons with localStorage persistence
       (function initFilter() {
         var savedFilter = localStorage.getItem("devpulse.filter") || "all";
-        document.querySelectorAll(".filter-btn").forEach(function (btn) {
+        var savedStatus = localStorage.getItem("devpulse.statusFilter") || "all";
+
+        function applyFilters() {
+          document.querySelectorAll(".finding-row").forEach(function (row) {
+            var sevMatch = savedFilter === "all" || row.getAttribute("data-severity") === savedFilter;
+            var statusMatch = savedStatus === "all" || row.getAttribute("data-status") === savedStatus;
+            row.style.display = (sevMatch && statusMatch) ? "" : "none";
+          });
+        }
+
+        document.querySelectorAll("#filter-bar .filter-btn").forEach(function (btn) {
           var filter = btn.getAttribute("data-filter");
           if (filter === savedFilter) btn.classList.add("active");
           else btn.classList.remove("active");
           btn.addEventListener("click", function () {
-            document.querySelectorAll(".filter-btn").forEach(function (b) { b.classList.remove("active"); });
+            document.querySelectorAll("#filter-bar .filter-btn").forEach(function (b) { b.classList.remove("active"); });
             btn.classList.add("active");
-            var f = btn.getAttribute("data-filter");
-            localStorage.setItem("devpulse.filter", f);
-            document.querySelectorAll(".finding-row").forEach(function (row) {
-              row.style.display = (f === "all" || row.getAttribute("data-severity") === f) ? "" : "none";
-            });
+            savedFilter = btn.getAttribute("data-filter") || "all";
+            localStorage.setItem("devpulse.filter", savedFilter);
+            applyFilters();
           });
         });
-        // Apply saved filter on load
-        document.querySelectorAll(".finding-row").forEach(function (row) {
-          row.style.display = (savedFilter === "all" || row.getAttribute("data-severity") === savedFilter) ? "" : "none";
+
+        document.querySelectorAll("#status-filter-bar .filter-btn").forEach(function (btn) {
+          var status = btn.getAttribute("data-status");
+          if (status === savedStatus) btn.classList.add("active");
+          else btn.classList.remove("active");
+          btn.addEventListener("click", function () {
+            document.querySelectorAll("#status-filter-bar .filter-btn").forEach(function (b) { b.classList.remove("active"); });
+            btn.classList.add("active");
+            savedStatus = btn.getAttribute("data-status") || "all";
+            localStorage.setItem("devpulse.statusFilter", savedStatus);
+            applyFilters();
+          });
         });
+
+        applyFilters();
       })();
 
       // Sortable columns
