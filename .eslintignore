@@ -1,0 +1,4 @@
+# devpulse-frontend uses Next.js eslint config (next/core-web-vitals)
+# which requires eslint-config-next — not installed at repo root.
+# Lint this workspace independently via: cd devpulse-frontend && pnpm lint
+devpulse-frontend/
