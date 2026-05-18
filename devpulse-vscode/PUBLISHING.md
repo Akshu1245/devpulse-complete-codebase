@@ -138,7 +138,7 @@ Drop the PNGs under `devpulse-vscode/docs/screenshots/` and update
 `README.md` with links such as:
 
 ```markdown
-![Findings tree](https://raw.githubusercontent.com/akshaynhcm-droid/Devpulse-/main/devpulse-vscode/docs/screenshots/findings.png)
+![Findings tree](https://raw.githubusercontent.com/Akshu1245/devpulse-complete-codebase/main/devpulse-vscode/resources/screenshot-findings-tree.png)
 ```
 
 ## 8. Verify after publish
