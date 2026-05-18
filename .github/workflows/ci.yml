@@ -2,9 +2,19 @@ name: CI
 
 on:
   push:
-    branches: [main, master]
+    branches:
+      - main
+      - master
+      - 'feature/**'
+      - 'release/**'
+      - 'hotfix/**'
   pull_request:
-    branches: [main, master]
+    branches:
+      - main
+      - master
+      - 'feature/**'
+      - 'release/**'
+      - 'hotfix/**'
 
 env:
   REGISTRY: ghcr.io
@@ -16,6 +26,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -51,6 +64,9 @@ jobs:
           --health-retries=5
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -98,6 +114,9 @@ jobs:
           --health-retries=5
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -124,6 +143,9 @@ jobs:
     needs: [lint-typecheck, test]
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -148,6 +170,9 @@ jobs:
     needs: [lint-typecheck, test]
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -199,6 +224,9 @@ jobs:
     needs: [lint-typecheck]
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -246,6 +274,13 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
       - name: Run migrations
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
