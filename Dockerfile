@@ -1,5 +1,6 @@
 FROM node:22-alpine AS base
 RUN corepack enable pnpm
+ENV HUSKY=0
 
 FROM base AS deps
 WORKDIR /app
