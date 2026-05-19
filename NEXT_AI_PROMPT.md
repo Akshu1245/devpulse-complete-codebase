@@ -72,3 +72,30 @@ clean, Dockerfile builds on Node 22). The remaining work is purely
 operational: provisioning accounts and clicking "deploy". This prompt
 removes the guesswork so any competent agent can finish that work in one
 session.
+
+---
+
+## Known issue (CI workflow edit needs a token with `workflow` scope)
+
+The `Trivy Security Scan` job in `.github/workflows/ci.yml` currently
+fails because `docker/metadata-action` is tagging images with a short
+SHA (`sha-abc1234`) while Trivy looks for the full SHA
+(`sha-<40 chars>`). This was preexisting before any deploy work.
+
+**One-line fix** — change line ~208 in `.github/workflows/ci.yml`:
+
+```diff
+           tags: |
+-            type=sha,prefix=sha-
++            type=sha,prefix=sha-,format=long
+             type=ref,event=branch
+             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+```
+
+Apply this directly on GitHub (web UI -> edit -> commit) or with a PAT
+that has the `workflow` OAuth scope. The Devin git proxy intentionally
+blocks workflow file edits, so this has to be done by a human or a
+token with that scope.
+
+This does not block deployment — Trivy is marked `optional` in CI and
+the actual build/push still produces a valid image.
