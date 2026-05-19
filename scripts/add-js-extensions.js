@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
- * Post-build script: adds .js extensions to all relative ESM imports/exports
- * in compiled dist/ files so they resolve under Node.js native ESM.
+ * Post-build script: rewrites compiled dist/ JS so imports resolve under Node.js native ESM.
+ * 1. Adds .js to bare relative imports (./foo → ./foo.js)
+ * 2. Rewrites @shared/* path aliases to relative paths (../../shared/const.js)
  *
  * Run after: tsc
  */
@@ -21,21 +22,36 @@ function* walk(dir) {
   }
 }
 
-function rewrite(content) {
-  // Match import/export specifiers that are relative and lack an extension
-  // Handles: import x from "./foo"; export { x } from "../bar";
-  const re = /((?:import|export)\s+(?:[^"']*\s+from\s+)?["'])(\.\/[^"']+|\.\.\/[^"']+)(["'])/g;
-  return content.replace(re, (_match, prefix, specifier, suffix) => {
-    // Skip if already has an extension or is a directory index
+function rewrite(content, filePath) {
+  const fileDir = path.dirname(filePath);
+
+  // 1. Rewrite @shared/* aliases to relative paths
+  //    e.g. @shared/const → ../../shared/const.js (from dist/server/_core/oauth.js)
+  const aliasRe = /((?:import|export)\s+(?:[^"']*\s+from\s+)?["'])(@shared\/[^"']+)(["'])/g;
+  content = content.replace(aliasRe, (_match, prefix, specifier, suffix) => {
+    // @shared/const  →  dist/shared/const
+    const sharedTarget = path.join(DIST, specifier.replace(/^@/, ""));
+    let rel = path.relative(fileDir, sharedTarget).replace(/\\/g, "/");
+    if (!rel.startsWith(".")) rel = "./" + rel;
+    if (!/\.[a-z0-9]+$/i.test(rel)) rel += ".js";
+    return `${prefix}${rel}${suffix}`;
+  });
+
+  // 2. Add .js to bare relative imports that still lack an extension
+  //    Skip if already has an extension
+  const relRe = /((?:import|export)\s+(?:[^"']*\s+from\s+)?["'])(\.\/[^"']+|\.\.\/[^"']+)(["'])/g;
+  content = content.replace(relRe, (_match, prefix, specifier, suffix) => {
     if (/\.[a-z0-9]+$/i.test(specifier)) return _match;
     return `${prefix}${specifier}.js${suffix}`;
   });
+
+  return content;
 }
 
 let changed = 0;
 for (const filePath of walk(DIST)) {
   const original = fs.readFileSync(filePath, "utf-8");
-  const updated = rewrite(original);
+  const updated = rewrite(original, filePath);
   if (updated !== original) {
     fs.writeFileSync(filePath, updated, "utf-8");
     changed++;
