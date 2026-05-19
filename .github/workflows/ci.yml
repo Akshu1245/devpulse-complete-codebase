@@ -215,7 +215,7 @@ jobs:
       - name: Build extension
         working-directory: devpulse-vscode
         run: |
-          npx esbuild src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node
+          npx esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node
       - name: Package extension
         working-directory: devpulse-vscode
         run: npx @vscode/vsce package --no-dependencies
