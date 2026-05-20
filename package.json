@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc",
-    "start": "node dist/server/_core/index.js",
+    "start": "node --experimental-specifier-resolution=node dist/server/_core/index.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
