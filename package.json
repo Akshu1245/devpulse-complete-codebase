@@ -22,7 +22,7 @@
     "db:up": "docker compose up -d mysql redis",
     "db:down": "docker compose down",
     "db:migrate": "sh scripts/migrate.sh",
-    "prepare": "husky",
+    "prepare": "node -e \"try { require('child_process').execSync('git rev-parse --is-inside-work-tree') } catch (e) { process.exit(0) }\" && husky",
     "lint": "eslint .",
     "lint:frontend": "cd devpulse-frontend && eslint .",
     "format": "npx prettier --write \"**/*.{ts,tsx,json,md}\"",
