@@ -3,19 +3,102 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 17, 24, 39;
-  --background-end-rgb: 17, 24, 39;
+  --foreground-rgb: 230, 224, 233; /* #e6e0e9 */
+  --background-start-rgb: 11, 13, 18; /* #0B0D12 */
+  --background-end-rgb: 11, 13, 18;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background-color: #0b0d12;
+  font-family: var(--font-jetbrains-mono), monospace;
+  overflow-x: hidden;
+}
+
+/* Cybernetic Aesthetic Utilities */
+.glass-panel {
+  backdrop-filter: blur(20px);
+  background: rgba(29, 27, 32, 0.7);
+  border: 1px solid rgba(148, 142, 156, 0.12);
+}
+
+.glass-card {
+  background: rgba(29, 27, 32, 0.4);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: #cfbcff;
+  box-shadow: 0 0 15px rgba(207, 188, 255, 0.15);
+}
+
+/* Animations */
+@keyframes scan-line {
+  0% { top: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.scan-animation {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #cfbcff, transparent);
+  animation: scan-line 4s linear infinite;
+  z-index: 10;
+}
+
+.scan-line {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #cfbcff, transparent);
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: scan 4s linear infinite;
+  opacity: 0.3;
+}
+
+@keyframes scan {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+.status-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .5; transform: scale(1.2); }
+}
+
+.pulse {
+  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-ring {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+}
+
+.bezier-path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: dash 3s linear forwards;
+}
+
+@keyframes dash {
+  to { stroke-dashoffset: 0; }
+}
+
+.health-ring {
+  transform: rotate(-90deg);
+  stroke-dasharray: 251.2;
 }
 
 @keyframes slideIn {
@@ -28,3 +111,4 @@ body {
     opacity: 1;
   }
 }
+

@@ -1,6 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { AuthProvider } from "../components/AuthProvider";
 import { CookieConsent } from "../components/CookieConsent";
 import { ErrorBoundary } from "../components/ErrorBoundary";
@@ -10,7 +10,21 @@ import AppShell from "@/components/AppShell";
 import { ToastProvider } from "@/components/Toast";
 import { TrialBanner } from "@/app/components/TrialBanner";
 
-const inter = Inter({ subsets: ["latin"] });
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-space-grotesk", // Map variable to use in tailwind config config
+  weight: ["600", "700"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-space-jetbrains-mono",
+  weight: ["400", "500", "700"],
+});
+
+// Configure fonts mapped to css variables in tailwind config
+const spaceGroteskVar = spaceGrotesk.variable;
+const jetbrainsMonoVar = jetbrainsMono.variable;
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://devpulse.in";
 
@@ -57,11 +71,25 @@ export const viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${spaceGroteskVar} ${jetbrainsMonoVar} dark`}>
       <head>
         <link rel="manifest" href="/manifest.json" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          rel="stylesheet"
+        />
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+          :root {
+            --font-space-grotesk: ${spaceGrotesk.style.fontFamily};
+            --font-jetbrains-mono: ${jetbrainsMono.style.fontFamily};
+          }
+        `,
+          }}
+        />
       </head>
-      <body className={inter.className}>
+      <body className="bg-[#0b0d12] text-on-background font-body-md selection:bg-primary selection:text-on-primary min-h-screen">
         <TRPCProvider>
           <AuthProvider>
             <TrialBanner />

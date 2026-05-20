@@ -59,15 +59,15 @@ export default function AppShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 flex">
+    <div className="min-h-screen bg-[#0b0d12] flex text-[#e6e0e9]">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile top bar */}
-        <div className="lg:hidden flex items-center gap-3 px-4 py-3 bg-gray-900 border-b border-gray-800 sticky top-0 z-30">
+        <div className="lg:hidden flex items-center gap-3 px-4 py-3 bg-[#0b0d12]/80 backdrop-blur-md border-b border-outline-variant/10 sticky top-0 z-30">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="text-gray-400 hover:text-white"
+            className="text-on-surface-variant hover:text-on-surface p-1"
             aria-label="Open sidebar"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,7 +79,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               />
             </svg>
           </button>
-          <span className="text-lg font-bold text-blue-400">DevPulse</span>
+          <span className="font-display-lg text-primary text-md">DevPulse</span>
         </div>
 
         {/* Main content */}

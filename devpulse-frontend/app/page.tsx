@@ -69,41 +69,42 @@ function JsonLdInjector() {
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gray-900 text-white font-sans">
+    <div className="min-h-screen bg-[#0b0d12] text-[#e6e0e9] font-body-md relative overflow-hidden">
       <JsonLdInjector />
+      <div className="scan-line opacity-10"></div>
 
       {/* Hero */}
-      <div className="text-center py-24 px-4">
-        <div className="inline-block bg-blue-600/20 text-blue-400 px-4 py-2 rounded-full text-sm font-medium mb-6 border border-blue-600/30">
+      <div className="text-center py-24 px-4 relative z-10 max-w-[1600px] mx-auto">
+        <div className="inline-block bg-primary/10 text-primary px-4 py-2 rounded-full text-xs font-bold font-label-caps mb-6 border border-primary/20 tracking-wider">
           🚀 First AI Runtime Governance Platform Built in India
         </div>
-        <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">
+        <h1 className="text-5xl md:text-7xl font-bold mb-6 font-display-lg text-on-surface tracking-tighter leading-none">
           Secure Your AI Agents
           <br />
-          Before They Cost You
+          <span className="text-primary font-bold">Before They Cost You</span>
         </h1>
-        <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-8">
+        <p className="text-md text-on-surface-variant max-w-3xl mx-auto mb-10 leading-relaxed">
           DevPulse scans every API endpoint, tracks every LLM token, and blocks every prompt
           injection — all inside your VS Code. Built with 4 patents, 478+ tests, and
           enterprise-grade security.
         </p>
-        <div className="flex flex-col sm:flex-row justify-center gap-4 px-4 mb-12">
+        <div className="flex flex-col sm:flex-row justify-center gap-4 px-4 mb-16">
           <Link
             href="/demo"
-            className="bg-green-600 text-white px-8 py-4 rounded-lg font-bold hover:bg-green-700 transition-colors text-lg"
+            className="bg-tertiary text-on-tertiary px-8 py-4 rounded font-bold hover:shadow-[0_0_20px_rgba(231,195,101,0.4)] transition-all text-sm cursor-pointer font-body-md"
           >
             Try Live Demo — No Signup
           </Link>
           <Link
             href={`${APP_URL}/api/oauth/login`}
-            className="bg-white text-gray-900 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors text-lg"
+            className="bg-primary text-on-primary px-8 py-4 rounded font-bold hover:shadow-[0_0_20px_rgba(207,188,255,0.4)] transition-all text-sm cursor-pointer font-body-md"
           >
             Start Free Trial
           </Link>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto text-center">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-container-gap max-w-4xl mx-auto">
           <StatCard value="478+" label="Server Tests" />
           <StatCard value="4" label="Patents Filed" />
           <StatCard value="37" label="API Routers" />
@@ -112,12 +113,14 @@ export default function LandingPage() {
       </div>
 
       {/* How it Works */}
-      <div className="max-w-7xl mx-auto px-4 pb-24">
-        <h2 className="text-3xl font-bold text-center mb-4">How It Works</h2>
-        <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+      <div className="max-w-[1600px] mx-auto px-6 pb-24 relative z-10">
+        <h2 className="text-3xl font-bold text-center mb-2 font-display-lg text-on-surface">
+          How It Works
+        </h2>
+        <p className="text-on-surface-variant text-center mb-12 max-w-2xl mx-auto text-sm">
           Three steps from zero to protected. No configuration required.
         </p>
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-container-gap">
           {[
             {
               step: "1",
@@ -140,75 +143,91 @@ export default function LandingPage() {
           ].map((s) => (
             <div
               key={s.step}
-              className="bg-gray-800 p-8 rounded-xl border border-gray-700 text-center"
+              className="glass-card p-8 rounded-xl text-center relative overflow-hidden group"
             >
               <div className="text-4xl mb-4">{s.icon}</div>
-              <div className="text-blue-500 text-sm font-bold mb-2">STEP {s.step}</div>
-              <h3 className="text-xl font-bold mb-3">{s.title}</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">{s.desc}</p>
+              <div className="text-primary text-[11px] font-bold font-label-caps mb-2 tracking-wider">
+                STEP {s.step}
+              </div>
+              <h3 className="text-lg font-bold mb-3 font-display-lg text-on-surface">{s.title}</h3>
+              <p className="text-on-surface-variant text-xs leading-relaxed font-body-md">
+                {s.desc}
+              </p>
             </div>
           ))}
         </div>
       </div>
 
       {/* Competitive Differentiation */}
-      <div className="bg-gray-800/50 py-24 px-4">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-4">What Makes DevPulse Different</h2>
-          <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+      <div className="py-24 px-6 relative z-10 border-t border-outline-variant/10 bg-surface-container-low/30">
+        <div className="max-w-[1200px] mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-2 font-display-lg text-on-surface">
+            What Makes DevPulse Different
+          </h2>
+          <p className="text-on-surface-variant text-center mb-12 max-w-2xl mx-auto text-sm">
             We combined API security + LLM cost governance into one platform. Nobody else does this.
           </p>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="border-b border-gray-700">
-                  <th className="py-3 pr-4 text-gray-400 font-medium">Capability</th>
-                  <th className="py-3 px-4 text-center">Postman</th>
-                  <th className="py-3 px-4 text-center">Snyk</th>
-                  <th className="py-3 px-4 text-center">Datadog</th>
-                  <th className="py-3 px-4 text-center text-blue-400">DevPulse</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ["API Security Scanning", "❌", "❌", "❌", "✅"],
-                  ["LLM Cost Tracking", "❌", "❌", "✅", "✅"],
-                  ["Prompt Injection Blocking", "❌", "❌", "❌", "✅"],
-                  ["PII Redaction (real-time)", "❌", "❌", "❌", "✅"],
-                  ["Shadow API Detection", "❌", "❌", "❌", "✅"],
-                  ["Kill Switch", "❌", "❌", "❌", "✅"],
-                  ["PCI DSS Compliance", "❌", "❌", "❌", "✅"],
-                  ["VS Code Integration", "❌", "❌", "❌", "✅"],
-                  ["MCP Tool Governance", "❌", "❌", "❌", "✅"],
-                  ["SSO + RBAC", "✅", "✅", "✅", "✅"],
-                ].map((row, i) => (
-                  <tr key={i} className="border-b border-gray-700/50">
-                    <td className="py-3 pr-4">{row[0]}</td>
-                    {row.slice(1).map((cell, j) => (
-                      <td
-                        key={j}
-                        className={`py-3 px-4 text-center ${j === 3 ? "text-blue-400 font-semibold" : ""}`}
-                      >
-                        {cell}
-                      </td>
-                    ))}
+          <div className="glass-card rounded-xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs font-data-tabular">
+                <thead>
+                  <tr className="border-b border-outline-variant/10 text-on-surface-variant font-label-caps uppercase tracking-wider">
+                    <th className="py-4 px-6 font-bold">Capability</th>
+                    <th className="py-4 px-4 text-center font-bold">Postman</th>
+                    <th className="py-4 px-4 text-center font-bold">Snyk</th>
+                    <th className="py-4 px-4 text-center font-bold">Datadog</th>
+                    <th className="py-4 px-6 text-center text-primary font-bold">DevPulse</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-outline-variant/5">
+                  {[
+                    ["API Security Scanning", "❌", "❌", "❌", "✅"],
+                    ["LLM Cost Tracking", "❌", "❌", "✅", "✅"],
+                    ["Prompt Injection Blocking", "❌", "❌", "❌", "✅"],
+                    ["PII Redaction (real-time)", "❌", "❌", "❌", "✅"],
+                    ["Shadow API Detection", "❌", "❌", "❌", "✅"],
+                    ["Kill Switch", "❌", "❌", "❌", "✅"],
+                    ["PCI DSS Compliance", "❌", "❌", "❌", "✅"],
+                    ["VS Code Integration", "❌", "❌", "❌", "✅"],
+                    ["MCP Tool Governance", "❌", "❌", "❌", "✅"],
+                    ["SSO + RBAC", "✅", "✅", "✅", "✅"],
+                  ].map((row, i) => (
+                    <tr key={i} className="hover:bg-surface-variant/30 transition-colors">
+                      <td className="py-4 px-6 text-on-surface font-semibold">{row[0]}</td>
+                      {row.slice(1).map((cell, j) => (
+                        <td
+                          key={j}
+                          className={`py-4 px-4 text-center ${j === 3 ? "text-primary font-bold bg-primary/5" : ""}`}
+                        >
+                          {cell === "✅" ? (
+                            <span className="px-2 py-0.5 rounded border border-primary/20 bg-primary/10 text-primary text-[10px] font-bold">
+                              YES
+                            </span>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded border border-outline-variant/20 bg-surface-container-low text-on-surface-variant text-[10px] font-bold opacity-30">
+                              NO
+                            </span>
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Features */}
-      <div className="max-w-7xl mx-auto py-24 px-4">
-        <h2 className="text-3xl font-bold text-center mb-4">
+      <div className="max-w-[1600px] mx-auto py-24 px-6 relative z-10">
+        <h2 className="text-3xl font-bold text-center mb-2 font-display-lg text-on-surface">
           Everything You Need to Ship Secure AI
         </h2>
-        <p className="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+        <p className="text-on-surface-variant text-center mb-12 max-w-2xl mx-auto text-sm">
           One platform. Every surface covered. No stitching tools together.
         </p>
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 gap-container-gap">
           <FeatureCard
             icon="🔒"
             title="Security Scanner"
@@ -273,12 +292,14 @@ export default function LandingPage() {
       </div>
 
       {/* Pricing */}
-      <div className="max-w-4xl mx-auto px-4 pb-24">
-        <h2 className="text-3xl font-bold text-center mb-4">Simple, Transparent Pricing</h2>
-        <p className="text-gray-400 text-center mb-12">
+      <div className="max-w-[1200px] mx-auto px-6 pb-24 relative z-10">
+        <h2 className="text-3xl font-bold text-center mb-2 font-display-lg text-on-surface">
+          Simple, Transparent Pricing
+        </h2>
+        <p className="text-on-surface-variant text-center mb-12 text-sm">
           Start free. Scale when you're ready. All prices in USD with INR equivalent.
         </p>
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 gap-container-gap">
           <PricingCard
             plan="Free"
             price="$0"
@@ -322,21 +343,23 @@ export default function LandingPage() {
       </div>
 
       {/* CTA */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 py-20 px-4 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Ship Secure AI?</h2>
-        <p className="text-lg text-blue-100 mb-8 max-w-2xl mx-auto">
+      <div className="bg-gradient-to-r from-primary/10 via-tertiary/5 to-[#0b0d12] py-20 px-6 text-center border-t border-b border-outline-variant/10 relative z-10">
+        <h2 className="text-3xl md:text-4xl font-bold mb-4 font-display-lg text-on-surface">
+          Ready to Ship Secure AI?
+        </h2>
+        <p className="text-md text-on-surface-variant mb-8 max-w-2xl mx-auto leading-relaxed">
           478+ tests. 4 patents. 37 API routers. One platform. Deploy in 5 minutes.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <Link
             href="/demo"
-            className="bg-white text-blue-700 px-8 py-4 rounded-lg font-bold hover:bg-gray-100 transition-colors text-lg"
+            className="bg-tertiary text-on-tertiary px-8 py-4 rounded font-bold hover:shadow-[0_0_20px_rgba(231,195,101,0.45)] transition-all text-sm cursor-pointer font-body-md"
           >
             Try Live Demo →
           </Link>
           <Link
             href={`${APP_URL}/api/oauth/login`}
-            className="border-2 border-white text-white px-8 py-4 rounded-lg font-bold hover:bg-white/10 transition-colors text-lg"
+            className="bg-primary text-on-primary px-8 py-4 rounded font-bold hover:shadow-[0_0_20px_rgba(207,188,255,0.45)] transition-all text-sm cursor-pointer font-body-md"
           >
             Start Free Trial
           </Link>
@@ -344,9 +367,11 @@ export default function LandingPage() {
       </div>
 
       {/* Integrations */}
-      <div className="max-w-5xl mx-auto py-16 px-4 text-center border-t border-gray-800">
-        <p className="text-gray-500 text-sm mb-6 uppercase tracking-wide">Works With Your Stack</p>
-        <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-gray-400 text-sm">
+      <div className="max-w-[1200px] mx-auto py-16 px-6 text-center relative z-10">
+        <p className="text-on-surface-variant text-[11px] font-bold font-label-caps mb-6 uppercase tracking-widest">
+          Works With Your Stack
+        </p>
+        <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-on-surface-variant text-xs">
           {[
             "OpenAI",
             "Anthropic",
@@ -361,7 +386,7 @@ export default function LandingPage() {
           ].map((name) => (
             <span
               key={name}
-              className="bg-gray-800/50 px-4 py-2 rounded-full border border-gray-700/50"
+              className="bg-surface-container-low px-4 py-2 rounded-full border border-outline-variant/10 text-on-surface font-semibold font-body-md"
             >
               {name}
             </span>
@@ -369,18 +394,18 @@ export default function LandingPage() {
         </div>
         <Link
           href="/integrations"
-          className="inline-block mt-6 text-blue-400 text-sm hover:text-blue-300"
+          className="inline-block mt-6 text-primary text-xs font-bold font-body-md hover:underline"
         >
           View all 40+ integrations →
         </Link>
       </div>
 
       {/* Testimonials */}
-      <div className="max-w-5xl mx-auto py-16 px-4 border-t border-gray-800">
-        <p className="text-gray-500 text-sm mb-8 text-center uppercase tracking-wide">
+      <div className="max-w-[1200px] mx-auto py-16 px-6 border-t border-outline-variant/10 relative z-10">
+        <p className="text-on-surface-variant text-[11px] font-bold font-label-caps mb-8 text-center uppercase tracking-widest">
           What Early Users Say
         </p>
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-3 gap-container-gap">
           {[
             {
               quote:
@@ -401,11 +426,13 @@ export default function LandingPage() {
               company: "Enterprise SaaS",
             },
           ].map((t) => (
-            <div key={t.author} className="bg-gray-800 p-6 rounded-xl border border-gray-700">
-              <p className="text-gray-300 text-sm leading-relaxed mb-4 italic">"{t.quote}"</p>
-              <div className="text-sm">
-                <div className="font-medium text-white">{t.author}</div>
-                <div className="text-gray-500">{t.company}</div>
+            <div key={t.author} className="glass-card p-6 rounded-xl relative overflow-hidden">
+              <p className="text-on-surface-variant text-xs leading-relaxed mb-4 italic">
+                "{t.quote}"
+              </p>
+              <div className="text-xs">
+                <div className="font-bold text-on-surface font-body-md">{t.author}</div>
+                <div className="text-on-surface-variant font-body-md text-[11px]">{t.company}</div>
               </div>
             </div>
           ))}
@@ -413,8 +440,10 @@ export default function LandingPage() {
       </div>
 
       {/* FAQ Preview */}
-      <div className="max-w-3xl mx-auto py-16 px-4 border-t border-gray-800">
-        <h2 className="text-2xl font-bold text-center mb-8">Frequently Asked Questions</h2>
+      <div className="max-w-[800px] mx-auto py-16 px-6 border-t border-outline-variant/10 relative z-10">
+        <h2 className="text-2xl font-bold text-center mb-8 font-display-lg text-on-surface">
+          Frequently Asked Questions
+        </h2>
         <div className="space-y-4">
           {[
             {
@@ -430,23 +459,27 @@ export default function LandingPage() {
               a: "OWASP API Top 10, OWASP LLM Top 10, PCI DSS v4.0.1, and SOC 2 Trust Services Criteria.",
             },
           ].map((faq) => (
-            <div key={faq.q} className="bg-gray-800 p-5 rounded-xl border border-gray-700">
-              <h3 className="font-bold text-blue-400 mb-1">{faq.q}</h3>
-              <p className="text-gray-400 text-sm">{faq.a}</p>
+            <div key={faq.q} className="glass-card p-5 rounded-xl">
+              <h3 className="font-bold text-primary mb-1 text-sm font-display-lg">{faq.q}</h3>
+              <p className="text-on-surface-variant text-xs leading-relaxed font-body-md">
+                {faq.a}
+              </p>
             </div>
           ))}
         </div>
         <div className="text-center mt-6">
-          <Link href="/faq" className="text-blue-400 text-sm hover:text-blue-300">
+          <Link href="/faq" className="text-primary text-xs font-bold font-body-md hover:underline">
             See all 12 FAQs →
           </Link>
         </div>
       </div>
 
       {/* Newsletter */}
-      <div className="max-w-2xl mx-auto py-16 px-4 border-t border-gray-800 text-center">
-        <h2 className="text-2xl font-bold mb-2">Stay Ahead of AI Risks</h2>
-        <p className="text-gray-400 mb-6">
+      <div className="max-w-[600px] mx-auto py-16 px-6 border-t border-outline-variant/10 text-center relative z-10">
+        <h2 className="text-2xl font-bold mb-2 font-display-lg text-on-surface">
+          Stay Ahead of AI Risks
+        </h2>
+        <p className="text-on-surface-variant mb-6 text-xs font-body-md">
           Weekly insights on AI security, cost optimization, and compliance. No spam.
         </p>
         <form
@@ -460,11 +493,11 @@ export default function LandingPage() {
             type="email"
             placeholder="you@company.com"
             required
-            className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+            className="flex-1 bg-surface-container-low border border-outline-variant/20 rounded px-4 py-2.5 text-on-surface placeholder-on-surface-variant/40 outline-none focus:border-primary font-body-md text-xs"
           />
           <button
             type="submit"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors whitespace-nowrap"
+            className="bg-primary text-on-primary font-bold px-6 py-2.5 rounded font-body-md text-xs cursor-pointer hover:shadow-[0_0_15px_rgba(207,188,255,0.3)] transition-shadow"
           >
             Subscribe
           </button>
@@ -472,9 +505,11 @@ export default function LandingPage() {
       </div>
 
       {/* Trust */}
-      <div className="max-w-4xl mx-auto py-16 px-4 text-center">
-        <p className="text-gray-500 text-sm mb-6">TRUSTED BY ENGINEERS WORLDWIDE</p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-gray-400 text-sm">
+      <div className="max-w-[1000px] mx-auto py-16 px-6 text-center border-t border-outline-variant/10 relative z-10">
+        <p className="text-on-surface-variant text-[11px] font-bold font-label-caps mb-6 tracking-widest">
+          TRUSTED BY ENGINEERS WORLDWIDE
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-container-gap text-on-surface-variant text-xs">
           <TrustBadge title="4 Patents" desc="NHCE/DEV/2026/001–004" />
           <TrustBadge title="478+ Tests" desc="Server-side test suite" />
           <TrustBadge title="18 Migrations" desc="Drizzle ORM + MySQL" />
@@ -482,139 +517,148 @@ export default function LandingPage() {
         </div>
       </div>
 
-      <footer className="border-t border-gray-800 py-12 px-4 text-gray-500">
-        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 mb-8 text-sm">
+      <footer className="border-t border-outline-variant/10 py-12 px-6 text-on-surface-variant relative z-10">
+        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 mb-8 text-xs font-body-md">
           <div>
-            <h4 className="font-bold text-white mb-3">Product</h4>
+            <h4 className="font-bold text-on-surface mb-3 uppercase tracking-wider">Product</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/features" className="hover:text-white transition-colors">
+                <Link href="/features" className="hover:text-on-surface transition-colors">
                   Features
                 </Link>
               </li>
               <li>
-                <Link href="/pricing" className="hover:text-white transition-colors">
+                <Link href="/pricing" className="hover:text-on-surface transition-colors">
                   Pricing
                 </Link>
               </li>
               <li>
-                <Link href="/changelog" className="hover:text-white transition-colors">
+                <Link href="/changelog" className="hover:text-on-surface transition-colors">
                   Changelog
                 </Link>
               </li>
               <li>
-                <Link href="/integrations" className="hover:text-white transition-colors">
+                <Link href="/integrations" className="hover:text-on-surface transition-colors">
                   Integrations
                 </Link>
               </li>
               <li>
-                <Link href="/demo" className="hover:text-white transition-colors">
+                <Link href="/demo" className="hover:text-on-surface transition-colors">
                   Live Demo
                 </Link>
               </li>
             </ul>
           </div>
           <div>
-            <h4 className="font-bold text-white mb-3">Solutions</h4>
+            <h4 className="font-bold text-on-surface mb-3 uppercase tracking-wider">Solutions</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/solutions/fintech" className="hover:text-white transition-colors">
+                <Link href="/solutions/fintech" className="hover:text-on-surface transition-colors">
                   Fintech
                 </Link>
               </li>
               <li>
-                <Link href="/solutions/healthcare" className="hover:text-white transition-colors">
+                <Link
+                  href="/solutions/healthcare"
+                  className="hover:text-on-surface transition-colors"
+                >
                   Healthcare
                 </Link>
               </li>
               <li>
-                <Link href="/solutions/enterprise" className="hover:text-white transition-colors">
+                <Link
+                  href="/solutions/enterprise"
+                  className="hover:text-on-surface transition-colors"
+                >
                   Enterprise
                 </Link>
               </li>
               <li>
-                <Link href="/compare" className="hover:text-white transition-colors">
+                <Link href="/compare" className="hover:text-on-surface transition-colors">
                   Comparisons
                 </Link>
               </li>
               <li>
-                <Link href="/roi-calculator" className="hover:text-white transition-colors">
+                <Link href="/roi-calculator" className="hover:text-on-surface transition-colors">
                   ROI Calculator
                 </Link>
               </li>
             </ul>
           </div>
           <div>
-            <h4 className="font-bold text-white mb-3">Resources</h4>
+            <h4 className="font-bold text-on-surface mb-3 uppercase tracking-wider">Resources</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/blog" className="hover:text-white transition-colors">
+                <Link href="/blog" className="hover:text-on-surface transition-colors">
                   Blog
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="hover:text-white transition-colors">
+                <Link href="/faq" className="hover:text-on-surface transition-colors">
                   FAQ
                 </Link>
               </li>
               <li>
-                <Link href="/trust" className="hover:text-white transition-colors">
+                <Link href="/trust" className="hover:text-on-surface transition-colors">
                   Trust Center
                 </Link>
               </li>
               <li>
-                <Link href="/status" className="hover:text-white transition-colors">
+                <Link href="/status" className="hover:text-on-surface transition-colors">
                   Status
                 </Link>
               </li>
               <li>
-                <Link href="/open-source" className="hover:text-white transition-colors">
+                <Link href="/open-source" className="hover:text-on-surface transition-colors">
                   Open Source
                 </Link>
               </li>
             </ul>
           </div>
           <div>
-            <h4 className="font-bold text-white mb-3">Company</h4>
+            <h4 className="font-bold text-on-surface mb-3 uppercase tracking-wider">Company</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/about" className="hover:text-white transition-colors">
+                <Link href="/about" className="hover:text-on-surface transition-colors">
                   About
                 </Link>
               </li>
               <li>
-                <Link href="/partners" className="hover:text-white transition-colors">
+                <Link href="/partners" className="hover:text-on-surface transition-colors">
                   Partners
                 </Link>
               </li>
               <li>
-                <a href="mailto:press@devpulse.in" className="hover:text-white transition-colors">
+                <a
+                  href="mailto:press@devpulse.in"
+                  className="hover:text-on-surface transition-colors"
+                >
                   Press
                 </a>
               </li>
               <li>
-                <Link href="/terms" className="hover:text-white transition-colors">
+                <Link href="/terms" className="hover:text-on-surface transition-colors">
                   Terms
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-white transition-colors">
+                <Link href="/privacy" className="hover:text-on-surface transition-colors">
                   Privacy
                 </Link>
               </li>
             </ul>
           </div>
         </div>
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center pt-8 border-t border-gray-800">
-          <p className="text-sm">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center pt-8 border-t border-outline-variant/10">
+          <p className="text-[11px]">
             &copy; {new Date().getFullYear()} DevPulse by Rashi Technologies. Bengaluru, India.
           </p>
-          <div className="flex items-center gap-4 mt-4 md:mt-0">
+          <div className="flex items-center gap-4 mt-4 md:mt-0 text-[11px]">
             <a
               href="https://github.com/Akshu1245/devpulse-complete-codebase"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
+              className="hover:text-on-surface transition-colors"
             >
               GitHub
             </a>
@@ -622,7 +666,7 @@ export default function LandingPage() {
               href="https://twitter.com/devpulsehq"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
+              className="hover:text-on-surface transition-colors"
             >
               Twitter
             </a>
@@ -630,7 +674,7 @@ export default function LandingPage() {
               href="https://linkedin.com/company/devpulse"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-white transition-colors"
+              className="hover:text-on-surface transition-colors"
             >
               LinkedIn
             </a>
@@ -643,19 +687,23 @@ export default function LandingPage() {
 
 function StatCard({ value, label }: { value: string; label: string }) {
   return (
-    <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50">
-      <div className="text-2xl font-bold text-blue-400">{value}</div>
-      <div className="text-gray-400 text-xs mt-1">{label}</div>
+    <div className="glass-card p-6 rounded-xl relative overflow-hidden group">
+      <div className="text-3xl font-display-lg font-bold text-primary tracking-tighter">
+        {value}
+      </div>
+      <div className="text-on-surface-variant font-label-caps text-[10px] tracking-wider mt-2">
+        {label}
+      </div>
     </div>
   );
 }
 
 function FeatureCard({ icon, title, desc }: { icon: string; title: string; desc: string }) {
   return (
-    <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 hover:border-blue-500 transition-colors">
-      <div className="text-3xl mb-3">{icon}</div>
-      <h3 className="text-lg font-bold mb-2 text-blue-400">{title}</h3>
-      <p className="text-gray-400 text-sm leading-relaxed">{desc}</p>
+    <div className="glass-card p-6 rounded-xl relative overflow-hidden group hover:border-primary/40 transition-all">
+      <div className="text-4xl mb-4">{icon}</div>
+      <h3 className="font-display-lg text-md text-primary mb-2 font-bold">{title}</h3>
+      <p className="text-on-surface-variant font-body-md text-xs leading-relaxed">{desc}</p>
     </div>
   );
 }
@@ -679,29 +727,33 @@ function PricingCard({
 }) {
   return (
     <div
-      className={`bg-gray-800 p-6 rounded-xl border ${popular ? "border-blue-500 relative" : "border-gray-700"}`}
+      className={`glass-card p-6 rounded-xl relative overflow-hidden flex flex-col ${popular ? "border-primary shadow-[0_0_20px_rgba(207,188,255,0.25)]" : "border-outline-variant/10"}`}
     >
       {popular && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-bold px-4 py-1 rounded-full">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-on-primary text-[10px] font-bold px-4 py-1 rounded-full font-label-caps tracking-wider">
           POPULAR
         </div>
       )}
-      <h3 className={`text-xl font-bold mb-2 ${popular ? "text-blue-400" : ""}`}>{plan}</h3>
-      <p className="text-3xl font-bold mb-1">
+      <h3
+        className={`text-lg font-display-lg font-bold mb-2 ${popular ? "text-primary" : "text-on-surface"}`}
+      >
+        {plan}
+      </h3>
+      <p className="text-3xl font-bold font-display-lg text-on-surface mb-1">
         {price}
-        <span className="text-sm text-gray-400">/mo</span>
+        <span className="text-sm text-on-surface-variant font-body-md">/mo</span>
       </p>
-      <p className="text-xs text-gray-500 mb-4">{inr}/mo</p>
-      <ul className="space-y-2 text-gray-400 text-sm mb-6">
+      <p className="text-xs text-on-surface-variant/75 mb-4 font-body-md">{inr}/mo</p>
+      <ul className="space-y-2 text-on-surface-variant text-xs mb-8 flex-1">
         {features.map((f, i) => (
           <li key={i} className="flex items-center gap-2">
-            <span className="text-green-400">✓</span> {f}
+            <span className="text-primary">✓</span> {f}
           </li>
         ))}
       </ul>
       <Link
         href={href}
-        className={`block w-full py-3 rounded-lg font-medium transition-colors text-center ${popular ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-700 hover:bg-gray-600"}`}
+        className={`block w-full py-2.5 rounded font-bold transition-all text-center text-xs font-body-md ${popular ? "bg-primary text-on-primary hover:shadow-[0_0_12px_rgba(207,188,255,0.3)]" : "bg-surface-container-high text-on-surface border border-outline-variant/20 hover:bg-surface-variant/80"}`}
       >
         {cta}
       </Link>
@@ -711,9 +763,9 @@ function PricingCard({
 
 function TrustBadge({ title, desc }: { title: string; desc: string }) {
   return (
-    <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/30">
-      <div className="font-semibold text-gray-300">{title}</div>
-      <div className="text-gray-500 text-xs mt-1">{desc}</div>
+    <div className="glass-card p-4 rounded-xl relative overflow-hidden">
+      <div className="font-bold text-on-surface text-sm font-display-lg">{title}</div>
+      <div className="text-on-surface-variant text-[10px] mt-1 font-body-md">{desc}</div>
     </div>
   );
 }
