@@ -58,6 +58,8 @@ const EnvSchema = z.object({
   MINIMAX_API_KEY: z.string().default(""),
   MINIMAX_API_URL: z.string().url().default("https://api.minimax.io/v1"),
   MINIMAX_MODEL: z.string().default("minimaxai/minimax-m2.7"),
+  OPENROUTER_API_KEY: z.string().default(""),
+  OPENROUTER_DEFAULT_MODEL: z.string().default("deepseek/deepseek-chat-v3-0324:free"),
 
   // Email (SMTP)
   SMTP_HOST: z.string().default(""),

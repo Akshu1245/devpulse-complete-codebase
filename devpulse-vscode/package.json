@@ -8,13 +8,13 @@
   "icon": "resources/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/akshaynhcm-droid/Devpulse-.git",
+    "url": "https://github.com/rakshex/rakshex.git",
     "directory": "rakshex-vscode"
   },
   "bugs": {
-    "url": "https://github.com/akshaynhcm-droid/Devpulse-/issues"
+    "url": "https://github.com/rakshex/rakshex/issues"
   },
-  "homepage": "https://github.com/akshaynhcm-droid/Devpulse-#readme",
+  "homepage": "https://rakshex.in",
   "galleryBanner": {
     "color": "#0F172A",
     "theme": "dark"

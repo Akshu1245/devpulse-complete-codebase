@@ -274,6 +274,18 @@ export async function registerOptionalProviders() {
       logger.warn({ err }, "[Providers] Failed to load Groq provider");
     }
   }
+
+  // OpenRouter — free-tier fallback, registered last so it acts as default
+  // when no other provider key is present
+  if (process.env.OPENROUTER_API_KEY) {
+    try {
+      const { openrouterProvider } = await import("../services/openrouterProvider");
+      providerRegistry.register(openrouterProvider);
+      logger.info("[Providers] OpenRouter registered (free-tier fallback active)");
+    } catch (err) {
+      logger.warn({ err }, "[Providers] Failed to load OpenRouter provider");
+    }
+  }
 }
 
 /* ─── Main routing entry point ─────────────────────────────────────────── */
@@ -331,7 +343,10 @@ export async function routeLLM(
     provider = providerRegistry.findForModel(params.model);
   }
 
-  provider = provider ?? minimaxProvider;
+  // If no provider resolved, prefer OpenRouter (free) over MiniMax when available
+  if (!provider) {
+    provider = providerRegistry.get("openrouter") ?? minimaxProvider;
+  }
 
   const result = await provider.invoke(params, {
     model: params.model,
