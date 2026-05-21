@@ -36,6 +36,10 @@ import { handleGitHubPush, handleGitHubPullRequest, verifyGitHubWebhook } from "
 import { scheduleWeeklyDigest } from "../jobs/weeklyDigest";
 import { startRedTeamScheduler } from "../services/redTeamScheduler";
 import { registerJobWorkers } from "../services/jobs";
+import {
+  startSecurityEventsFlusher,
+  flushSecurityEventsOnShutdown,
+} from "../services/securityEvents";
 import { verifyWebhookSignature } from "../utils/security";
 import { handleGitHubWebhook } from "../api/github";
 import { redis } from "./cache";
@@ -1021,6 +1025,7 @@ async function startServer() {
     }
 
     registerJobWorkers();
+    startSecurityEventsFlusher();
     scheduleWeeklyDigest();
     if (process.env.RAKSHEX_REDTEAM_SCHEDULER !== "disabled") {
       startRedTeamScheduler(60_000);
@@ -1031,8 +1036,9 @@ async function startServer() {
   // ── Graceful shutdown ──────────────────────────────────────────────────────
   process.on("SIGTERM", () => {
     logger.info("[Server] SIGTERM received. Shutting down gracefully");
-    server.close(() => {
+    server.close(async () => {
       logger.info("[Server] Closed");
+      await flushSecurityEventsOnShutdown();
       process.exit(0);
     });
   });

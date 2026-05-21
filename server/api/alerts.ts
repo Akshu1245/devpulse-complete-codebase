@@ -96,10 +96,24 @@ function rowToAlertRule(row: {
 }
 
 export const alertsRouter = router({
-  listRules: protectedProcedure.query(async ({ ctx }) => {
-    const rows = await db.listAlertRules(ctx.user.id);
-    return rows.map(rowToAlertRule);
-  }),
+  listRules: protectedProcedure
+    .input(
+      z
+        .object({
+          cursor: z.number().int().min(0).default(0),
+          limit: z.number().int().min(1).max(100).default(20),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const cursor = input?.cursor ?? 0;
+      const limit = input?.limit ?? 20;
+      const rows = await db.listAlertRules(ctx.user.id);
+      const sliced = rows.slice(cursor, cursor + limit + 1);
+      const hasMore = sliced.length > limit;
+      const items = sliced.slice(0, limit).map(rowToAlertRule);
+      return { items, nextCursor: hasMore ? cursor + limit : undefined };
+    }),
 
   getRule: protectedProcedure
     .input(z.object({ id: z.number().int().positive() }))
@@ -109,32 +123,30 @@ export const alertsRouter = router({
       return rowToAlertRule(row);
     }),
 
-  createRule: protectedProcedure
-    .input(ruleInputSchema)
-    .mutation(async ({ ctx, input }) => {
-      const errors = validateRule(input);
-      if (errors.length > 0) {
-        throw new ValidationError(`invalid alert rule: ${errors.join("; ")}`);
-      }
-      const id = await db.createAlertRule({
-        userId: ctx.user.id,
-        name: input.name,
-        enabled: input.enabled,
-        conditions: input.conditions,
-        window: input.window,
-        cooldownMinutes: input.cooldownMinutes,
-        severity: input.severity,
-        channels: input.channels,
-      });
-      return { id };
-    }),
+  createRule: protectedProcedure.input(ruleInputSchema).mutation(async ({ ctx, input }) => {
+    const errors = validateRule(input);
+    if (errors.length > 0) {
+      throw new ValidationError(`invalid alert rule: ${errors.join("; ")}`);
+    }
+    const id = await db.createAlertRule({
+      userId: ctx.user.id,
+      name: input.name,
+      enabled: input.enabled,
+      conditions: input.conditions,
+      window: input.window,
+      cooldownMinutes: input.cooldownMinutes,
+      severity: input.severity,
+      channels: input.channels,
+    });
+    return { id };
+  }),
 
   updateRule: protectedProcedure
     .input(
       z.object({
         id: z.number().int().positive(),
         ...ruleInputSchema.shape,
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const existing = await db.getAlertRule(ctx.user.id, input.id);
@@ -160,7 +172,7 @@ export const alertsRouter = router({
       z.object({
         id: z.number().int().positive(),
         enabled: z.boolean(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const existing = await db.getAlertRule(ctx.user.id, input.id);
@@ -180,7 +192,7 @@ export const alertsRouter = router({
     .input(z.object({ limit: z.number().int().min(1).max(500).default(100) }).optional())
     .query(async ({ ctx, input }) => {
       const rows = await db.listAlertEvents(ctx.user.id, input?.limit ?? 100);
-      return rows.map(r => ({
+      return rows.map((r) => ({
         id: r.id,
         ruleId: r.ruleId,
         severity: r.severity,
@@ -200,7 +212,7 @@ export const alertsRouter = router({
       z.object({
         id: z.number().int().positive(),
         values: z.record(metricEnum, z.number().finite()),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const row = await db.getAlertRule(ctx.user.id, input.id);
@@ -217,7 +229,7 @@ export const alertsRouter = router({
       const rule = rowToAlertRule(row);
 
       const now = new Date();
-      const syntheticSnapshots: MetricSnapshot[] = rule.conditions.map(c => ({
+      const syntheticSnapshots: MetricSnapshot[] = rule.conditions.map((c) => ({
         metric: c.metric,
         value: c.threshold + (c.operator === "lt" || c.operator === "lte" ? -1 : 1),
         observedAt: now,
@@ -226,7 +238,7 @@ export const alertsRouter = router({
       const verdict = evaluateRule(
         { ...rule, lastFiredAt: null, enabled: true },
         syntheticSnapshots,
-        now
+        now,
       );
 
       if (!verdict.fired) {

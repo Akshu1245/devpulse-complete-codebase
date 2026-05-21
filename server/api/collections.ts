@@ -198,6 +198,8 @@ export const collectionsRouter = router({
         .object({
           page: z.number().int().min(1).default(1),
           pageSize: z.number().int().min(1).max(100).default(20),
+          cursor: z.number().int().min(0).default(0),
+          limit: z.number().int().min(1).max(100).default(20),
         })
         .optional(),
     )
@@ -208,9 +210,18 @@ export const collectionsRouter = router({
         db.getCollectionsByUserId(ctx.user.id),
       );
 
+      const cursor = input?.cursor ?? 0;
+      const limit = input?.limit ?? input?.pageSize ?? 20;
       const page = input?.page ?? 1;
       const pageSize = input?.pageSize ?? 20;
       const total = allCollections.length;
+
+      // Cursor-based slice
+      const sliced = allCollections.slice(cursor, cursor + limit + 1);
+      const hasMore = sliced.length > limit;
+      const items = sliced.slice(0, limit);
+
+      // Legacy page-based slice (backwards compat)
       const paginated = allCollections.slice((page - 1) * pageSize, page * pageSize);
       return {
         collections: paginated.map((c) => ({
@@ -221,6 +232,15 @@ export const collectionsRouter = router({
           totalRequests: c.totalRequests,
           createdAt: c.createdAt,
         })),
+        items: items.map((c) => ({
+          id: c.id,
+          name: c.name,
+          description: c.description,
+          format: c.format,
+          totalRequests: c.totalRequests,
+          createdAt: c.createdAt,
+        })),
+        nextCursor: hasMore ? cursor + limit : undefined,
         total,
         page,
         pageSize,

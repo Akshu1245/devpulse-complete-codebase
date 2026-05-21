@@ -60,9 +60,24 @@ export async function verifyWebSocketAuth(
     const session = await db.getUserSessionByToken(sessionData.sessionId);
     if (!session) return null;
 
-    // Get user
+    // Check session expiry — delete and reject if expired
+    if (session.expiresAt && new Date(session.expiresAt) < new Date()) {
+      try {
+        await db.deleteUserSession(session.id);
+      } catch (delErr) {
+        logger.warn({ delErr }, "[WS] Failed to delete expired session");
+      }
+      return null;
+    }
+
+    // Get user — reject if not found
     const user = await db.getUserById(session.userId);
     if (!user) return null;
+
+    // Check account lock — reject if locked
+    if (user.lockedUntil && new Date(user.lockedUntil) > new Date()) {
+      return null;
+    }
 
     return { userId: user.id, role: user.role };
   } catch {

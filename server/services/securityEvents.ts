@@ -84,9 +84,75 @@ export function countSecurityEvents(eventType: SecurityEventType, windowHours = 
     .length;
 }
 
-/** Flush buffer — call on shutdown or periodically */
-export function flushSecurityEvents(): SecurityEvent[] {
-  const flushed = [...eventBuffer];
-  eventBuffer.length = 0;
-  return flushed;
+/** Drain the in-memory buffer and batch-insert into the security_events table. */
+export async function flushSecurityEvents(): Promise<void> {
+  if (eventBuffer.length === 0) return;
+  const drained = eventBuffer.splice(0, eventBuffer.length);
+  try {
+    const { insertSecurityEvents } = await import("../db");
+    // Map in-memory events to the DB schema shape.
+    // The DB table requires workspaceId, eventType (enum subset), severity, etc.
+    // We map our internal event types to the nearest DB enum value and use a
+    // system workspace sentinel so rows are always valid.
+    const rows = drained.map((e) => ({
+      workspaceId: String(e.userId ?? "system"),
+      eventType: mapEventType(e.eventType),
+      severity: mapSeverity(e.eventType),
+      threatLevel: e.eventType,
+      detectedPatterns: e.details,
+      promptHash: e.id,
+      agentId: e.ip ?? null,
+    }));
+    await insertSecurityEvents(rows);
+  } catch (err) {
+    logger.error({ err }, "[SecurityEvents] Flush to DB failed — re-buffering");
+    // Re-buffer up to MAX to avoid loss on transient DB errors
+    eventBuffer.unshift(...drained.slice(-MAX_BUFFER_SIZE));
+  }
+}
+
+let _flusherInterval: ReturnType<typeof setInterval> | null = null;
+
+/** Start periodic 30-second flush of security events to DB. */
+export function startSecurityEventsFlusher(): void {
+  if (_flusherInterval) return;
+  _flusherInterval = setInterval(() => {
+    flushSecurityEvents().catch((err) =>
+      logger.error({ err }, "[SecurityEvents] Periodic flush error"),
+    );
+  }, 30_000);
+  logger.info("[SecurityEvents] Periodic flusher started (30s interval)");
+}
+
+/** Stop the periodic flusher and do a final flush before shutdown. */
+export async function flushSecurityEventsOnShutdown(): Promise<void> {
+  if (_flusherInterval) {
+    clearInterval(_flusherInterval);
+    _flusherInterval = null;
+  }
+  await flushSecurityEvents();
+  logger.info("[SecurityEvents] Final flush on shutdown complete");
+}
+
+/* ─── Internal helpers ──────────────────────────────────────────────────── */
+
+function mapEventType(
+  t: SecurityEventType,
+): "prompt_injection" | "pii_leak" | "policy_violation" | "anomaly" {
+  if (t === "auth_failure" || t === "csrf_failure" || t === "password_reset_attempt")
+    return "policy_violation";
+  if (t === "rate_limit_hit" || t === "mcp_registration_rate_limited") return "anomaly";
+  return "policy_violation";
+}
+
+function mapSeverity(t: SecurityEventType): "low" | "medium" | "high" | "critical" {
+  if (
+    t === "rce_command_blocked" ||
+    t === "ssrf_url_blocked" ||
+    t === "prototype_pollution_blocked"
+  )
+    return "critical";
+  if (t === "auth_failure" || t === "csrf_failure") return "high";
+  if (t === "rate_limit_hit" || t === "mcp_registration_rate_limited") return "medium";
+  return "low";
 }

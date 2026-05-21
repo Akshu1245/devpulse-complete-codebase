@@ -3625,6 +3625,20 @@ export async function insertSecurityEvent(
   return eventId;
 }
 
+/** Batch-insert up to N security events in one round-trip. Silently no-ops if DB unavailable. */
+export async function insertSecurityEvents(
+  rows: Array<Omit<InsertSecurityEventRow, "eventId">>,
+): Promise<void> {
+  if (rows.length === 0) return;
+  const db = await getDb();
+  if (!db) return;
+  const BATCH = 100;
+  for (let i = 0; i < rows.length; i += BATCH) {
+    const chunk = rows.slice(i, i + BATCH).map((r) => ({ eventId: crypto.randomUUID(), ...r }));
+    await db.insert(securityEvents).values(chunk);
+  }
+}
+
 export async function listSecurityEvents(
   workspaceId: string,
   opts: {

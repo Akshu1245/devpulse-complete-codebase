@@ -21,6 +21,7 @@ export const auditRouter = router({
       z.object({
         limit: z.number().int().min(1).max(200).default(50),
         offset: z.number().int().min(0).default(0),
+        cursor: z.number().int().min(0).default(0),
         eventType: z.string().optional(),
         userId: z.number().int().optional(),
         startDate: z.string().optional(),
@@ -54,6 +55,11 @@ export const auditRouter = router({
       }
 
       const total = filtered.length;
+      const cursor = input.cursor ?? input.offset;
+      const limit = input.limit;
+      const sliced = filtered.slice(cursor, cursor + limit + 1);
+      const hasMore = sliced.length > limit;
+      const items = sliced.slice(0, limit);
       const page = filtered.slice(input.offset, input.offset + input.limit);
 
       return {
@@ -66,6 +72,16 @@ export const auditRouter = router({
           createdAt: e.createdAt,
           userId: e.userId,
         })),
+        items: items.map((e) => ({
+          id: e.id,
+          action: e.action,
+          details: e.details,
+          ipAddress: e.ipAddress,
+          userAgent: e.userAgent,
+          createdAt: e.createdAt,
+          userId: e.userId,
+        })),
+        nextCursor: hasMore ? cursor + limit : undefined,
         total,
         limit: input.limit,
         offset: input.offset,
