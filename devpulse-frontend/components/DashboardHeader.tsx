@@ -10,11 +10,11 @@ export function DashboardHeader({ onMenuOpen }: DashboardHeaderProps) {
   const { user } = useAuth();
 
   return (
-    <header className="fixed top-0 left-64 right-0 h-16 z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-[0_0_15px_rgba(207,188,255,0.08)] flex items-center justify-between px-8">
+    <header className="fixed top-0 left-0 md:left-64 right-0 h-16 z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/20 shadow-[0_0_15px_rgba(207,188,255,0.08)] flex items-center justify-between px-4 md:px-8">
       {/* Mobile menu button */}
       <button
         onClick={onMenuOpen}
-        className="lg:hidden text-on-surface-variant hover:text-on-surface mr-3"
+        className="md:hidden text-on-surface-variant hover:text-on-surface mr-3 min-h-[44px] min-w-[44px] flex items-center justify-center"
         aria-label="Open sidebar"
       >
         <span className="material-symbols-outlined">menu</span>

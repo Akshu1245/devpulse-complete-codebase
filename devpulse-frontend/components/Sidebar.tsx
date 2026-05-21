@@ -57,12 +57,12 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
 
   return (
     <>
-      {open && <div className="fixed inset-0 bg-black/60 z-30 lg:hidden" onClick={onClose} />}
+      {open && <div className="fixed inset-0 bg-black/60 z-30 md:hidden" onClick={onClose} />}
 
       <aside
         className={`fixed top-0 left-0 h-full w-64 z-40 flex flex-col transform transition-transform duration-300
           bg-surface-container-low/95 backdrop-blur-2xl border-r border-outline-variant/20
-          ${open ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+          ${open ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
         {/* Logo */}
         <div className="flex items-center justify-between px-5 py-5 border-b border-outline-variant/20">
@@ -84,7 +84,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                   fontSize: "18px",
                 }}
               >
-                DevPulse AI
+                Rakshex
               </h1>
               <p
                 className="font-label-caps text-on-surface-variant mt-0.5"
@@ -96,7 +96,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           </Link>
           <button
             onClick={onClose}
-            className="lg:hidden text-on-surface-variant hover:text-on-surface p-1 transition-colors"
+            className="md:hidden text-on-surface-variant hover:text-on-surface p-1 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
           >
             <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>
               close
@@ -123,7 +123,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                       key={item.href}
                       href={item.href}
                       onClick={onClose}
-                      className={`flex items-center gap-3 px-3 py-2.5 text-body-md transition-all duration-200 mb-0.5 rounded
+                      className={`flex items-center gap-3 px-3 min-h-[44px] text-body-md transition-all duration-200 mb-0.5 rounded
                         ${
                           active
                             ? "bg-primary-container/20 text-primary border-l-2 border-primary font-bold"
