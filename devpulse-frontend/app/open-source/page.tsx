@@ -91,12 +91,10 @@ export default function OpenSourcePage() {
         {/* CTA */}
         <div className="text-center">
           <Link
-            href="https://github.com/Akshu1245/rakshex-complete-codebase"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="mailto:open-source@rakshex.in?subject=Request Source Code Access"
             className="inline-block bg-white text-gray-900 px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors"
           >
-            View on GitHub →
+            Request Code Access →
           </Link>
         </div>
       </div>

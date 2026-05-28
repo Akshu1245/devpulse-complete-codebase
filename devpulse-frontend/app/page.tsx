@@ -19,7 +19,6 @@ function JsonLdInjector() {
             "AI Runtime Governance Platform — security scanning, cost monitoring, and compliance for production AI agents.",
           sameAs: [
             "https://twitter.com/rakshexhq",
-            "https://github.com/Akshu1245/rakshex-complete-codebase",
           ],
         },
         {
@@ -597,14 +596,6 @@ export default function LandingPage() {
         >
           <p>© {new Date().getFullYear()} Rakshex by Rashi Technologies. Bengaluru, India.</p>
           <div className="flex items-center gap-6 mt-4 md:mt-0">
-            <a
-              href="https://github.com/Akshu1245/rakshex-complete-codebase"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-on-surface transition-colors"
-            >
-              GitHub
-            </a>
             <a
               href="https://twitter.com/rakshexhq"
               target="_blank"
