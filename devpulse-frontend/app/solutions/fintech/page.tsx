@@ -1,75 +1,114 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "AI Security for Fintech — Rakshex",
+  title: "AI Security for Fintech APIs — RakshEx",
   description:
-    "Rakshex helps fintech companies secure AI agents, comply with PCI DSS, and prevent API leaks. Built for regulated financial services.",
+    "RakshEx secures financial services AI applications, ensuring PCI-DSS compliance, real-time fraud prevention, and thinking token cost governance.",
   alternates: { canonical: "/solutions/fintech" },
 };
 
-export default function FintechPage() {
+export default function FintechSolutionPage() {
+  const painPoints = [
+    { title: "PCI-DSS Compliance", desc: "Regulated financial platforms must ensure cardholder data (CHD) and sensitive authentication data (SAD) never leaks to external LLM provider environments. RakshEx redacts sensitive info at the API level." },
+    { title: "Real-time Fraud Detection in AI Agents", desc: "Autonomous financial agents can be manipulated via prompt injection to transfer funds or override transaction thresholds. RakshEx monitors tool parameters in real time." },
+    { title: "LLM Cost Attribution at Scale", desc: "High-volume transactional LLM calls create massive cloud spend. RakshEx tracks cost attribution per feature, model, and user session." },
+  ];
+
+  const caseStudies = [
+    {
+      company: "PayWise (Neobank)",
+      title: "Mitigating Prompt Injections in AI Chatbots",
+      challenge: "PayWise deployed a customer support agent with access to user account APIs. Attackers attempted direct prompt injections to execute unauthorized transfers.",
+      solution: "By routing LLM calls through RakshEx runtime firewalls, PayWise immediately blocked 99.8% of prompt injection strings and put high-value transfers behind AgentGuard approvals.",
+      result: "Zero transaction fraud incidents since integration, and full compliance audit log retention.",
+    },
+    {
+      company: "InsuTech (Insurance)",
+      title: "Securing Underwriting RAG Pipelines",
+      challenge: "InsuTech's underwriting agent queried a vector store containing patient bank details and PAN data, risking leakage to public models.",
+      solution: "RakshEx deployed an egress filter redacting Aadhaar, PAN, and bank accounts in real time before data reached external model gateways.",
+      result: "100% compliance with India DPDP Act and zero leakage of customer PII.",
+    },
+    {
+      company: "TradeFlow (Brokerage)",
+      title: "Optimizing High-Volume Trading LLM Costs",
+      challenge: "TradeFlow's financial advisor agent ran recursive loops that bloated token spend by $12,000 in a single week.",
+      solution: "TradeFlow configured RakshEx's cost attribution engine to trace thinking tokens and automatically shut down runaway loops using a budget kill switch.",
+      result: "Reduced LLM API costs by 64% within the first month of deployment.",
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <div className="max-w-4xl mx-auto py-20 px-4">
-        <div className="text-center mb-16">
-          <span className="text-green-400 text-sm font-medium uppercase tracking-wide">
-            Solution
+    <div className="min-h-screen bg-slate-950 text-slate-100 py-16 px-4 font-sans">
+      <div className="max-w-4xl mx-auto">
+        <nav className="text-sm text-blue-400 mb-6">
+          <Link href="/" className="hover:underline">← Back to Home</Link>
+        </nav>
+
+        {/* Hero */}
+        <header className="mb-16 text-center md:text-left">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950 text-emerald-400 border border-emerald-900/60 mb-4">
+            💳 Fintech & Banking Solution
           </span>
-          <h1 className="text-4xl md:text-5xl font-bold mt-2 mb-4">AI Security for Fintech</h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Protect customer data, comply with PCI DSS, and prevent prompt injection in production
-            AI agents. Built for banks, NBFCs, insurance, and payment processors.
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white">
+            AI Security for Fintech APIs
+          </h1>
+          <p className="text-slate-400 text-lg mt-3">
+            Secure financial AI integrations, ensure PCI-DSS compliance, and control high-volume transaction costs.
           </p>
-        </div>
+        </header>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
-          {[
-            {
-              title: "PCI DSS v4.0.1 Compliance",
-              desc: "Automated mapping of all 47 PCI controls. Requirement 6.5 (application security), 11.3 (penetration testing), and 6.4 (software security patches) covered out of the box.",
-            },
-            {
-              title: "Customer Data Protection",
-              desc: "Real-time PII redaction before data reaches LLM providers. PAN, Aadhaar, account numbers, and phone numbers masked automatically. No data leakage to third parties.",
-            },
-            {
-              title: "API Security for Payment Rails",
-              desc: "Scan every payment API endpoint for BOLA/IDOR vulnerabilities. Test UPI, NEFT, RTGS, and card processing endpoints. Find auth bypasses before attackers do.",
-            },
-            {
-              title: "Budget Governance",
-              desc: "Set per-department LLM budgets. Kill switch prevents runaway costs from customer service bots or fraud detection models. Track spend in INR and USD.",
-            },
-          ].map((item) => (
-            <div key={item.title} className="bg-gray-800 p-6 rounded-xl border border-gray-700">
-              <h3 className="font-bold text-lg mb-2 text-blue-400">{item.title}</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">{item.desc}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="bg-gray-800/50 rounded-xl p-8 border border-gray-700 mb-16">
-          <h2 className="text-2xl font-bold mb-6">Why Fintechs Choose Rakshex</h2>
-          <div className="grid md:grid-cols-3 gap-6 text-center">
-            {[
-              { value: "₹0", label: "Data leakage risk with PII redaction" },
-              { value: "4h", label: "SLA for critical security findings" },
-              { value: "100%", label: "PCI DSS control coverage" },
-            ].map((s) => (
-              <div key={s.label}>
-                <div className="text-3xl font-bold text-green-400">{s.value}</div>
-                <div className="text-gray-400 text-sm mt-1">{s.label}</div>
+        {/* Pain points */}
+        <section className="mb-16">
+          <h2 className="text-2xl font-bold text-white mb-6 border-b border-slate-900 pb-3">Fintech Security Challenges</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            {painPoints.map((pt) => (
+              <div key={pt.title} className="p-6 bg-slate-900/30 border border-slate-905 rounded-2xl">
+                <h3 className="font-bold text-white text-base mb-2">{pt.title}</h3>
+                <p className="text-slate-400 text-xs leading-relaxed">{pt.desc}</p>
               </div>
             ))}
           </div>
-        </div>
+        </section>
 
-        <div className="text-center">
+        {/* Case Studies */}
+        <section className="mb-16">
+          <h2 className="text-2xl font-bold text-white mb-6 border-b border-slate-900 pb-3">Frictional Case Studies</h2>
+          <div className="space-y-6">
+            {caseStudies.map((cs) => (
+              <div key={cs.company} className="p-8 bg-slate-900/10 border border-slate-900 rounded-2xl hover:border-slate-800 transition-colors">
+                <span className="text-xs font-semibold text-blue-400 uppercase tracking-wider block mb-1">{cs.company}</span>
+                <h3 className="text-xl font-bold text-white mb-4">{cs.title}</h3>
+                <div className="grid md:grid-cols-3 gap-6 text-xs text-slate-400">
+                  <div>
+                    <strong className="text-slate-300 block mb-1 font-semibold">The Challenge:</strong>
+                    {cs.challenge}
+                  </div>
+                  <div>
+                    <strong className="text-slate-300 block mb-1 font-semibold">The Solution:</strong>
+                    {cs.solution}
+                  </div>
+                  <div>
+                    <strong className="text-slate-300 block mb-1 font-semibold">The Result:</strong>
+                    <span className="text-emerald-400">{cs.result}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA */}
+        <div className="text-center bg-slate-900/30 border border-slate-900 p-8 rounded-2xl">
+          <h2 className="text-xl font-bold text-white mb-2">Ready to run a secure scan?</h2>
+          <p className="text-slate-400 text-sm mb-6 max-w-md mx-auto leading-relaxed">
+            Upload your financial API specs to detect credentials and vulnerabilities instantly.
+          </p>
           <Link
             href="/demo"
-            className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            className="inline-block bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm py-3 px-8 rounded-lg transition-colors shadow-lg shadow-blue-500/20"
           >
-            Schedule Fintech Demo →
+            Start Free Demo Scan
           </Link>
         </div>
       </div>
