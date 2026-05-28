@@ -707,6 +707,494 @@ function LiveStatsSection() {
   );
 }
 
+function ComparisonTableSection() {
+  const capabilities = [
+    {
+      name: "API Security Scanning",
+      postman: false,
+      snyk: false,
+      datadog: false,
+      rakshex: true,
+      tooltip:
+        "AI agents make unauthorized external requests; scanning detects target leaks beforehand.",
+    },
+    {
+      name: "LLM Cost Tracking",
+      postman: false,
+      snyk: false,
+      datadog: true,
+      rakshex: true,
+      tooltip: "Enables isolation and tracking of reasoning tokens, preventing runaway bills.",
+    },
+    {
+      name: "Prompt Injection Blocking",
+      postman: false,
+      snyk: false,
+      datadog: false,
+      rakshex: true,
+      tooltip: "Stops malicious user input from hijacking agent logic at the gateway.",
+    },
+    {
+      name: "PII Redaction (real-time)",
+      postman: false,
+      snyk: false,
+      datadog: false,
+      rakshex: true,
+      tooltip: "Prevents leaks of customer PII (e.g. Aadhaar, PAN, emails) to third-party LLMs.",
+    },
+    {
+      name: "Shadow API Detection",
+      postman: false,
+      snyk: false,
+      datadog: false,
+      rakshex: true,
+      tooltip: "Extracts routes from code bases statically to map unknown agent access paths.",
+    },
+    {
+      name: "Kill Switch",
+      postman: false,
+      snyk: false,
+      datadog: false,
+      rakshex: true,
+      tooltip: "Trips automatically if budget caps are breached or rogue behaviors are identified.",
+    },
+    {
+      name: "PCI DSS Compliance",
+      postman: false,
+      snyk: false,
+      datadog: false,
+      rakshex: true,
+      tooltip: "Ensures all payment processing and transaction data complies with v4.0.1 rules.",
+    },
+    {
+      name: "VS Code Integration",
+      postman: false,
+      snyk: false,
+      datadog: false,
+      rakshex: true,
+      tooltip: "Enables developers to scan APIs directly inside their IDE before committing.",
+    },
+    {
+      name: "SSO + RBAC",
+      postman: true,
+      snyk: true,
+      datadog: true,
+      rakshex: true,
+      tooltip: "Provides secure team management and single sign-on access control.",
+    },
+  ];
+
+  return (
+    <section className="py-24 px-6 max-w-7xl mx-auto border-t border-slate-900">
+      <div className="text-center mb-16">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-500/20 bg-cyan-500/5 text-cyan-400 mb-4">
+          <span className="text-[10px] uppercase font-mono font-bold tracking-widest">
+            Feature Comparison
+          </span>
+        </div>
+        <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight font-body-lg">
+          What Makes RakshEx Different
+        </h2>
+        <p className="mt-4 text-slate-400 text-sm md:text-base max-w-xl mx-auto font-body-md">
+          A side-by-side breakdown of features compared to traditional security tools.
+        </p>
+      </div>
+
+      <div className="w-full overflow-x-auto border border-slate-850 rounded-2xl shadow-2xl bg-slate-950/40 scrollbar-none relative">
+        <table className="w-full text-left border-collapse min-w-[700px]">
+          <thead>
+            <tr className="border-b border-slate-850 bg-slate-900/60 text-[10px] font-mono uppercase tracking-widest text-slate-500">
+              <th className="px-6 py-5 font-bold sticky left-0 bg-slate-950 z-20 min-w-[200px]">
+                Capability
+              </th>
+              <th className="px-6 py-5 font-bold text-center">Postman</th>
+              <th className="px-6 py-5 font-bold text-center">Snyk</th>
+              <th className="px-6 py-5 font-bold text-center">Datadog</th>
+              <th className="px-6 py-5 font-bold text-center bg-cyan-500/10 border-x border-cyan-500/20 relative">
+                <span className="text-cyan-400">RakshEx</span>
+                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-cyan-500 text-slate-950 text-[8px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider font-mono">
+                  ✓ Best
+                </span>
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-850 text-xs">
+            {capabilities.map((row, idx) => (
+              <tr key={idx} className="hover:bg-slate-900/40 transition-colors group">
+                <td className="px-6 py-4.5 font-semibold text-slate-200 sticky left-0 bg-slate-950 group-hover:bg-slate-900/40 z-20 flex items-center gap-1.5 min-w-[200px]">
+                  <span className="cursor-help relative group/tooltip border-b border-dotted border-slate-500 pb-0.5">
+                    {row.name}
+                    <span className="absolute bottom-full left-0 mb-2 hidden group-hover/tooltip:block w-64 bg-slate-900 border border-slate-750 text-slate-300 text-[10px] leading-relaxed p-3 rounded-lg shadow-xl z-50 normal-case font-normal font-body-md">
+                      {row.tooltip}
+                    </span>
+                  </span>
+                </td>
+
+                <td className="px-6 py-4.5 text-center">
+                  {row.postman ? (
+                    <span className="text-emerald-400 font-bold text-base">✓</span>
+                  ) : (
+                    <span className="text-slate-700 text-base">×</span>
+                  )}
+                </td>
+
+                <td className="px-6 py-4.5 text-center">
+                  {row.snyk ? (
+                    <span className="text-emerald-400 font-bold text-base">✓</span>
+                  ) : (
+                    <span className="text-slate-700 text-base">×</span>
+                  )}
+                </td>
+
+                <td className="px-6 py-4.5 text-center">
+                  {row.datadog ? (
+                    <span className="text-emerald-400 font-bold text-base">✓</span>
+                  ) : (
+                    <span className="text-slate-700 text-base">×</span>
+                  )}
+                </td>
+
+                <td className="px-6 py-4.5 text-center bg-cyan-500/5 border-x border-cyan-500/10 font-bold">
+                  {row.rakshex ? (
+                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-400 font-bold text-sm shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+                      ✓
+                    </span>
+                  ) : (
+                    <span className="text-red-500 font-bold text-base">×</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
+function PricingSection() {
+  const plans = [
+    {
+      plan: "Free",
+      price: "$0",
+      inr: "₹0",
+      features: ["2 Collections", "3 Scans/day", "OWASP Top 10 audit", "Community Support"],
+      cta: "Get Started",
+      href: "/register",
+      popular: false,
+    },
+    {
+      plan: "Pro",
+      price: "$99",
+      inr: "≈ ₹8,299",
+      features: [
+        "Unlimited Collections",
+        "Advanced Security Scanning",
+        "Kill Switch & Budget Caps",
+        "Team (5 members)",
+        "Slack & Discord Alerts",
+        "API Access",
+      ],
+      cta: "Start Free Trial",
+      href: "/billing",
+      popular: true,
+    },
+    {
+      plan: "Enterprise",
+      price: "$499",
+      inr: "≈ ₹41,599",
+      features: [
+        "Everything in Pro",
+        "SSO / SAML 2.0",
+        "25 Team Members + RBAC",
+        "Priority Support, 4h SLA",
+        "SOC2 Evidence Builder",
+        "Custom Data Retention",
+      ],
+      cta: "Contact Sales",
+      href: "/billing",
+      popular: false,
+    },
+  ];
+
+  return (
+    <section className="py-24 px-6 max-w-7xl mx-auto border-t border-slate-900">
+      <div className="text-center mb-16">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-cyan-500/20 bg-cyan-500/5 text-cyan-400 mb-4">
+          <span className="text-[10px] uppercase font-mono font-bold tracking-widest">Pricing</span>
+        </div>
+        <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight font-body-lg">
+          Simple, Transparent Pricing
+        </h2>
+        <p className="mt-4 text-slate-400 text-sm md:text-base max-w-xl mx-auto font-body-md">
+          Start protecting your AI integrations today. Upgrade or downgrade anytime.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {plans.map((p, idx) => (
+          <div
+            key={idx}
+            className={`bg-slate-900 border rounded-2xl p-8 relative flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${p.popular ? "border-cyan-500 shadow-[0_0_30px_rgba(6,182,212,0.1)]" : "border-slate-800"}`}
+          >
+            {p.popular && (
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyan-500 text-slate-950 text-[9px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest font-mono">
+                Most Popular
+              </span>
+            )}
+            <div>
+              <h3 className="text-lg font-bold text-white tracking-tight">{p.plan}</h3>
+              <div className="mt-6 flex items-baseline gap-2">
+                <span className="text-4xl font-extrabold text-white font-mono">{p.price}</span>
+                <span className="text-xs text-slate-500 font-mono">/mo</span>
+              </div>
+              <p className="mt-1 text-[10px] text-slate-500 font-mono">{p.inr}/mo</p>
+
+              <ul className="mt-8 space-y-4">
+                {p.features.map((f, fIdx) => (
+                  <li
+                    key={fIdx}
+                    className="flex items-center gap-3 text-xs text-slate-300 font-body-md"
+                  >
+                    <span className="material-symbols-outlined text-cyan-400 text-sm font-bold">
+                      check_circle
+                    </span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <Link
+              href={p.href}
+              className={`mt-10 block w-full py-3.5 rounded-lg text-center text-xs tracking-wider uppercase font-mono font-extrabold transition-all duration-300 ${p.popular ? "bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)]" : "bg-slate-850 hover:bg-slate-800 border border-slate-750 text-white"}`}
+            >
+              {p.cta}
+            </Link>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function CallToActionSection() {
+  return (
+    <section className="py-24 px-6 max-w-5xl mx-auto border-t border-slate-900 text-center relative overflow-hidden">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-cyan-500/5 rounded-full blur-[80px] pointer-events-none" />
+      <div className="relative space-y-6 flex flex-col items-center">
+        <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight font-body-lg">
+          Ready to Ship Secure AI?
+        </h2>
+        <p className="text-slate-400 text-sm md:text-base max-w-lg leading-relaxed font-body-md">
+          478+ tests. 4 patents. 37 API routers. One platform. Deploy in 5 minutes.
+        </p>
+        <div className="flex flex-col sm:flex-row justify-center gap-4 w-full max-w-sm mt-4">
+          <Link
+            href="/demo"
+            className="px-6 py-3.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold rounded-lg transition-all text-xs tracking-wider uppercase font-mono shadow-[0_0_15px_rgba(6,182,212,0.25)] flex items-center justify-center gap-1.5"
+          >
+            Try Live Demo
+            <span className="material-symbols-outlined text-xs font-bold">arrow_forward</span>
+          </Link>
+          <Link
+            href={`${APP_URL}/api/oauth/login`}
+            className="px-6 py-3.5 bg-slate-905 border border-slate-800 hover:border-slate-700 text-white font-extrabold rounded-lg transition-all text-xs tracking-wider uppercase font-mono flex items-center justify-center"
+          >
+            Start Free Trial
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FooterRedesign() {
+  const productLinks = [
+    ["Features", "/features"],
+    ["Pricing", "/pricing"],
+    ["Changelog", "/changelog"],
+    ["Integrations", "/integrations"],
+    ["Live Demo", "/demo"],
+  ];
+  const solutionsLinks = [
+    ["Fintech", "/solutions/fintech"],
+    ["Healthcare", "/solutions/healthcare"],
+    ["Enterprise", "/solutions/enterprise"],
+    ["Comparisons", "/compare"],
+    ["ROI Calculator", "/roi-calculator"],
+  ];
+  const resourcesLinks = [
+    ["Blog", "/blog"],
+    ["FAQ", "/faq"],
+    ["Trust Center", "/trust"],
+    ["Status", "/status"],
+    ["Open Source", "/open-source"],
+  ];
+  const companyLinks = [
+    ["About", "/about"],
+    ["Partners", "/partners"],
+    ["Terms", "/terms"],
+    ["Privacy", "/privacy"],
+  ];
+
+  return (
+    <footer className="border-t border-slate-900 bg-slate-950/60 py-16 px-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 mb-12">
+        <div className="md:col-span-4 flex flex-col gap-4">
+          <Link href="/" className="flex items-center gap-2 group self-start">
+            <div className="w-8 h-8 bg-cyan-500/10 border border-cyan-400/30 rounded flex items-center justify-center group-hover:border-cyan-400 transition-colors">
+              <span className="material-symbols-outlined text-cyan-400 font-bold text-base">
+                shield
+              </span>
+            </div>
+            <span className="text-white font-headline-md text-headline-md font-bold tracking-tight">
+              RakshEx
+            </span>
+          </Link>
+          <p className="text-xs text-slate-400 leading-relaxed font-body-md max-w-sm">
+            AI Runtime Governance Platform. Real-time prompt injection blocking, LLM cost control,
+            and compliance reporting.
+          </p>
+          <div className="flex items-center gap-4 mt-2">
+            <a
+              href="https://discord.gg/rakshexhq"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-500 hover:text-white transition-colors"
+              title="Discord"
+            >
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 127.14 96.36">
+                <path d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,53.22,6.83,77.19,77.19,0,0,0,49.88,0,105.15,105.15,0,0,0,19.44,8.07C3.66,31.58-1.86,54.65,1,77.53A105.73,105.73,0,0,0,32,96.36a77.7,77.7,0,0,0,6.63-10.85,68.43,68.43,0,0,1-10.5-5c.89-.66,1.75-1.37,2.58-2.1a75.43,75.43,0,0,0,93.18,0c.84.73,1.69,1.44,2.58,2.1a68.43,68.43,0,0,1-10.5,5,77.7,77.7,0,0,0,6.63,10.85,105.73,105.73,0,0,0,31-18.83C129.87,48.24,123.63,25.41,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53S36.18,40.36,42.45,40.36,53.88,46,53.88,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.12,46,96.12,53,91,65.69,84.69,65.69Z" />
+              </svg>
+            </a>
+            <a
+              href="https://github.com/Akshu1245/devpulse-complete-codebase"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-500 hover:text-white transition-colors"
+              title="GitHub"
+            >
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.579.688.481C19.137 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"
+                />
+              </svg>
+            </a>
+            <a
+              href="https://twitter.com/rakshexhq"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-500 hover:text-white transition-colors"
+              title="Twitter"
+            >
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div className="md:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
+          <div>
+            <h4 className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 mb-4">
+              Product
+            </h4>
+            <ul className="space-y-2">
+              {productLinks.map(([label, href]) => (
+                <li key={label}>
+                  <Link
+                    href={href}
+                    className="text-xs text-slate-500 hover:text-white transition-colors"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 mb-4">
+              Solutions
+            </h4>
+            <ul className="space-y-2">
+              {solutionsLinks.map(([label, href]) => (
+                <li key={label}>
+                  <Link
+                    href={href}
+                    className="text-xs text-slate-500 hover:text-white transition-colors"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 mb-4">
+              Resources
+            </h4>
+            <ul className="space-y-2">
+              {resourcesLinks.map(([label, href]) => (
+                <li key={label}>
+                  <Link
+                    href={href}
+                    className="text-xs text-slate-500 hover:text-white transition-colors"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 mb-4">
+              Company
+            </h4>
+            <ul className="space-y-2">
+              {companyLinks.map(([label, href]) => (
+                <li key={label}>
+                  <Link
+                    href={href}
+                    className="text-xs text-slate-500 hover:text-white transition-colors"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto pt-8 border-t border-slate-900 flex flex-col sm:flex-row justify-between items-center gap-4 text-[11px] text-slate-500">
+        <div>© 2026 RakshEx by Rashi Technologies. Bengaluru, India.</div>
+        <div className="flex gap-4 font-mono text-[10px]">
+          <Link href="/privacy" className="hover:text-white">
+            Privacy
+          </Link>
+          <span>|</span>
+          <Link href="/terms" className="hover:text-white">
+            Terms
+          </Link>
+          <span>|</span>
+          <Link href="/trust" className="hover:text-white">
+            Trust Center
+          </Link>
+        </div>
+        <div>
+          <Link href="/status" className="flex items-center gap-1.5 hover:text-white">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            All systems operational
+          </Link>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
 export default function LandingPage() {
   const [copied, setCopied] = useState(false);
   const commandText = "npx rakshex scan ./postman-collection.json";
@@ -1528,12 +2016,17 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Placeholder sections for next steps */}
-      <section className="py-24 px-6 text-center border-t border-slate-900">
-        <p className="text-slate-500 font-mono text-sm">
-          Additional sections will be built here...
-        </p>
-      </section>
+      {/* SECTION 12 — Comparison Table (Redesign) */}
+      <ComparisonTableSection />
+
+      {/* Pricing Cards Section */}
+      <PricingSection />
+
+      {/* CTA Section */}
+      <CallToActionSection />
+
+      {/* SECTION 11 — Footer Redesign */}
+      <FooterRedesign />
     </div>
   );
 }
