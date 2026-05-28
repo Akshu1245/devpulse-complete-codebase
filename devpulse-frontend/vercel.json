@@ -5,12 +5,5 @@
   "installCommand": "pnpm install",
   "env": {
     "NEXT_PUBLIC_APP_URL": "https://app.rakshex.in"
-  },
-  "redirects": [
-    {
-      "source": "https://www.rakshex.in/(.*)",
-      "destination": "https://rakshex.in/$1",
-      "permanent": true
-    }
-  ]
+  }
 }
