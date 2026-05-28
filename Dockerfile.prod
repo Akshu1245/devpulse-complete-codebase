@@ -1,4 +1,4 @@
-# Production-hardened multi-stage Dockerfile for DevPulse
+# Production-hardened multi-stage Dockerfile for RakshEx
 
 # Stage 1: install ALL deps (needed for build, including devDependencies)
 FROM node:22-alpine AS deps

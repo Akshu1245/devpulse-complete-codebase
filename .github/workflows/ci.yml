@@ -34,8 +34,8 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: devpulse
-          MYSQL_DATABASE: devpulse_test
+          MYSQL_ROOT_PASSWORD: rakshex
+          MYSQL_DATABASE: rakshex_test
         ports:
           - 3306:3306
         options: >-
@@ -64,10 +64,10 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run db:migrate
         env:
-          DATABASE_URL: mysql://root:devpulse@127.0.0.1:3306/devpulse_test
+          DATABASE_URL: mysql://root:rakshex@127.0.0.1:3306/rakshex_test
       - run: pnpm run test
         env:
-          DATABASE_URL: mysql://root:devpulse@127.0.0.1:3306/devpulse_test
+          DATABASE_URL: mysql://root:rakshex@127.0.0.1:3306/rakshex_test
           REDIS_URL: redis://127.0.0.1:6379
           JWT_SECRET: test-secret-ci
       - uses: actions/upload-artifact@v4
@@ -84,8 +84,8 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: devpulse
-          MYSQL_DATABASE: devpulse_test
+          MYSQL_ROOT_PASSWORD: rakshex
+          MYSQL_DATABASE: rakshex_test
         ports:
           - 3306:3306
         options: >-
@@ -125,7 +125,7 @@ jobs:
           fi
       - name: Install frontend dependencies
         run: pnpm install --frozen-lockfile
-        working-directory: devpulse-frontend
+        working-directory: rakshex-frontend
       - name: Install Playwright browsers
         if: steps.check_playwright.outputs.exists == 'true'
         run: pnpm exec playwright install --with-deps
@@ -133,7 +133,7 @@ jobs:
         if: steps.check_playwright.outputs.exists == 'true'
         run: pnpm run test:e2e
         env:
-          DATABASE_URL: mysql://root:devpulse@127.0.0.1:3306/devpulse_test
+          DATABASE_URL: mysql://root:rakshex@127.0.0.1:3306/rakshex_test
           REDIS_URL: redis://127.0.0.1:6379
           JWT_SECRET: test-secret-ci
       - uses: actions/upload-artifact@v4
@@ -234,19 +234,19 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Install VS Code extension dependencies
-        working-directory: devpulse-vscode
+        working-directory: rakshex-vscode
         run: npm ci
       - name: Build extension
-        working-directory: devpulse-vscode
+        working-directory: rakshex-vscode
         run: |
           npx esbuild src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node
       - name: Package extension
-        working-directory: devpulse-vscode
+        working-directory: rakshex-vscode
         run: npx @vscode/vsce package --no-dependencies
       - uses: actions/upload-artifact@v4
         with:
-          name: devpulse-vscode
-          path: devpulse-vscode/*.vsix
+          name: rakshex-vscode
+          path: rakshex-vscode/*.vsix
 
   security-scan:
     name: Trivy Security Scan
@@ -305,7 +305,7 @@ jobs:
           echo "$DEPLOY_KEY" > deploy_key
           chmod 600 deploy_key
           ssh -i deploy_key -o StrictHostKeyChecking=no $DEPLOY_USER@$DEPLOY_HOST "
-            cd /opt/devpulse &&
+            cd /opt/rakshex &&
             docker compose -f docker-compose.prod.yml pull &&
             docker compose -f docker-compose.prod.yml up -d --remove-orphans
           "

@@ -1,8 +1,8 @@
 import crypto from "crypto";
 import { eq, and, desc, gte, lt, sql } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/mysql2";
-import type { MySql2Database } from "drizzle-orm/mysql2";
-import mysql from "mysql2/promise";
+import { drizzle } from "drizzle-orm/postgres-js";
+import type { PostgresJsDatabase } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 
 /** Generate a cryptographically secure ID with a prefix — replaces Math.random() */
 function secureId(prefix: string): string {
@@ -117,24 +117,31 @@ export type SubscriptionStatus = Subscription["status"];
 export type PaymentStatus = Payment["status"];
 export type RefundStatus = NonNullable<Payment["refundStatus"]>;
 
-let _db: MySql2Database<Record<string, unknown>> | null = null;
+let _db: PostgresJsDatabase<Record<string, unknown>> | null = null;
+let _client: postgres.Sql | null = null;
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      const pool = mysql.createPool({
-        uri: process.env.DATABASE_URL,
-        connectionLimit: 20,
-        queueLimit: 0,
-      });
-      _db = drizzle(pool);
+      _client = postgres(process.env.DATABASE_URL, { max: 20 });
+      _db = drizzle(_client);
     } catch (error) {
       logger.warn({ err: error }, "[Database] Failed to connect");
       _db = null;
+      _client = null;
     }
   }
   return _db;
+}
+
+export async function closeDb() {
+  if (_client) {
+    await _client.end();
+    logger.info("[Database] Connection pool closed");
+    _client = null;
+    _db = null;
+  }
 }
 
 export async function upsertUser(user: InsertUser): Promise<{ isNew: boolean }> {
@@ -191,7 +198,8 @@ export async function upsertUser(user: InsertUser): Promise<{ isNew: boolean }> 
       updateSet.lastSignedIn = new Date();
     }
 
-    await db.insert(users).values(values).onDuplicateKeyUpdate({
+    await db.insert(users).values(values).onConflictDoUpdate({
+      target: users.openId,
       set: updateSet,
     });
 
@@ -2361,9 +2369,9 @@ export async function markWebhookEventProcessed(
     });
     return true;
   } catch (err: unknown) {
-    // MySQL duplicate-key error — already processed.
+    // MySQL duplicate-key error or Postgres 23505 — already processed.
     const code = (err as { code?: string } | null)?.code;
-    if (code === "ER_DUP_ENTRY") {
+    if (code === "ER_DUP_ENTRY" || code === "23505") {
       return false;
     }
     throw err;
@@ -2570,7 +2578,7 @@ export async function getTokenBudgetState(userId: number): Promise<{
     windowStart,
     used: usedTotal,
     limit: settings?.dailyTokenLimit ?? null,
-    mode: settings?.mode ?? "soft",
+    mode: (settings?.mode as "soft" | "hard") ?? "soft",
   };
 }
 
@@ -2588,7 +2596,8 @@ export async function setTokenBudget(
       dailyTokenLimit,
       mode,
     })
-    .onDuplicateKeyUpdate({
+    .onConflictDoUpdate({
+      target: tokenBudgets.userId,
       set: { dailyTokenLimit, mode },
     });
 }
@@ -2686,7 +2695,7 @@ export async function listRedteamFindings(runId: string): Promise<RedteamFinding
 export async function listDueRedteamSchedules(): Promise<RedteamScheduleRow[]> {
   const db = await getDb();
   if (!db) return [];
-  const now = new Date();
+  const now = new Date().toISOString();
   return db
     .select()
     .from(redteamSchedules)

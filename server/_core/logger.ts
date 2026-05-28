@@ -32,7 +32,7 @@ export const logger: Logger = pino({
   },
   timestamp: pino.stdTimeFunctions.isoTime,
   base: {
-    service: process.env.SERVICE_NAME || "devpulse",
+    service: process.env.SERVICE_NAME || "rakshex",
     env: process.env.NODE_ENV || "development",
   },
   transport: isProduction

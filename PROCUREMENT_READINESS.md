@@ -1,4 +1,4 @@
-# DevPulse Procurement Readiness
+# RakshEx Procurement Readiness
 
 > Can enterprises actually buy us?
 > Date: 2026-05-17

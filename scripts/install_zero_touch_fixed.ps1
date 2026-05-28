@@ -1,10 +1,10 @@
 # install_zero_touch.ps1 - Fixed Windows Version
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "  DEVPULSE ZERO-TOUCH INSTALLATION" -ForegroundColor Green
+Write-Host "  RAKSHEX ZERO-TOUCH INSTALLATION" -ForegroundColor Green
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 
-$taskName = "DevPulse_Autonomous"
+$taskName = "RakshEx_Autonomous"
 
 # Check if task exists, remove if old version exists
 $existingTask = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
@@ -97,7 +97,7 @@ if (-not (Test-Path "hermes/memory/hermes_memory.db")) { $healthy = $false; Writ
 
 # Auto-heal if unhealthy
 if (-not $healthy) {
-    Write-Host "Auto-healing DevPulse..." -ForegroundColor Yellow
+    Write-Host "Auto-healing RakshEx..." -ForegroundColor Yellow
     commandcode "/sequential auto-repair: restore missing components"
 }
 
@@ -113,7 +113,7 @@ Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "  INSTALLATION COMPLETE" -ForegroundColor Green
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "DevPulse zero-touch autonomy is now installed." -ForegroundColor White
+Write-Host "RakshEx zero-touch autonomy is now installed." -ForegroundColor White
 Write-Host ""
 Write-Host "  Schedule:  $taskName" -ForegroundColor Gray
 Write-Host "  Trigger:   At logon (60 second delay)" -ForegroundColor Gray

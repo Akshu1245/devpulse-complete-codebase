@@ -2,7 +2,7 @@
 param([string]$Query)
 
 $MEM_DIR = "$env:USERPROFILE\.commandcode\codemem\data"
-$PROJECT_DIR = "C:\Users\aksha\Downloads\DevPulse_Complete_Codebase"
+$PROJECT_DIR = "C:\Users\aksha\Downloads\RakshEx_Complete_Codebase"
 
 if (-not $Query) {
     Write-Host "[] No query provided"

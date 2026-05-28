@@ -1,4 +1,4 @@
-# DevPulse Monthly Investor Update Template
+# RakshEx Monthly Investor Update Template
 
 > Standardized format for monthly traction reports.
 > Date: 2026-05-17
@@ -8,11 +8,11 @@
 ## MONTHLY UPDATE: [MONTH YEAR]
 
 ```
-DevPulse Monthly Investor Update — [Month Year]
+RakshEx Monthly Investor Update — [Month Year]
 
 Hi [Investor name],
 
-Here's what happened at DevPulse this month.
+Here's what happened at RakshEx this month.
 
 ---
 
@@ -109,7 +109,7 @@ What we need help with:
 Thanks for your continued support.
 
 Akshay
-Founder & CEO, DevPulse
+Founder & CEO, RakshEx
 
 P.S. — Want to try it? Here's a free Pro code: [CODE]
 ```

@@ -3,7 +3,7 @@ import { logger } from "./logger";
 import crypto from "crypto";
 import { trace, SpanKind } from "@opentelemetry/api";
 
-const tracer = trace.getTracer("devpulse-redis");
+const tracer = trace.getTracer("rakshex-redis");
 
 /**
  * Span-wrapped Redis GET. Records hit/miss as span attribute.
@@ -43,14 +43,18 @@ const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 
 export const redis = new Redis(REDIS_URL, {
   retryStrategy: (times: number) => {
+    if (times > 3) {
+      logger.warn("[Cache] Redis is unavailable — falling back to in-memory/mock caching mode");
+      return null; // Stop retrying and transition to offline state
+    }
     const delay = Math.min(times * 50, 2000);
     return delay;
   },
-  maxRetriesPerRequest: 3,
+  maxRetriesPerRequest: null,
 });
 
 redis.on("error", (err: Error) => {
-  logger.error({ err: err }, "Redis error");
+  logger.warn({ err: err.message }, "Redis connection failed — cache operates in degraded mode");
 });
 
 redis.on("connect", () => {

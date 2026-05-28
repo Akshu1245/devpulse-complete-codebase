@@ -1,4 +1,4 @@
-# How DevPulse Works: Architecture Deep Dive
+# How RakshEx Works: Architecture Deep Dive
 
 > Technical explanation for developers, investors, and technical writers.
 > Date: 2026-05-17
@@ -7,14 +7,14 @@
 
 ## 1. SYSTEM OVERVIEW
 
-DevPulse is a VS Code extension + Node.js backend that protects AI applications from:
+RakshEx is a VS Code extension + Node.js backend that protects AI applications from:
 
 1. Hidden LLM costs
 2. Infinite agent loops
 3. API security vulnerabilities
 
 ```
-Developer's Machine          DevPulse Cloud
+Developer's Machine          RakshEx Cloud
 ┌──────────────────┐       ┌──────────────────────────┐
 │ VS Code          │◄─────►│ Node.js API (tRPC)       │
 │ ├─ Sidebar       │  WS   │ ├─ Auth (JWT)            │

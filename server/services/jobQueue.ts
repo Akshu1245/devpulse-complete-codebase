@@ -143,7 +143,7 @@ let queue: JobQueue | null = null;
 
 export function getJobQueue(): JobQueue {
   if (queue) return queue;
-  const redisUrl = process.env.REDIS_URL ?? process.env.DEVPULSE_REDIS_URL;
+  const redisUrl = process.env.REDIS_URL ?? process.env.RAKSHEX_REDIS_URL;
   if (redisUrl) {
     try {
       queue = createBullMQQueue(redisUrl);

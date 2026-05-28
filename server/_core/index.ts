@@ -409,8 +409,13 @@ async function startServer() {
     try {
       const db = await getDb();
       if (db) {
-        // lightweight query — just verify connection is alive
-        await db.execute("SELECT 1");
+        // lightweight query — verify connection is alive with 3s timeout
+        await Promise.race([
+          db.execute("SELECT 1"),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("Database ping timeout")), 3000),
+          ),
+        ]);
         checks.database = "ok";
       } else {
         logger.error("[HealthCheck] database client is null");
@@ -425,11 +430,19 @@ async function startServer() {
 
     // Redis check
     try {
-      await redis.ping();
+      // Race the ping against a 1.5s timeout to prevent ioredis command queuing hangs
+      await Promise.race([
+        redis.ping(),
+        new Promise<string>((_, reject) =>
+          setTimeout(() => reject(new Error("Redis ping timeout")), 1500),
+        ),
+      ]);
       checks.redis = "ok";
-    } catch {
+    } catch (err) {
+      logger.warn({ err }, "[HealthCheck] Redis check degraded");
       checks.redis = "error";
-      allOk = false;
+      // Do not mark the entire app as down (allOk = false) if Redis is down,
+      // since the application degrades gracefully to in-memory caching.
     }
 
     // Memory check

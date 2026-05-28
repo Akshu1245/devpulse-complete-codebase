@@ -1,6 +1,6 @@
-# DevPulse Scale Readiness Report
+# RakshEx Scale Readiness Report
 
-> Can DevPulse handle real traffic?
+> Can RakshEx handle real traffic?
 > Date: 2026-05-17
 
 ---

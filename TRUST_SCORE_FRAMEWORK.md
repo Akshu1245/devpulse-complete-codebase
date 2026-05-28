@@ -1,4 +1,4 @@
-# DevPulse Trust Score Framework
+# RakshEx Trust Score Framework
 
 > Measuring and improving trust systematically.
 > Date: 2026-05-17

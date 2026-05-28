@@ -1,6 +1,6 @@
 /**
  * VS Code Extension API Router
- * Provides endpoints for the DevPulse VS Code extension
+ * Provides endpoints for the RakshEx VS Code extension
  */
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
@@ -280,5 +280,5 @@ function generateCopilotFallback(question: string): string {
   if (q.includes("auth") || q.includes("authentication")) {
     return "Authentication vulnerabilities often stem from weak password policies, missing MFA, or improper session management. Remediation: Enforce strong passwords, implement multi-factor authentication, use secure session cookies with HttpOnly/Secure flags, and implement account lockout after failed attempts.";
   }
-  return "I'm your DevPulse Security Copilot. I can help explain findings, suggest fixes, and review your security posture. For detailed analysis, ensure your DevPulse workspace has recent scan data available.";
+  return "I'm your RakshEx Security Copilot. I can help explain findings, suggest fixes, and review your security posture. For detailed analysis, ensure your RakshEx workspace has recent scan data available.";
 }

@@ -62,7 +62,7 @@ export async function createResearchMemory(params: {
 export async function getResearchMemory(
   userId: number,
   limit = 10,
-  offset = 0
+  offset = 0,
 ): Promise<ResearchMemoryRow[]> {
   const db = await getDb();
   if (!db) return [];
@@ -75,13 +75,13 @@ export async function getResearchMemory(
     LIMIT ${limit} OFFSET ${offset}
   `);
 
-  return (rows as Array<Array<unknown>>).map(mapResearchMemoryRow);
+  return (rows as unknown as Array<Array<unknown>>).map(mapResearchMemoryRow);
 }
 
 export async function searchResearchMemory(
   userId: number,
   query: string,
-  limit = 10
+  limit = 10,
 ): Promise<ResearchMemoryRow[]> {
   const db = await getDb();
   if (!db) return [];
@@ -95,7 +95,7 @@ export async function searchResearchMemory(
     LIMIT ${limit}
   `);
 
-  return (rows as Array<Array<unknown>>).map(mapResearchMemoryRow);
+  return (rows as unknown as Array<Array<unknown>>).map(mapResearchMemoryRow);
 }
 
 // ── Competitive Scan CRUD ───────────────────────────────────────────────────
@@ -124,7 +124,7 @@ export async function createCompetitiveScan(params: {
 }
 
 export async function getLatestCompetitiveScan(
-  competitorId: string
+  competitorId: string,
 ): Promise<CompetitiveScanRow | null> {
   const db = await getDb();
   if (!db) return null;
@@ -136,14 +136,14 @@ export async function getLatestCompetitiveScan(
     LIMIT 1
   `);
 
-  const arr = rows as Array<Array<unknown>>;
+  const arr = rows as unknown as Array<Array<unknown>>;
   if (arr.length === 0) return null;
   return mapCompetitiveScanRow(arr[0]);
 }
 
 export async function getCompetitiveScanHistory(
   competitorId: string,
-  limit = 10
+  limit = 10,
 ): Promise<CompetitiveScanRow[]> {
   const db = await getDb();
   if (!db) return [];
@@ -155,7 +155,7 @@ export async function getCompetitiveScanHistory(
     LIMIT ${limit}
   `);
 
-  return (rows as Array<Array<unknown>>).map(mapCompetitiveScanRow);
+  return (rows as unknown as Array<Array<unknown>>).map(mapCompetitiveScanRow);
 }
 
 // ── Row Mappers ─────────────────────────────────────────────────────────────
@@ -183,8 +183,16 @@ function mapCompetitiveScanRow(row: unknown[]): CompetitiveScanRow {
     recentNews: parseJsonArray(row[4]),
     pricingChanges: parseJsonArray(row[5]),
     featureChanges: parseJsonArray(row[6]),
-    blogPosts: parseJsonArray(row[7]) as unknown as Array<{ title: string; url: string; date?: string }>,
-    socialMentions: parseJsonArray(row[8]) as unknown as Array<{ platform: string; text: string; date?: string }>,
+    blogPosts: parseJsonArray(row[7]) as unknown as Array<{
+      title: string;
+      url: string;
+      date?: string;
+    }>,
+    socialMentions: parseJsonArray(row[8]) as unknown as Array<{
+      platform: string;
+      text: string;
+      date?: string;
+    }>,
     threatLevel: row[9] as string,
     summary: row[10] as string,
     scannedAt: new Date(row[11] as string),

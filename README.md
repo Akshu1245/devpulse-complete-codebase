@@ -1,6 +1,6 @@
-# ⚡ DevPulse — Unified API Security & LLM Cost Intelligence
+# ⚡ RakshEx — Unified API Security & LLM Cost Intelligence
 
-DevPulse is the industry's first developer-native **AgentGuard** and **API Security Scanner** built directly where developers live: inside **VS Code**.
+RakshEx is the industry's first developer-native **AgentGuard** and **API Security Scanner** built directly where developers live: inside **VS Code**.
 
 It simultaneously bridges API vulnerability scanning (OWASP Top 10 + DAST) and real-time Large Language Model (LLM) cost intelligence (reasoning token attribution + autonomous agent loops kill-switches) in a single, unified development workflow.
 
@@ -8,13 +8,13 @@ It simultaneously bridges API vulnerability scanning (OWASP Top 10 + DAST) and r
 
 ## 🏗️ Architectural Overview
 
-DevPulse operates on a **Dual-Engine Architecture** integrated directly into the developer workflow.
+RakshEx operates on a **Dual-Engine Architecture** integrated directly into the developer workflow.
 
 ```mermaid
 graph TD
     subgraph Client Environments
         VSCode[VS Code Extension / Web Client] -->|tRPC / HTTP| Backend[Express Server]
-        AppSDK[devpulse-sdk] -->|HTTP Proxy| LLMProxy[API proxy / AgentGuard]
+        AppSDK[rakshex-sdk] -->|HTTP Proxy| LLMProxy[API proxy / AgentGuard]
     end
 
     subgraph Core Intelligence Platform
@@ -57,10 +57,10 @@ temp_clone/
 │   ├── db.ts                → Drizzle ORM transactions & connection pool
 │   ├── engines/             → Credential & PII scanner engines
 │   └── services/            → Scan schedulers, imports, compliance generators
-├── devpulse-frontend/       → Next.js SaaS Web Dashboard (React + HSL styling)
-├── devpulse-vscode/         → VS Code Extension Source (Static Router Extraction)
+├── rakshex-frontend/       → Next.js SaaS Web Dashboard (React + HSL styling)
+├── rakshex-vscode/         → VS Code Extension Source (Static Router Extraction)
 ├── packages/
-│   └── devpulse-sdk/        → Client Telemetry SDK (Auto-redaction pipeline)
+│   └── rakshex-sdk/        → Client Telemetry SDK (Auto-redaction pipeline)
 ├── github-action/           → CI/CD Pull Request Scan Action
 ├── drizzle/                 → Database Schema & Migration files
 └── test-labs/               → Vulnerable sandboxes for local exploit simulation
@@ -114,7 +114,7 @@ npm run dev
 
 ## 🧪 Testing & Verification
 
-DevPulse maintains a zero-regression policy with a fully automated testing suite.
+RakshEx maintains a zero-regression policy with a fully automated testing suite.
 
 ### 1. Static Type Checking
 
@@ -142,22 +142,22 @@ This runs:
 
 ## 🚀 Production Deployment
 
-To package and deploy DevPulse to production:
+To package and deploy RakshEx to production:
 
 1.  **Dockerize Build:**
     Use `Dockerfile.prod` and `docker-compose.prod.yml` to package and build the runtime image:
     ```bash
-    docker build -f Dockerfile.prod -t devpulse-app:latest .
+    docker build -f Dockerfile.prod -t rakshex-app:latest .
     ```
 2.  **Stripe/Razorpay Webhooks:**
     Set up appropriate webhook bindings in `server/payments.ts` to trigger subscription upgrades and scan quota replenishment.
 3.  **VS Code Extension Packaging:**
     Package the extension bundle into a `.vsix` ready to be uploaded to the extension marketplace:
     ```bash
-    cd devpulse-vscode
+    cd rakshex-vscode
     npx @vscode/vsce package
     ```
 
 ---
 
-_DevPulse by Rashi Technologies · 2026_
+_RakshEx by Rashi Technologies · 2026_

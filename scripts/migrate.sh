@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# migrate.sh — Safe database migration runner for DevPulse.
+# migrate.sh — Safe database migration runner for RakshEx.
 #
 # Usage: ./scripts/migrate.sh
 #

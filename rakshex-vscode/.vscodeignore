@@ -1,0 +1,12 @@
+# RakshEx VS Code Extension — publish ignore list
+node_modules
+src
+.vscode
+tests
+*.ts
+!src/types/*.d.ts
+tsconfig.json
+vitest.config.ts
+.gitignore
+.eslintrc*
+.prettierrc*

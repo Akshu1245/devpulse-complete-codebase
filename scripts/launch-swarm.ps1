@@ -1,4 +1,4 @@
-# DevPulse Swarm Launcher
+# RakshEx Swarm Launcher
 # Usage: .\scripts\launch-swarm.ps1 -Swarm <test|security|migration|all>
 #        .\scripts\launch-swarm.ps1 -Swarm test -Fast
 #        .\scripts\launch-swarm.ps1 -Swarm all -Parallel
@@ -27,7 +27,7 @@ Write-Host "  / / / / __  / ___/ //_/ _ \\/ ___/ /_/ / __ \\/ __  / ___/        
 Write-Host " / /_/ / /_/ (__  ) ,< /  __/ /  / __/ / /_/ / /_/ (__  )          " -ForegroundColor Cyan
 Write-Host "/_____/\\__,_/____/_/|_|\\___/_/  /_/ /_/\\____/\\__,_/____/           " -ForegroundColor Cyan
 Write-Host "                                                                    " -ForegroundColor Cyan
-Write-Host "═══ DEVPULSE SWARM LAUNCHER ═══" -ForegroundColor Cyan
+Write-Host "═══ RAKSHEX SWARM LAUNCHER ═══" -ForegroundColor Cyan
 Write-Host "Swarm: $Swarm | Fast: $Fast | AutoFix: $AutoFix | Timeout: ${TimeoutMinutes}m"
 Write-Host "Project: $projectRoot"
 Write-Host ""

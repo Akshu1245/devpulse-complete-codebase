@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help us improve DevPulse
+about: Create a report to help us improve RakshEx
 title: "[BUG] "
 labels: bug
 assignees: ""

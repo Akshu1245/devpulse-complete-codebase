@@ -32,10 +32,7 @@ function cacheKey(workspaceId: number, userId: number): string {
 }
 
 /** Drop the cached membership for a user — call after role changes. */
-export function invalidateMembershipCache(
-  workspaceId: number,
-  userId: number
-): void {
+export function invalidateMembershipCache(workspaceId: number, userId: number): void {
   cache.delete(cacheKey(workspaceId, userId));
 }
 
@@ -50,7 +47,7 @@ export function clearMembershipCache(): void {
  */
 export async function getWorkspaceRole(
   workspaceId: number,
-  userId: number
+  userId: number,
 ): Promise<WorkspaceRole | null> {
   const key = cacheKey(workspaceId, userId);
   const cached = cache.get(key);
@@ -62,8 +59,8 @@ export async function getWorkspaceRole(
   if (!member || !member.active) {
     return null;
   }
-  cache.set(key, { role: member.role, expiresAt: now + CACHE_TTL_MS });
-  return member.role;
+  cache.set(key, { role: member.role as WorkspaceRole, expiresAt: now + CACHE_TTL_MS });
+  return member.role as WorkspaceRole;
 }
 
 /**
@@ -76,17 +73,13 @@ export async function assertWorkspacePermission(
   workspaceId: number,
   userId: number,
   resource: RbacResource,
-  action: RbacAction
+  action: RbacAction,
 ): Promise<WorkspaceRole> {
   const role = await getWorkspaceRole(workspaceId, userId);
   if (!role) {
     // We treat "not a member" the same as "no permission" rather than
     // leaking workspace existence to non-members.
-    throw new (await import("./rbac")).PermissionDeniedError(
-      resource,
-      action,
-      "viewer"
-    );
+    throw new (await import("./rbac")).PermissionDeniedError(resource, action, "viewer");
   }
   assertPermission(role, resource, action);
   return role;
@@ -100,7 +93,7 @@ export async function checkWorkspacePermission(
   workspaceId: number,
   userId: number,
   resource: RbacResource,
-  action: RbacAction
+  action: RbacAction,
 ): Promise<{ allowed: boolean; role: WorkspaceRole | null }> {
   const role = await getWorkspaceRole(workspaceId, userId);
   if (!role) return { allowed: false, role: null };
@@ -118,7 +111,7 @@ export async function checkWorkspacePermission(
  */
 export async function ensurePersonalWorkspace(
   userId: number,
-  displayName: string | null
+  displayName: string | null,
 ): Promise<WorkspaceRow> {
   const existing = await db.getPersonalWorkspaceForUser(userId);
   if (existing) return existing;

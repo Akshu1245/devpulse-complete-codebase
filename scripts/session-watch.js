@@ -122,7 +122,7 @@ function snapshot() {
     : `- [${ts}] Initial auto-save — branch: ${branch}`;
 
   // Build state
-  const state = `# DevPulse Session State
+  const state = `# RakshEx Session State
 > Last auto-save: ${ts}
 > Daemon PID: ${existsSync(PID_FILE) ? readFileSync(PID_FILE, 'utf8').trim() : 'unknown'}
 
@@ -130,9 +130,9 @@ function snapshot() {
 ${existingTask || 'No active task recorded'}
 
 ## Project Context
-- **Project**: DevPulse - developer productivity platform
+- **Project**: RakshEx - developer productivity platform
 - **Stack**: Node.js/Express + Vite + Drizzle ORM + MySQL + Redis + BullMQ
-- **Structure**: Monorepo (devpulse-frontend, devpulse-vscode, server, shared, packages)
+- **Structure**: Monorepo (rakshex-frontend, rakshex-vscode, server, shared, packages)
 - **Branch**: ${branch}
 
 ## Recent Decisions
@@ -274,7 +274,7 @@ if (cmd === '_run') {
   startDaemon();
 } else {
   console.log(`
-DevPulse Session Watch Daemon
+RakshEx Session Watch Daemon
 
 Usage:
   node scripts/session-watch.js           Start daemon (background)

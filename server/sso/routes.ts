@@ -43,12 +43,9 @@ import type { SsoProviderRow } from "../../drizzle/schema";
 
 /* ── Helpers ──────────────────────────────────────────────────────────── */
 
-function assertEnabled(
-  provider: SsoProviderRow | null
-): asserts provider is SsoProviderRow {
+function assertEnabled(provider: SsoProviderRow | null): asserts provider is SsoProviderRow {
   if (!provider) throw new SsoRouteError("SSO provider not found", 404);
-  if (!provider.enabled)
-    throw new SsoRouteError("SSO provider is not enabled", 403);
+  if (!provider.enabled) throw new SsoRouteError("SSO provider is not enabled", 403);
 }
 
 class SsoRouteError extends Error {
@@ -63,7 +60,7 @@ async function upsertLocalUser(
   provider: SsoProviderRow,
   openId: string,
   email: string,
-  name: string
+  name: string,
 ) {
   await db.upsertUser({
     openId,
@@ -74,12 +71,7 @@ async function upsertLocalUser(
   });
 }
 
-async function issueSessionCookie(
-  req: Request,
-  res: Response,
-  openId: string,
-  name: string
-) {
+async function issueSessionCookie(req: Request, res: Response, openId: string, name: string) {
   const sessionToken = await sdk.createSessionToken(openId, {
     name,
     expiresInMs: ONE_YEAR_MS,
@@ -134,7 +126,7 @@ async function handleSamlLogin(req: Request, res: Response) {
 
     logger.info(
       { providerId: provider.id, name: provider.name, requestId: authnRequest.id },
-      "[SAML] redirecting to IdP"
+      "[SAML] redirecting to IdP",
     );
     res.redirect(302, redirectUrl);
   } catch (err) {
@@ -198,25 +190,25 @@ async function handleSamlCallback(req: Request, res: Response) {
     const nameId = attributes.nameId;
     const email = attributes.email ?? `${nameId}@sso.local`;
     const name =
-      attributes.displayName ??
-      attributes.firstName
+      (attributes.displayName ?? attributes.firstName)
         ? `${attributes.firstName} ${attributes.lastName ?? ""}`.trim()
-        : email.split("@")[0] ?? nameId;
+        : (email.split("@")[0] ?? nameId);
 
     // JIT provision
     await jitProvisionUser(
       { subject: nameId, email, name },
-      { providerId: provider.id, defaultRole: provider.defaultRole ?? "viewer" }
+      {
+        providerId: provider.id,
+        defaultRole:
+          (provider.defaultRole as "viewer" | "admin" | "editor" | undefined) ?? "viewer",
+      },
     );
 
     const openId = ssoOpenId(provider.id, nameId);
     await upsertLocalUser(provider, openId, email, name);
     await issueSessionCookie(req, res, openId, name);
 
-    logger.info(
-      { providerId: provider.id, name, email },
-      "[SAML] login successful"
-    );
+    logger.info({ providerId: provider.id, name, email }, "[SAML] login successful");
     res.redirect(302, "/dashboard");
   } catch (err) {
     if (err instanceof SsoRouteError) {
@@ -280,10 +272,7 @@ async function handleOidcLogin(req: Request, res: Response) {
       codeChallenge,
     });
 
-    logger.info(
-      { providerId: provider.id, name: provider.name },
-      "[OIDC] redirecting to IdP"
-    );
+    logger.info({ providerId: provider.id, name: provider.name }, "[OIDC] redirecting to IdP");
     res.redirect(302, authUrl);
   } catch (err) {
     if (err instanceof SsoRouteError) {
@@ -358,12 +347,9 @@ async function handleOidcCallback(req: Request, res: Response) {
     });
 
     // Verify the id_token cryptographically
-    const claims = await verifyIdToken(
-      tokenSet.idToken,
-      config.issuer,
-      config.clientId,
-      { expectedNonce: pending.nonce ?? undefined }
-    );
+    const claims = await verifyIdToken(tokenSet.idToken, config.issuer, config.clientId, {
+      expectedNonce: pending.nonce ?? undefined,
+    });
 
     // JIT provision using the verified sub + email claims
     const email = claims.email ?? `${claims.sub}@sso.local`;
@@ -371,17 +357,18 @@ async function handleOidcCallback(req: Request, res: Response) {
 
     await jitProvisionUser(
       { subject: claims.sub, email, name },
-      { providerId: provider.id, defaultRole: provider.defaultRole ?? "viewer" }
+      {
+        providerId: provider.id,
+        defaultRole:
+          (provider.defaultRole as "viewer" | "admin" | "editor" | undefined) ?? "viewer",
+      },
     );
 
     const openId = ssoOpenId(provider.id, claims.sub);
     await upsertLocalUser(provider, openId, email, name);
     await issueSessionCookie(req, res, openId, name);
 
-    logger.info(
-      { providerId: provider.id, sub: claims.sub, email },
-      "[OIDC] login successful"
-    );
+    logger.info({ providerId: provider.id, sub: claims.sub, email }, "[OIDC] login successful");
     res.redirect(302, "/dashboard");
   } catch (err) {
     if (err instanceof SsoRouteError) {

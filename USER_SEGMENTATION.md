@@ -1,6 +1,6 @@
-# DevPulse User Segmentation
+# RakshEx User Segmentation
 
-> Who uses DevPulse and why.
+> Who uses RakshEx and why.
 > Date: 2026-05-17
 
 ---

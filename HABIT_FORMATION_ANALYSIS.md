@@ -1,6 +1,6 @@
-# DevPulse Habit Formation Analysis
+# RakshEx Habit Formation Analysis
 
-> Making DevPulse indispensable.
+> Making RakshEx indispensable.
 > Date: 2026-05-17
 
 ---
@@ -44,7 +44,7 @@
 **External Trigger:**
 
 - Git pre-commit hook
-- VS Code command palette: "DevPulse: Pre-deploy scan"
+- VS Code command palette: "RakshEx: Pre-deploy scan"
 
 **Internal Trigger:**
 

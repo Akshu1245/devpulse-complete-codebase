@@ -28,7 +28,7 @@ export interface LLMProvider {
   readonly name: string;
   readonly defaultModel: string;
 
-  /** Invoke the LLM with the canonical DevPulse params. */
+  /** Invoke the LLM with the canonical RakshEx params. */
   invoke(params: InvokeParams, options?: ProviderInvokeOptions): Promise<InvokeResult>;
 
   /** Whether this provider can handle a given model string. */
@@ -274,6 +274,16 @@ export async function registerOptionalProviders() {
       logger.warn({ err }, "[Providers] Failed to load Groq provider");
     }
   }
+
+  // OpenRouter / InsForge AI Gateway
+  if (process.env.OPENROUTER_API_KEY) {
+    try {
+      const { openrouterProvider } = await import("../services/openrouterProvider");
+      providerRegistry.register(openrouterProvider);
+    } catch (err) {
+      logger.warn({ err }, "[Providers] Failed to load OpenRouter provider");
+    }
+  }
 }
 
 /* ─── Main routing entry point ─────────────────────────────────────────── */
@@ -284,7 +294,7 @@ export async function registerOptionalProviders() {
  * Lookup order:
  *  1. If `provider` is specified, use that named provider.
  *  2. If `model` is specified, find the first provider that supports it.
- *  3. Fall back to the default (MiniMax).
+ *  3. Fall back to the default (OpenRouter if key is present, otherwise MiniMax).
  */
 export async function routeLLM(
   params: InvokeParams & {
@@ -296,7 +306,7 @@ export async function routeLLM(
 ): Promise<InvokeResult> {
   // Kill-switch check (inline, before any provider dispatch)
   if (params.killSwitchActive) {
-    throw new RuntimePolicyError("LLM API request blocked by DevPulse Kill Switch.", {
+    throw new RuntimePolicyError("LLM API request blocked by RakshEx Kill Switch.", {
       context: { userId: params.userId, policy: "kill_switch" },
     });
   }
@@ -307,7 +317,7 @@ export async function routeLLM(
       const { getKillSwitchSettings } = await import("../db");
       const ks = await getKillSwitchSettings(params.userId);
       if (ks?.isActive) {
-        throw new RuntimePolicyError("LLM API request blocked by DevPulse Kill Switch.", {
+        throw new RuntimePolicyError("LLM API request blocked by RakshEx Kill Switch.", {
           context: { userId: params.userId, policy: "kill_switch" },
         });
       }
@@ -331,7 +341,10 @@ export async function routeLLM(
     provider = providerRegistry.findForModel(params.model);
   }
 
-  provider = provider ?? minimaxProvider;
+  provider =
+    provider ??
+    (process.env.OPENROUTER_API_KEY ? providerRegistry.get("openrouter") : undefined) ??
+    minimaxProvider;
 
   const result = await provider.invoke(params, {
     model: params.model,

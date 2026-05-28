@@ -1,4 +1,4 @@
-# DevPulse Retention Optimization Report
+# RakshEx Retention Optimization Report
 
 > Engineering habits into the product.
 > Date: 2026-05-17
@@ -59,7 +59,7 @@ Subject: Your weekly AI security summary
 
 Hi {{name}},
 
-This week with DevPulse:
+This week with RakshEx:
 🛡️ Scans run: {{scans}}
 🔍 Issues found: {{findings}}
 💰 Money saved: ${{saved}}

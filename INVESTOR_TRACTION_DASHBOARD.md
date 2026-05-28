@@ -1,4 +1,4 @@
-# DevPulse Investor Traction Dashboard
+# RakshEx Investor Traction Dashboard
 
 > Real-time metrics that prove market pull.
 > Date: 2026-05-17
@@ -125,7 +125,7 @@ Current   |100%| ___%| ___%| ___%| ___%| ___%
 ### For Monthly Email
 
 ```
-DevPulse Monthly Update — [Month Year]
+RakshEx Monthly Update — [Month Year]
 
 Growth:
   WAD: ___ (___% WoW)
@@ -168,15 +168,15 @@ SLIDE: Traction
 
 ## DATA SOURCES
 
-| Metric     | Source                      | Update Frequency |
-| ---------- | --------------------------- | ---------------- |
-| Installs   | VS Code Marketplace API     | Daily            |
-| Activation | PostHog / Telemetry         | Real-time        |
-| Retention  | PostHog cohorts             | Daily            |
-| Revenue    | Stripe                      | Real-time        |
-| Scans      | DevPulse DB                 | Real-time        |
-| Findings   | DevPulse DB + user feedback | Daily            |
-| NPS        | In-app survey               | Weekly           |
+| Metric     | Source                     | Update Frequency |
+| ---------- | -------------------------- | ---------------- |
+| Installs   | VS Code Marketplace API    | Daily            |
+| Activation | PostHog / Telemetry        | Real-time        |
+| Retention  | PostHog cohorts            | Daily            |
+| Revenue    | Stripe                     | Real-time        |
+| Scans      | RakshEx DB                 | Real-time        |
+| Findings   | RakshEx DB + user feedback | Daily            |
+| NPS        | In-app survey              | Weekly           |
 
 ---
 

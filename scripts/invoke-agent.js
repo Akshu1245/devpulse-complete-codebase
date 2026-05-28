@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Agent CLI — invoke any DevPulse agent from the command line.
+ * Agent CLI — invoke any RakshEx agent from the command line.
  *
  * Usage:
  *   node scripts/invoke-agent.js <agent-name> "<task description>"
@@ -21,7 +21,7 @@ const args = process.argv.slice(2);
 
 function printHelp() {
   console.log(`
-DevPulse Agent CLI
+RakshEx Agent CLI
 ──────────────────
   node scripts/invoke-agent.js <agent> "<task>"     Invoke a specific agent
   node scripts/invoke-agent.js --list               List all 29 agents
@@ -45,7 +45,7 @@ async function main() {
 
   if (args[0] === "--list") {
     const agents = agentRegistry.list();
-    console.log(`\nDevPulse Agent Registry — ${agents.length} agents\n`);
+    console.log(`\nRakshEx Agent Registry — ${agents.length} agents\n`);
     for (const agent of agents) {
       console.log(`  ${agent.number} │ ${agent.name.padEnd(22)} │ ${agent.category.padEnd(12)} │ ${agent.role}`);
     }

@@ -1,4 +1,4 @@
-﻿# health_check.ps1
+# health_check.ps1
 $healthy = $true
 
 # Check 1: Agent files exist
@@ -13,7 +13,7 @@ if (-not (Test-Path "hermes/memory/hermes_memory.db")) { $healthy = $false; Writ
 
 # Auto-heal if unhealthy
 if (-not $healthy) {
-    Write-Host "Auto-healing DevPulse..." -ForegroundColor Yellow
+    Write-Host "Auto-healing RakshEx..." -ForegroundColor Yellow
     commandcode "/sequential auto-repair: restore missing components"
 }
 

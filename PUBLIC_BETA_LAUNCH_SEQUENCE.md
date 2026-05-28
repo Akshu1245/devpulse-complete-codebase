@@ -1,4 +1,4 @@
-# DevPulse Public Beta Launch Sequence
+# RakshEx Public Beta Launch Sequence
 
 > Step-by-step execution plan for going from private beta to public launch.
 > Date: 2026-05-17
@@ -54,14 +54,14 @@
 **Week 5**
 
 - [ ] Open waitlist on landing page
-- [ ] Post on Twitter/X: "Join the DevPulse beta"
+- [ ] Post on Twitter/X: "Join the RakshEx beta"
 - [ ] Share in 5 relevant Discord/Slack communities
 - [ ] Email 50 target developers personally
-- [ ] Create "Why I Built DevPulse" founder thread
+- [ ] Create "Why I Built RakshEx" founder thread
 
 **Week 6**
 
-- [ ] Publish first benchmark report (DevPulse vs Snyk)
+- [ ] Publish first benchmark report (RakshEx vs Snyk)
 - [ ] Publish first engineering blog post
 - [ ] Share on Hacker News "Ask HN"
 - [ ] Share on Reddit r/SideProject
@@ -70,11 +70,11 @@
 **Weekly Email to Waitlist:**
 
 ```
-Subject: DevPulse beta update — [exciting progress]
+Subject: RakshEx beta update — [exciting progress]
 
 Hi [name],
 
-Quick update from the DevPulse beta:
+Quick update from the RakshEx beta:
 
 [One specific win from a beta user]
 [One metric that shows traction]

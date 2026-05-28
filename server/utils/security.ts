@@ -36,7 +36,7 @@ import { logger } from "../_core/logger";
  */
 export async function verifyWebSocketAuth(
   socket: any,
-  db: any
+  db: any,
 ): Promise<{ userId: number; role: string } | null> {
   try {
     const cookieHeader = socket.handshake?.headers?.cookie;
@@ -49,18 +49,26 @@ export async function verifyWebSocketAuth(
       cookies[name] = rest.join("=");
     });
 
-    const token = cookies["devpulse_session"];
+    const token = cookies["rakshex_session"];
     if (!token) return null;
 
     // Decode session token
-    const sessionData = JSON.parse(
-      Buffer.from(token, "base64").toString("utf-8")
-    );
+    const sessionData = JSON.parse(Buffer.from(token, "base64").toString("utf-8"));
     if (!sessionData?.sessionId) return null;
 
     // Verify session exists and is valid
     const session = await db.getUserSessionByToken(sessionData.sessionId);
     if (!session) return null;
+
+    // Check if session has expired or is revoked
+    if (new Date(session.expiresAt).getTime() < Date.now()) {
+      logger.warn({ sessionId: session.id }, "[WebSocket] Rejected expired session");
+      return null;
+    }
+    if (session.isRevoked) {
+      logger.warn({ sessionId: session.id }, "[WebSocket] Rejected revoked session");
+      return null;
+    }
 
     // Get user
     const user = await db.getUserById(session.userId);
@@ -96,7 +104,7 @@ export async function verifyWebSocketAuth(
 export function verifyWebhookSignature(
   payload: string | Buffer,
   signature: string,
-  secret: string
+  secret: string,
 ): boolean {
   if (!secret) {
     logger.error("[Webhook] Secret not configured");
@@ -108,12 +116,8 @@ export function verifyWebhookSignature(
     return false;
   }
 
-  const payloadString =
-    typeof payload === "string" ? payload : payload.toString("utf-8");
-  const expectedSignature = crypto
-    .createHmac("sha256", secret)
-    .update(payloadString)
-    .digest("hex");
+  const payloadString = typeof payload === "string" ? payload : payload.toString("utf-8");
+  const expectedSignature = crypto.createHmac("sha256", secret).update(payloadString).digest("hex");
 
   // Use timing-safe comparison with proper error handling
   try {
@@ -147,7 +151,7 @@ export function generateCsrfToken(): string {
  */
 export function verifyCsrfToken(
   requestToken: string | undefined,
-  sessionToken: string | undefined
+  sessionToken: string | undefined,
 ): boolean {
   if (!requestToken || !sessionToken) return false;
 

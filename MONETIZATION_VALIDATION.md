@@ -1,4 +1,4 @@
-# DevPulse Monetization Validation
+# RakshEx Monetization Validation
 
 > Testing what developers actually pay for.
 > Date: 2026-05-17
@@ -11,16 +11,16 @@
 
 **Van Westendorp Questions:**
 
-1. At what price would DevPulse be so cheap you'd question its quality?
+1. At what price would RakshEx be so cheap you'd question its quality?
    → \_\_\_ $/mo
 
-2. At what price would DevPulse be a bargain?
+2. At what price would RakshEx be a bargain?
    → \_\_\_ $/mo
 
-3. At what price would DevPulse start to feel expensive?
+3. At what price would RakshEx start to feel expensive?
    → \_\_\_ $/mo
 
-4. At what price would DevPulse be too expensive?
+4. At what price would RakshEx be too expensive?
    → \_\_\_ $/mo
 
 **Optimal price point:** $**_ — $_** / month

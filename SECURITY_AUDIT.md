@@ -1,4 +1,4 @@
-# DevPulse Security Audit Report
+# RakshEx Security Audit Report
 
 **Date:** 2026-05-17
 **Auditor:** Elite Bug Bounty Research Operator

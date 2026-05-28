@@ -1,6 +1,6 @@
-# DevPulse Autonomous Command Aliases
+# RakshEx Autonomous Command Aliases
 # Source this in your PowerShell profile for full autonomy mode
-# Add to $PROFILE: . C:\Users\aksha\Downloads\DevPulse_Complete_Codebase\scripts\autonomous_profile.ps1
+# Add to $PROFILE: . C:\Users\aksha\Downloads\RakshEx_Complete_Codebase\scripts\autonomous_profile.ps1
 
 # Full autonomy: no prompts, no confirmations, no waiting
 function cc {
@@ -9,16 +9,16 @@ function cc {
 
 # Short alias chain
 Set-Alias -Name cc -Value cc -Force
-Set-Alias -Name dp -Value cc -Force  # 'dp' for quick DevPulse commands
+Set-Alias -Name dp -Value cc -Force  # 'dp' for quick RakshEx commands
 
 # Auto-start the swarm (runs on shell open)
-function Start-DevPulseSwarm {
+function Start-RakshExSwarm {
     $swarmRunning = Get-Process -Name commandcode -ErrorAction SilentlyContinue
     if (-not $swarmRunning) {
-        Write-Host "DevPulse swarm not running — auto-starting..." -ForegroundColor Cyan
-        Start-Process -NoNewWindow -FilePath "pwsh" -ArgumentList "-File `"C:\Users\aksha\Downloads\DevPulse_Complete_Codebase\scripts\auto_start.ps1`""
+        Write-Host "RakshEx swarm not running — auto-starting..." -ForegroundColor Cyan
+        Start-Process -NoNewWindow -FilePath "pwsh" -ArgumentList "-File `"C:\Users\aksha\Downloads\RakshEx_Complete_Codebase\scripts\auto_start.ps1`""
     } else {
-        Write-Host "DevPulse swarm already running (PID: $($swarmRunning.Id))" -ForegroundColor Green
+        Write-Host "RakshEx swarm already running (PID: $($swarmRunning.Id))" -ForegroundColor Green
     }
 }
 
@@ -36,6 +36,6 @@ function dp-parallel-stats {
 }
 
 # Auto-start on profile load (uncomment to enable)
-# Start-DevPulseSwarm
+# Start-RakshExSwarm
 
-Write-Host "DevPulse Autonomous Mode Active | Commands: cc, dp, dp-status, dp-meeting, dp-parallel-stats" -ForegroundColor Green
+Write-Host "RakshEx Autonomous Mode Active | Commands: cc, dp, dp-status, dp-meeting, dp-parallel-stats" -ForegroundColor Green

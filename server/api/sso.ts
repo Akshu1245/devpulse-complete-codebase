@@ -63,7 +63,7 @@ export const ssoRouter = router({
         config: z.union([oidcConfigSchema, samlConfigSchema]),
         emailDomain: z.string().max(256).optional(),
         defaultRole: roleEnum.default("viewer"),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       validateConfigForKind(input.kind, input.config);
@@ -87,19 +87,18 @@ export const ssoRouter = router({
         config: z.union([oidcConfigSchema, samlConfigSchema]).optional(),
         emailDomain: z.string().max(256).nullable().optional(),
         defaultRole: roleEnum.optional(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const existing = await db.getSsoProviderForUser(ctx.user.id, input.id);
       if (!existing) throw new ValidationError("provider not found");
       if (input.config) {
-        validateConfigForKind(existing.kind, input.config);
+        validateConfigForKind(existing.kind as "oidc" | "saml", input.config);
       }
       const patch: Record<string, unknown> = {};
       if (input.name !== undefined) patch.name = input.name;
       if (input.config !== undefined) patch.config = input.config;
-      if (input.emailDomain !== undefined)
-        patch.emailDomain = input.emailDomain;
+      if (input.emailDomain !== undefined) patch.emailDomain = input.emailDomain;
       if (input.defaultRole !== undefined) patch.defaultRole = input.defaultRole;
       await db.updateSsoProvider(ctx.user.id, input.id, patch);
       return { ok: true };
@@ -110,7 +109,7 @@ export const ssoRouter = router({
       z.object({
         id: z.number().int().positive(),
         enabled: z.boolean(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const existing = await db.getSsoProviderForUser(ctx.user.id, input.id);
@@ -163,7 +162,7 @@ export const ssoRouter = router({
       }
 
       const enabled = allProviders.filter(
-        p => p.enabled && p.emailDomain && p.emailDomain.length > 0
+        (p) => p.enabled && p.emailDomain && p.emailDomain.length > 0,
       );
       for (const p of enabled) {
         try {
@@ -178,22 +177,19 @@ export const ssoRouter = router({
     }),
 });
 
-function validateConfigForKind(
-  kind: "oidc" | "saml",
-  config: unknown
-): void {
+function validateConfigForKind(kind: "oidc" | "saml", config: unknown): void {
   if (kind === "oidc") {
     const r = oidcConfigSchema.safeParse(config);
     if (!r.success) {
       throw new ValidationError(
-        `OIDC config invalid: ${r.error.issues.map(i => i.message).join("; ")}`
+        `OIDC config invalid: ${r.error.issues.map((i) => i.message).join("; ")}`,
       );
     }
   } else {
     const r = samlConfigSchema.safeParse(config);
     if (!r.success) {
       throw new ValidationError(
-        `SAML config invalid: ${r.error.issues.map(i => i.message).join("; ")}`
+        `SAML config invalid: ${r.error.issues.map((i) => i.message).join("; ")}`,
       );
     }
   }
@@ -205,7 +201,7 @@ function validateConfigForKind(
  * without us exposing it to anyone who can call listProviders.
  */
 function redactSecrets(
-  row: SsoProviderRow
+  row: SsoProviderRow,
 ): Omit<SsoProviderRow, "config"> & { config: Record<string, unknown> } {
   const cfg = (row.config as Record<string, unknown>) ?? {};
   const redacted: Record<string, unknown> = { ...cfg };

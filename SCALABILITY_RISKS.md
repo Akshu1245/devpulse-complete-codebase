@@ -1,4 +1,4 @@
-# DevPulse Scalability Risk Assessment
+# RakshEx Scalability Risk Assessment
 
 > Where the system breaks as we grow from 1 → 100 → 10,000 → 100,000 users.
 > Date: 2026-05-17 | Current Scale: Pre-launch

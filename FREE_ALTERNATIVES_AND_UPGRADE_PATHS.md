@@ -1,4 +1,4 @@
-# DevPulse Free Alternatives & Upgrade Paths
+# RakshEx Free Alternatives & Upgrade Paths
 
 > Vendor comparison for infrastructure decisions.
 > Date: 2026-05-17

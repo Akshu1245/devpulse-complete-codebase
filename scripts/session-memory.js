@@ -61,16 +61,16 @@ if (cmd === 'save') {
     if (openMatch) existingOpen = openMatch[1].trim();
   } catch {}
 
-  const state = `# DevPulse Session State
+  const state = `# RakshEx Session State
 > Auto-loaded at session start. Updated at session end.
 
 ## Current Task
 ${existingTask || 'No active task recorded'}
 
 ## Project Context
-- **Project**: DevPulse - developer productivity platform
+- **Project**: RakshEx - developer productivity platform
 - **Stack**: Node.js/Express + Vite + Drizzle ORM + MySQL + Redis + BullMQ
-- **Structure**: Monorepo (devpulse-frontend, devpulse-vscode, server, shared, packages)
+- **Structure**: Monorepo (rakshex-frontend, rakshex-vscode, server, shared, packages)
 - **Branch**: ${branch}
 
 ## Recent Decisions
@@ -147,7 +147,7 @@ else if (cmd === 'history') {
 // === HELP ===
 else {
   console.log(`
-DevPulse Session Memory CLI
+RakshEx Session Memory CLI
 
 Commands:
   node scripts/session-memory.js save      Snapshot current state

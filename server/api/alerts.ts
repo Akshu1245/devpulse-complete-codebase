@@ -65,29 +65,16 @@ const ruleInputSchema = z.object({
   channels: channelsSchema,
 });
 
-function rowToAlertRule(row: {
-  id: number;
-  userId: number;
-  name: string;
-  enabled: boolean;
-  conditions: unknown;
-  window: AlertWindow;
-  cooldownMinutes: number;
-  severity: AlertSeverity;
-  channels: unknown;
-  lastFiredAt?: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-}): AlertRule {
+function rowToAlertRule(row: any): AlertRule {
   return {
     id: row.id,
     userId: row.userId,
     name: row.name,
     enabled: row.enabled,
     conditions: row.conditions as AlertCondition[],
-    window: row.window,
+    window: row.window as AlertWindow,
     cooldownMinutes: row.cooldownMinutes,
-    severity: row.severity,
+    severity: row.severity as AlertSeverity,
     channels: row.channels as AlertChannelConfig,
     lastFiredAt: row.lastFiredAt ?? null,
     createdAt: row.createdAt,
@@ -109,32 +96,30 @@ export const alertsRouter = router({
       return rowToAlertRule(row);
     }),
 
-  createRule: protectedProcedure
-    .input(ruleInputSchema)
-    .mutation(async ({ ctx, input }) => {
-      const errors = validateRule(input);
-      if (errors.length > 0) {
-        throw new ValidationError(`invalid alert rule: ${errors.join("; ")}`);
-      }
-      const id = await db.createAlertRule({
-        userId: ctx.user.id,
-        name: input.name,
-        enabled: input.enabled,
-        conditions: input.conditions,
-        window: input.window,
-        cooldownMinutes: input.cooldownMinutes,
-        severity: input.severity,
-        channels: input.channels,
-      });
-      return { id };
-    }),
+  createRule: protectedProcedure.input(ruleInputSchema).mutation(async ({ ctx, input }) => {
+    const errors = validateRule(input);
+    if (errors.length > 0) {
+      throw new ValidationError(`invalid alert rule: ${errors.join("; ")}`);
+    }
+    const id = await db.createAlertRule({
+      userId: ctx.user.id,
+      name: input.name,
+      enabled: input.enabled,
+      conditions: input.conditions,
+      window: input.window,
+      cooldownMinutes: input.cooldownMinutes,
+      severity: input.severity,
+      channels: input.channels,
+    });
+    return { id };
+  }),
 
   updateRule: protectedProcedure
     .input(
       z.object({
         id: z.number().int().positive(),
         ...ruleInputSchema.shape,
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const existing = await db.getAlertRule(ctx.user.id, input.id);
@@ -160,7 +145,7 @@ export const alertsRouter = router({
       z.object({
         id: z.number().int().positive(),
         enabled: z.boolean(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const existing = await db.getAlertRule(ctx.user.id, input.id);
@@ -180,7 +165,7 @@ export const alertsRouter = router({
     .input(z.object({ limit: z.number().int().min(1).max(500).default(100) }).optional())
     .query(async ({ ctx, input }) => {
       const rows = await db.listAlertEvents(ctx.user.id, input?.limit ?? 100);
-      return rows.map(r => ({
+      return rows.map((r) => ({
         id: r.id,
         ruleId: r.ruleId,
         severity: r.severity,
@@ -200,7 +185,7 @@ export const alertsRouter = router({
       z.object({
         id: z.number().int().positive(),
         values: z.record(metricEnum, z.number().finite()),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const row = await db.getAlertRule(ctx.user.id, input.id);
@@ -217,7 +202,7 @@ export const alertsRouter = router({
       const rule = rowToAlertRule(row);
 
       const now = new Date();
-      const syntheticSnapshots: MetricSnapshot[] = rule.conditions.map(c => ({
+      const syntheticSnapshots: MetricSnapshot[] = rule.conditions.map((c) => ({
         metric: c.metric,
         value: c.threshold + (c.operator === "lt" || c.operator === "lte" ? -1 : 1),
         observedAt: now,
@@ -226,7 +211,7 @@ export const alertsRouter = router({
       const verdict = evaluateRule(
         { ...rule, lastFiredAt: null, enabled: true },
         syntheticSnapshots,
-        now
+        now,
       );
 
       if (!verdict.fired) {

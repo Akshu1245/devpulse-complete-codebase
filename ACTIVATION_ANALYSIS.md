@@ -1,4 +1,4 @@
-# DevPulse Activation Analysis
+# RakshEx Activation Analysis
 
 > Understanding why users complete (or abandon) onboarding.
 > Date: 2026-05-17

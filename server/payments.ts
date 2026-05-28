@@ -44,7 +44,7 @@ const RAZORPAY_KEY_SECRET = ENV.razorpayKeySecret;
 // copy; once the new SKUs are billable they will be added via DB migration.
 const PLAN_CONFIG = {
   free: {
-    name: "DevPulse Free",
+    name: "RakshEx Free",
     amount: 0,
     usdAmount: 0,
     currency: "INR",
@@ -69,7 +69,7 @@ const PLAN_CONFIG = {
     },
   },
   pro: {
-    name: "DevPulse Pro",
+    name: "RakshEx Pro",
     amount: 829900, // ₹8,299/mo (≈ $99 USD)
     usdAmount: 9900, // $99/mo in cents
     currency: "INR",
@@ -99,7 +99,7 @@ const PLAN_CONFIG = {
     },
   },
   enterprise: {
-    name: "DevPulse Business",
+    name: "RakshEx Business",
     amount: 4159900, // ₹41,599/mo (≈ $499 USD)
     usdAmount: 49900, // $499/mo in cents
     currency: "INR",
@@ -230,11 +230,11 @@ const authHeader = () => {
 };
 
 /**
- * Get or create Razorpay plan for a DevPulse plan tier
+ * Get or create Razorpay plan for a RakshEx plan tier
  */
 async function getOrCreatePlan(plan: PlanType): Promise<string> {
   const planConfig = PLAN_CONFIG[plan];
-  const planName = `devpulse_${plan}_monthly`;
+  const planName = `rakshex_${plan}_monthly`;
 
   // Try to find existing plan
   const listResponse = await fetchWithTimeout(`https://api.razorpay.com/v1/plans?count=100`, {

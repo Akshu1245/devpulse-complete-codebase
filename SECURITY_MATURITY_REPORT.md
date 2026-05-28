@@ -1,6 +1,6 @@
-# DevPulse Security Maturity Report
+# RakshEx Security Maturity Report
 
-> How secure is DevPulse itself?
+> How secure is RakshEx itself?
 > Date: 2026-05-17
 
 ---

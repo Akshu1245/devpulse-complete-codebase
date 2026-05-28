@@ -1,4 +1,4 @@
-# DevPulse VS Code Marketplace Review Strategy
+# RakshEx VS Code Marketplace Review Strategy
 
 > How to get 5-star reviews from beta users.
 > Date: 2026-05-17
@@ -52,7 +52,7 @@ Ask for a review immediately after the user experiences value:
 ### In-Product Prompt
 
 ```
-🎉 You've found {{findings_count}} issues with DevPulse!
+🎉 You've found {{findings_count}} issues with RakshEx!
 
 Quick question: How has your experience been?
 
@@ -60,7 +60,7 @@ Quick question: How has your experience been?
 [Not now] Maybe later
 [Having issues?] Get help
 
-Your review helps other developers discover DevPulse.
+Your review helps other developers discover RakshEx.
 ```
 
 ### Email Request
@@ -70,19 +70,19 @@ Subject: Quick favor — 2 minutes?
 
 Hi {{name}},
 
-You've been using DevPulse for {{days}} days and found
+You've been using RakshEx for {{days}} days and found
 {{findings}} security issues.
 
 Would you mind leaving a quick review on the VS Code
 Marketplace? It takes 2 minutes and helps other developers
-discover DevPulse.
+discover RakshEx.
 
 [Leave a Review]
 
 As a thank you, I'll extend your Pro access by 1 month.
 
 Akshay
-Founder, DevPulse
+Founder, RakshEx
 ```
 
 ### Discord/Slack Request
@@ -90,7 +90,7 @@ Founder, DevPulse
 ```
 Hey @beta-users 👋
 
-If DevPulse has helped you find issues or save money, would
+If RakshEx has helped you find issues or save money, would
 you mind leaving a review on the VS Code Marketplace?
 
 It takes 2 minutes and makes a huge difference for us.
@@ -111,9 +111,9 @@ Top reviews this week get featured in our next blog post!
 ```
 Thank you so much, {{name}}! 🙏
 
-We're building DevPulse for developers like you. If you ever
+We're building RakshEx for developers like you. If you ever
 have feedback or feature requests, reach out anytime:
-support@devpulse.in
+support@rakshex.in
 
 — Akshay, Founder
 ```
@@ -121,11 +121,11 @@ support@devpulse.in
 **4-star review:**
 
 ```
-Thanks for the review, {{name}}! Glad DevPulse is working for you.
+Thanks for the review, {{name}}! Glad RakshEx is working for you.
 
 You mentioned {{issue}} — we're actually working on that right
 now. Would love to hear more about what you'd like to see:
-support@devpulse.in
+support@rakshex.in
 
 — Akshay, Founder
 ```
@@ -133,12 +133,12 @@ support@devpulse.in
 **3-star or below:**
 
 ```
-Hi {{name}}, sorry to hear DevPulse didn't meet your expectations.
+Hi {{name}}, sorry to hear RakshEx didn't meet your expectations.
 
 I'd love to understand what went wrong and make it right.
 Can we chat for 5 minutes? Book a time here: [Calendly link]
 
-Or email me directly: akshay@devpulse.in
+Or email me directly: akshay@rakshex.in
 
 — Akshay, Founder
 ```
@@ -150,11 +150,11 @@ Or email me directly: akshay@devpulse.in
 ### Encourage Detailed Reviews
 
 Bad: "Great tool!" (1 sentence)
-Good: "DevPulse found $400 in hidden reasoning costs and 3 exposed secrets in our API collection. The VS Code integration is seamless. Highly recommend for any team using LLMs." (3+ sentences, mentions specific value)
+Good: "RakshEx found $400 in hidden reasoning costs and 3 exposed secrets in our API collection. The VS Code integration is seamless. Highly recommend for any team using LLMs." (3+ sentences, mentions specific value)
 
 ### How to Get Detailed Reviews:
 
-1. **Ask specific questions:** "What did DevPulse find that surprised you?"
+1. **Ask specific questions:** "What did RakshEx find that surprised you?"
 2. **Share examples:** "Here's what other users wrote..."
 3. **Offer to draft:** "Happy to draft something you can edit"
 4. **Incentivize:** Best review of the week gets featured + swag

@@ -49,9 +49,9 @@ function buildWorker(): Worker<WebhookJobData> {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "X-DevPulse-Signature-256": `sha256=${signature}`,
-              "X-DevPulse-Event": eventType,
-              "X-DevPulse-Delivery": webhookId,
+              "X-RakshEx-Signature-256": `sha256=${signature}`,
+              "X-RakshEx-Event": eventType,
+              "X-RakshEx-Delivery": webhookId,
             },
             timeout: 10_000,
           },

@@ -232,7 +232,7 @@ export const scanningRouter = router({
 
   /**
    * Phase 25 — LLM-powered triage summary for a completed scan. Returns
-   * a DevPulse-tuned summary suitable for pasting into a ticket or Slack.
+   * a RakshEx-tuned summary suitable for pasting into a ticket or Slack.
    * Explicit endpoint (not auto-run on every scan) so users can opt in per
    * scan and we only burn tokens when a human is actually going to read it.
    */
@@ -254,10 +254,10 @@ export const scanningRouter = router({
         collectionName: collection?.name ?? "Untitled collection",
         scanType: scan.scanType,
         riskScore: toNumber(scan.riskScore),
-        riskLevel: scan.riskLevel,
+        riskLevel: scan.riskLevel as "LOW" | "MEDIUM" | "HIGH" | "CRITICAL",
         findings: findings.map((f) => ({
           title: f.title,
-          severity: f.severity,
+          severity: f.severity as "Critical" | "High" | "Medium" | "Low",
           description: f.description,
           category: f.category,
           remediation: f.remediation,

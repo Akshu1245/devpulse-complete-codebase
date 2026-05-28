@@ -1,4 +1,4 @@
-# DevPulse Scale Validation Report
+# RakshEx Scale Validation Report
 
 > Can we handle real growth?
 > Date: 2026-05-17

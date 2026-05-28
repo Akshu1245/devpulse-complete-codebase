@@ -1,4 +1,4 @@
-# DevPulse Real-World Feedback Summary
+# RakshEx Real-World Feedback Summary
 
 > What real developers actually said.
 > Date: 2026-05-17

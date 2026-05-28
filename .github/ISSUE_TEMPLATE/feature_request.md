@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an idea for DevPulse
+about: Suggest an idea for RakshEx
 title: "[FEATURE] "
 labels: enhancement
 assignees: ""

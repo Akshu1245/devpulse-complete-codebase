@@ -25,7 +25,7 @@ const severityBadge = {
   Low: '![Low](https://img.shields.io/badge/-Low-green)'
 };
 
-let comment = `## 🛡️ DevPulse Security Scan Results
+let comment = `## 🛡️ RakshEx Security Scan Results
 
 **Framework detected:** \`${framework || 'unknown'}\`  
 **Scan ID:** \`${data.scanId || 'N/A'}\`
@@ -157,9 +157,9 @@ if (data.complianceScore) {
 // Footer
 comment += `---
 `;
-comment += `🔒 **DevPulse** — API Security + LLM Cost Intelligence in one workflow
+comment += `🔒 **RakshEx** — API Security + LLM Cost Intelligence in one workflow
 `;
-comment += `📊 [View full dashboard](https://devpulse.in/dashboard) | 📖 [Documentation](https://docs.devpulse.in) | 💬 [Slack Support](https://devpulse.in/slack)
+comment += `📊 [View full dashboard](https://rakshex.in/dashboard) | 📖 [Documentation](https://docs.rakshex.in) | 💬 [Slack Support](https://rakshex.in/slack)
 `;
 
 console.log(comment);

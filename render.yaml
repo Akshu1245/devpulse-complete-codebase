@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: devpulse-backend
+    name: rakshex-backend
     env: docker
     dockerfilePath: ./Dockerfile.render
     region: singapore
@@ -16,15 +16,15 @@ services:
         sync: false   # Set manually in Render dashboard
       - key: REDIS_URL
         fromService:
-          name: devpulse-redis
+          name: rakshex-redis
           type: redis
           property: connectionString
       - key: JWT_SECRET
         generateValue: true
       - key: FRONTEND_URL
-        value: "https://devpulse-frontend.vercel.app"
+        value: "https://rakshex-frontend.vercel.app"
       - key: APP_URL
-        value: "https://devpulse-backend.onrender.com"
+        value: "https://rakshex-backend.onrender.com"
       - key: SMTP_HOST
         value: ""
       - key: SMTP_PORT
@@ -34,7 +34,7 @@ services:
       - key: SMTP_PASS
         value: ""
       - key: SMTP_FROM
-        value: "noreply@devpulse.in"
+        value: "noreply@rakshex.in"
       - key: GITHUB_APP_ID
         value: ""
       - key: GITHUB_APP_PRIVATE_KEY
@@ -54,7 +54,7 @@ services:
       - key: INTERNAL_SERVICE_SECRET
         generateValue: true
 
-  - name: devpulse-redis
+  - name: rakshex-redis
     type: redis
     plan: free
     ipAllowList: []

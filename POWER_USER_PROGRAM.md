@@ -1,4 +1,4 @@
-# DevPulse Power User Program
+# RakshEx Power User Program
 
 > Turn your best users into advocates.
 > Date: 2026-05-17
@@ -7,7 +7,7 @@
 
 ## PROGRAM TIERS
 
-### Tier 1: DevPulse Insider
+### Tier 1: RakshEx Insider
 
 **Criteria:**
 
@@ -29,7 +29,7 @@
 
 ---
 
-### Tier 2: DevPulse Champion
+### Tier 2: RakshEx Champion
 
 **Criteria:**
 
@@ -56,14 +56,14 @@
 
 ---
 
-### Tier 3: DevPulse Ambassador
+### Tier 3: RakshEx Ambassador
 
 **Criteria:**
 
 - Active user for 90+ days
 - Scanned 100+ times
 - Referred 5+ users
-- Published content about DevPulse
+- Published content about RakshEx
 - Enterprise introduction
 - Engagement score > 95
 
@@ -108,13 +108,13 @@ LIMIT 20;
 ### Step 2: Reach Out
 
 ```
-Subject: You've been selected for the DevPulse Insider Program
+Subject: You've been selected for the RakshEx Insider Program
 
 Hi {{name}},
 
 You've been one of our most active users.
 
-We'd like to invite you to the DevPulse Insider Program.
+We'd like to invite you to the RakshEx Insider Program.
 
 What that means:
 - Early access to features
@@ -164,7 +164,7 @@ Interested? [Join here]
 ### Monthly Champion Spotlight
 
 ```
-🌟 DevPulse Champion of the Month: {{name}}
+🌟 RakshEx Champion of the Month: {{name}}
 
 {{name}} is a {{role}} at {{company}}.
 They've scanned {{count}} times and found {{issues}} security issues.

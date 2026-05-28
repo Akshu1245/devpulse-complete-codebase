@@ -1,13 +1,13 @@
-# DevPulse Autonomous Notification Script
+# RakshEx Autonomous Notification Script
 # Only triggers when swarm cannot self-resolve after 30 minutes
 # Silent by design — if this runs, something actually needs attention
 
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
-$DEVPULSE_ROOT = "C:\Users\aksha\Downloads\DevPulse_Complete_Codebase"
-$ERROR_DIR = "$DEVPULSE_ROOT\.team\errors"
-$NOTIFY_LOG = "$DEVPULSE_ROOT\.team\autonomy\notifications.log"
+$RAKSHEX_ROOT = "C:\Users\aksha\Downloads\RakshEx_Complete_Codebase"
+$ERROR_DIR = "$RAKSHEX_ROOT\.team\errors"
+$NOTIFY_LOG = "$RAKSHEX_ROOT\.team\autonomy\notifications.log"
 
 $timestamp = Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
 
@@ -35,7 +35,7 @@ $unresolvedCount = ($errorFiles | Where-Object {
 }).Count
 
 $message = @"
-DEVPULSE AUTONOMOUS SWARM — ATTENTION NEEDED
+RAKSHEX AUTONOMOUS SWARM — ATTENTION NEEDED
 ═══════════════════════════════════════════════
 
 $unresolvedCount unresolved errors in last 30 minutes
@@ -56,7 +56,7 @@ System continues running. This notification is for awareness only.
 # --- Show Windows notification ---
 [System.Windows.Forms.MessageBox]::Show(
     $message,
-    "DevPulse Auto — Unresolved Errors",
+    "RakshEx Auto — Unresolved Errors",
     [System.Windows.Forms.MessageBoxButtons]::OK,
     [System.Windows.Forms.MessageBoxIcon]::Warning
 )

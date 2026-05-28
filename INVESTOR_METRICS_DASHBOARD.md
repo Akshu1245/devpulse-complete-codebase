@@ -1,4 +1,4 @@
-# DevPulse Investor Metrics Dashboard
+# RakshEx Investor Metrics Dashboard
 
 > Metrics that prove traction, retention, and product-market fit.
 > Date: 2026-05-17
@@ -135,7 +135,7 @@ Support response time: Target < 4 hours
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  DevPulse Operational Dashboard                    [Refresh]│
+│  RakshEx Operational Dashboard                    [Refresh]│
 ├─────────────────────────────────────────────────────────────┤
 │  WAD: 347 ▲ 12%    Scans Today: 1,247    Findings: 8,932  │
 │  New Signups: 45     Activation: 48%      Retention D7: 38% │
@@ -154,7 +154,7 @@ Support response time: Target < 4 hours
 ### Investor Snapshot (Monthly)
 
 ```
-DevPulse Monthly Investor Update — May 2026
+RakshEx Monthly Investor Update — May 2026
 
 Growth:
   WAD: 347 (+12% MoM)
