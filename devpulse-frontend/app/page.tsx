@@ -1,6 +1,7 @@
 "use client";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useEffect } from "react";
+import { trpc } from "@/lib/trpc";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
@@ -155,6 +156,62 @@ const PRICING = [
     href: "/billing",
   },
 ];
+
+function WaitlistForm() {
+  const [email, setEmail] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const joinMutation = trpc.waitlist.join.useMutation({
+    onSuccess: () => {
+      setSuccess(true);
+      setError(null);
+    },
+    onError: (err) => {
+      setError(err.message || "Failed to join. Please try again.");
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    joinMutation.mutate({ email, source: "homepage_waitlist" });
+  };
+
+  if (success) {
+    return (
+      <div className="p-4 bg-green-950/20 border border-green-500/30 rounded-lg text-green-400 text-sm font-mono text-center">
+        ✓ You have been added to the waitlist!
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-3">
+      <div className="flex flex-col sm:flex-row gap-2">
+        <input
+          type="email"
+          required
+          placeholder="Enter your work email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="flex-1 px-4 py-3 bg-gray-900 border border-gray-800 rounded focus:outline-none focus:border-blue-500 text-white text-sm font-mono"
+          disabled={joinMutation.isPending}
+        />
+        <button
+          type="submit"
+          disabled={joinMutation.isPending}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 text-xs tracking-wider uppercase font-mono rounded disabled:opacity-50 transition-colors"
+        >
+          {joinMutation.isPending ? "Joining..." : "Get Access"}
+        </button>
+      </div>
+      {error && (
+        <p className="text-red-400 text-xs text-left font-mono mt-1">{error}</p>
+      )}
+    </form>
+  );
+}
 
 export default function LandingPage() {
   return (
@@ -481,6 +538,29 @@ export default function LandingPage() {
               </Link>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Beta Waitlist Section */}
+      <section className="bg-surface-container/20 py-20 px-8 border-t border-outline-variant/10">
+        <div className="max-w-md mx-auto text-center space-y-6">
+          <p className="text-primary text-xs tracking-widest font-mono uppercase">
+            JOIN THE WAITLIST
+          </p>
+          <h2
+            className="text-on-surface font-semibold"
+            style={{
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontSize: "30px",
+              letterSpacing: "-0.01em",
+            }}
+          >
+            47+ security engineers already on the waitlist
+          </h2>
+          <p className="text-on-surface-variant text-sm">
+            Experience real-time AI security, budget caps, and compliance auditing. Join the queue to get early access.
+          </p>
+          <WaitlistForm />
         </div>
       </section>
 
