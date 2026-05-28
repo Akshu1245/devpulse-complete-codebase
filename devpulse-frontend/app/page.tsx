@@ -1,60 +1,11 @@
-/**
- * RAKSHEX HOMEPAGE - CLONE OF INSFORGE.DEV
- *
- * =========================================================================
- * STEP 2 - TECHNICAL ANALYSIS OF SCRAPED INSFORGE.DEV STRUCTURE & DESIGN SYSTEM
- * =========================================================================
- *
- * 1. COLOR PALETTE:
- *    - Primary Background: Near-black #0F0F0F (rgb 22, 22, 22)
- *    - Panel Backgrounds: Deep grey #181818, gradient from #232323 to #1C1C1C
- *    - Accent Color (InsForge): Emerald Green #6ee7b7 (rgb 110, 231, 183)
- *    - Accent Color (RakshEx): Cyan #06b6d4 (rgb 6, 182, 212)
- *    - Warning/Alert Colors: Amber #f59e0b (rgb 245, 158, 11), Red #ef4444 (rgb 239, 68, 68)
- *    - Text Colors: Primary White #ffffff, Secondary Grey #999999, Muted Grey #b4b4b4 / #a3a3a3
- *    - Borders: Border-neutral-700 (#404040), border-neutral-800 (#262626), border-black/8
- *
- * 2. TYPOGRAPHY:
- *    - Font Families:
- *      * Headings/Nav titles: "Manrope", "Manrope Fallback" (Sans-serif, weight 500/600/700)
- *      * Body text: "Inter", "Inter Fallback" (Sans-serif, weight 400)
- *      * Monospace / Data: "IBM Plex Mono", "IBM Plex Mono Fallback" (Monospace, weight 400/500/600)
- *      * Terminal Commands: "Fira Code", "Fira Code Fallback" (Monospace)
- *    - Font Sizes & Line Heights:
- *      * Main Hero title: text-[28px] sm:text-[48px] with line-height leading-16 (or custom 3.6rem)
- *      * Hero subheadline: text-xl leading-8 font-normal
- *      * Section Headings: text-[32px] leading-12 font-normal
- *      * Features/Cards text: text-base font-medium
- *      * Small badges / countdowns: text-[13px] sm:text-[16px]
- *
- * 3. LAYOUT COMPONENTS & CLASS STRUCTURES:
- *      * Announcement Bar: `#event-banner` wrapper, class `relative z-100 h-12 border-b bg-primary-green`
- *      * Navbar: `nav` element class `sticky h-12 top-0 left-0 bg-[#0F0F0F] w-screen z-50`
- *      * Dropdown mega-menus: Absolute positioned wrapper with classes `absolute top-full left-0 pt-3 transition-all duration-200 opacity-0 invisible -translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0`
- *      * Hero Section: `<section id="portal" class="w-full max-w-[1280px] mx-auto pt-40 pb-20">`
- *      * Infinite Scrolling Marquee: Container wrapper class `w-full overflow-hidden` with sub-container `flex items-center gap-10 animate-logo-scroll w-max pr-10`
- *      * Features Card Grid: Grid container class `grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 items-stretch`
- *      * FAQ Accordion: Collapsible container using `div data-orientation="vertical"` triggering `data-[state=open]:animate-accordion-down`
- *      * Footer: minimal layout `footer class="w-full bg-[#0F0F0F] py-10 border-t border-neutral-800 z-5"`
- *
- * 4. ANIMATION CLASSES AND KEYFRAMES:
- *      * infinite-scroll: `0%{transform:translateX(0)} to{transform:translateX(-50%)}`
- *      * accordion-down: `0%{height:0} to{height:var(--radix-accordion-content-height)}`
- *      * accordion-up: `0%{height:var(--radix-accordion-content-height)} to{height:0}`
- *      * typing-text-1: `0%,11.17%{width:0}` to show terminal text sequentially
- *      * cursor-blink: blinking caret animation `0%,1.67%{opacity:1}`
- *      * pulse-emerald: custom pulsing glow `0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; }`
- *      * pulse-dot: `0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(110,231,183,0.7); }`
- *
- * 5. BREAKPOINTS:
- *      * sm: 640px, md: 768px, lg: 1024px, xl: 1280px, 2xl: 1536px
- */
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import { useCountdown } from "@/lib/animations/countdown";
+import { useMegaMenu } from "@/lib/animations/megamenu";
+import { useScrollReveal } from "@/lib/animations/scroll-reveal";
 import {
   Shield,
   Power,
@@ -67,70 +18,94 @@ import {
   ChevronDown,
   ChevronRight,
   ArrowRight,
-  ExternalLink,
   Menu,
   X,
+  Play,
+  Clipboard,
+  Check,
 } from "lucide-react";
 
-function JsonLdInjector() {
+// Rolling digit counter component matching scraped style
+interface RollingDigitProps {
+  char: string;
+  trigger: boolean;
+}
+
+function RollingDigit({ char, trigger }: RollingDigitProps) {
+  const isDigit = /\d/.test(char);
+  const targetDigit = isDigit ? parseInt(char, 10) : 0;
+  const [digit, setDigit] = useState(0);
+
   useEffect(() => {
-    const jsonLd = {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "Organization",
-          "@id": "https://rakshex.in/#organization",
-          name: "RakshEx",
-          url: "https://rakshex.in",
-          logo: "https://rakshex.in/logo.png",
-          description:
-            "India's First AI Runtime Governance Platform — security scanning, cost monitoring, and compliance for production AI agents.",
-          sameAs: ["https://twitter.com/rakshexhq"],
-        },
-        {
-          "@type": "WebSite",
-          "@id": "https://rakshex.in/#website",
-          url: "https://rakshex.in",
-          name: "RakshEx",
-          publisher: { "@id": "https://rakshex.in/#organization" },
-        },
-        {
-          "@type": "SoftwareApplication",
-          "@id": "https://rakshex.in/#product",
-          name: "RakshEx",
-          applicationCategory: "DeveloperApplication",
-          operatingSystem: "Any",
-          offers: {
-            "@type": "Offer",
-            price: "0",
-            priceCurrency: "USD",
-          },
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: "4.9",
-            ratingCount: "58",
-          },
-          featureList: [
-            "AI Agent Security Scanning",
-            "AgentGuard Kill Switch",
-            "Shadow API Discovery",
-            "Thinking Token Attribution",
-            "Credential Scanner",
-            "Compliance Reports",
-            "MCP Governance",
-          ],
-        },
-      ],
-    };
-    const script = document.createElement("script");
-    script.type = "application/ld+json";
-    script.textContent = JSON.stringify(jsonLd);
-    document.head.appendChild(script);
-    return () => {
-      document.head.removeChild(script);
-    };
+    if (trigger && isDigit) {
+      const t = setTimeout(() => {
+        setDigit(targetDigit);
+      }, 200);
+      return () => clearTimeout(t);
+    } else {
+      setDigit(0);
+    }
+  }, [trigger, targetDigit, isDigit]);
+
+  if (!isDigit) {
+    return (
+      <span
+        aria-hidden="true"
+        className="PlatformStatsShowcase_digitSlot__6p_aH PlatformStatsShowcase_comma__2_vA9"
+      >
+        <span className="PlatformStatsShowcase_digitTrack__F2EJi">
+          <span className="PlatformStatsShowcase_digitChar__y2wrD">{char}</span>
+        </span>
+      </span>
+    );
+  }
+
+  return (
+    <span aria-hidden="true" className="PlatformStatsShowcase_digitSlot__6p_aH">
+      <span
+        className="PlatformStatsShowcase_digitTrack__F2EJi transition-transform duration-[1200ms] cubic-bezier(0.16, 1, 0.3, 1)"
+        style={{ transform: `translateY(-${digit * 1.1}em)` }}
+      >
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+          <span key={n} className="PlatformStatsShowcase_digitChar__y2wrD">
+            {n}
+          </span>
+        ))}
+      </span>
+    </span>
+  );
+}
+
+function StatsCard({ label, targetValue }: { label: string; targetValue: string }) {
+  const [inView, setInView] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 },
+    );
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+    return () => observer.disconnect();
   }, []);
-  return null;
+
+  return (
+    <article ref={containerRef} className="PlatformStatsShowcase_card__DyDV_">
+      <p className="PlatformStatsShowcase_label__dAs7X">{label}</p>
+      <div aria-label={targetValue} className="PlatformStatsShowcase_value__ypr4_">
+        {targetValue.split("").map((char, idx) => (
+          <RollingDigit key={idx} char={char} trigger={inView} />
+        ))}
+      </div>
+    </article>
+  );
 }
 
 function WaitlistForm() {
@@ -163,7 +138,7 @@ function WaitlistForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
+    <form onSubmit={handleSubmit} className="w-full space-y-3">
       <div className="flex flex-col sm:flex-row gap-2">
         <input
           type="email"
@@ -171,13 +146,13 @@ function WaitlistForm() {
           placeholder="Enter your work email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="flex-1 px-4 py-3 bg-[#181818] border border-neutral-700 rounded focus:outline-none focus:border-cyan-500 text-white text-sm font-mono"
+          className="flex-1 px-4 py-3 bg-neutral-900/90 border border-neutral-700 rounded focus:outline-none focus:border-cyan-500 text-white text-sm font-mono"
           disabled={joinMutation.isPending}
         />
         <button
           type="submit"
           disabled={joinMutation.isPending}
-          className="bg-[#06b6d4] hover:bg-cyan-400 text-neutral-950 font-bold px-6 py-3 text-xs tracking-wider uppercase font-mono rounded disabled:opacity-50 transition-colors shadow-[0_0_15px_rgba(6,182,212,0.3)]"
+          className="bg-[#06b6d4] hover:bg-[#0891b2] text-black font-bold px-6 py-3 text-xs tracking-wider uppercase font-mono rounded disabled:opacity-50 transition-colors shadow-[0_0_15px_rgba(6,182,212,0.3)] shrink-0"
         >
           {joinMutation.isPending ? "Joining..." : "Get Access"}
         </button>
@@ -188,445 +163,173 @@ function WaitlistForm() {
 }
 
 function AnimatedHeroVisual() {
-  const [lines, setLines] = useState<string[]>([]);
-  const [score, setScore] = useState(100);
+  const [scanStep, setScanStep] = useState(0);
+  const [findings, setFindings] = useState<string[]>([]);
+  const [securityScore, setSecurityScore] = useState(100);
 
   useEffect(() => {
-    const outputs = [
-      "✓ 23 endpoints scanned",
-      "⚠ 2 credentials detected",
-      "🔒 1 prompt injection blocked",
-      "💰 $47.3 cost anomaly flagged",
+    const steps = [
+      { text: "> rakshex scan ./api.json", delay: 1200 },
+      { text: "✓ 23 endpoints scanned", delay: 800 },
+      { text: "⚠ 2 credentials detected", delay: 800, finding: "Credential Leak", score: 98 },
+      { text: "🔒 1 prompt injection blocked", delay: 800, finding: "Prompt Injection", score: 95 },
+      { text: "💰 $47.3 cost anomaly flagged", delay: 800, finding: "Cost Anomaly", score: 94 },
     ];
-    let interval: NodeJS.Timeout;
-    let idx = 0;
 
-    const animate = () => {
-      setLines([]);
-      setScore(100);
-      idx = 0;
+    let currentStep = 0;
+    let timer: NodeJS.Timeout;
 
-      const nextLine = () => {
-        if (idx < outputs.length) {
-          setLines((prev) => [...prev, outputs[idx]]);
-          if (idx === 0) setScore(98);
-          if (idx === 1) setScore(84);
-          if (idx === 2) setScore(96); // Blocked
-          if (idx === 3) setScore(94); // Anomaly flag final
-          idx++;
-          interval = setTimeout(nextLine, 1200);
-        } else {
-          interval = setTimeout(animate, 5000); // loop reset
+    const runScan = () => {
+      if (currentStep < steps.length) {
+        const step = steps[currentStep];
+        setScanStep(currentStep + 1);
+        if (step.finding) {
+          setFindings((prev) => [...prev, step.finding!]);
         }
-      };
-
-      interval = setTimeout(nextLine, 1200);
+        if (step.score) {
+          setSecurityScore(step.score);
+        }
+        currentStep++;
+        timer = setTimeout(runScan, step.delay);
+      } else {
+        timer = setTimeout(() => {
+          setFindings([]);
+          setSecurityScore(100);
+          currentStep = 0;
+          setScanStep(0);
+          runScan();
+        }, 5000);
+      }
     };
 
-    animate();
-    return () => clearTimeout(interval);
+    runScan();
+    return () => clearTimeout(timer);
   }, []);
 
+  const terminalLines = [
+    "> rakshex scan ./api.json",
+    "✓ 23 endpoints scanned",
+    "⚠ 2 credentials detected",
+    "🔒 1 prompt injection blocked",
+    "💰 $47.3 cost anomaly flagged",
+  ];
+
   return (
-    <div className="w-full rounded-md border border-neutral-700 bg-gradient-to-b from-[#232323] to-[#1C1C1C] flex flex-col md:flex-row gap-6 p-4 sm:p-6 shadow-[0_0_40px_rgba(6,182,212,0.1)] relative">
-      <div className="scan-line" />
+    <div className="w-full max-w-[680px] rounded-xl border border-neutral-700 bg-gradient-to-br from-[#232323] to-[#1C1C1C] flex flex-col md:flex-row p-6 gap-6 items-stretch shadow-2xl relative">
       {/* Left panel: VS Code terminal */}
-      <div className="flex-1 w-full bg-[#0F0F0F] border border-neutral-800 rounded p-4 font-mono text-xs text-left h-52 overflow-y-auto relative">
+      <div className="flex-1 bg-[#0F0F0F] rounded-lg p-5 font-mono text-xs text-left h-52 relative border border-neutral-800 flex flex-col justify-between">
         <div className="flex items-center gap-1.5 mb-3 border-b border-neutral-800 pb-2">
           <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
           <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
           <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-          <span className="text-[10px] text-neutral-500 ml-2">rakshex scan ./api.json</span>
+          <span className="text-[10px] text-neutral-500 ml-2">bash - rakshex scan</span>
         </div>
-        <div className="space-y-2">
-          <div className="text-cyan-400 font-medium">$ rakshex scan ./api.json</div>
-          {lines.map((l, i) => {
+        <div className="space-y-2 flex-1 overflow-y-auto">
+          {terminalLines.slice(0, scanStep).map((line, idx) => {
             let color = "text-neutral-300";
-            if (l.startsWith("✓")) color = "text-emerald-400";
-            if (l.startsWith("⚠")) color = "text-yellow-400";
-            if (l.startsWith("🔒")) color = "text-cyan-400 font-semibold";
-            if (l.startsWith("💰")) color = "text-red-400";
+            if (line.startsWith("✓")) color = "text-cyan-400";
+            else if (line.startsWith("⚠")) color = "text-amber-400";
+            else if (line.startsWith("🔒")) color = "text-red-400";
+            else if (line.startsWith("💰")) color = "text-emerald-400";
             return (
-              <div key={i} className={`stream-fade-in ${color}`}>
-                {l}
-              </div>
+              <p key={idx} className={`${color} font-mono leading-relaxed`}>
+                {line}
+              </p>
             );
           })}
-          {lines.length < 4 && (
-            <span className="inline-block w-1.5 h-3.5 bg-cyan-400 animate-pulse ml-0.5" />
+          {scanStep < terminalLines.length && (
+            <span className="inline-block w-1.5 h-3 bg-cyan-400 animate-pulse ml-1" />
           )}
         </div>
       </div>
 
-      {/* Right panel: Security Dashboard */}
-      <div className="w-full md:w-56 shrink-0 bg-[#0F0F0F] border border-neutral-800 rounded p-4 flex flex-col items-center justify-center gap-3 relative">
-        <div className="text-[11px] text-neutral-500 font-mono tracking-wider self-start border-b border-neutral-800 w-full pb-1.5">
-          SECURITY MONITOR
-        </div>
-        <div className="relative flex items-center justify-center w-28 h-28">
-          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="40" stroke="#262626" strokeWidth="6" fill="transparent" />
-            <circle
-              cx="50"
-              cy="50"
-              r="40"
-              stroke="#06b6d4"
-              strokeWidth="6"
-              fill="transparent"
-              strokeDasharray={251.2}
-              strokeDashoffset={251.2 - (251.2 * score) / 100}
-              className="transition-all duration-500 ease-out"
-            />
-          </svg>
-          <div className="absolute flex flex-col items-center">
-            <span className="text-3xl font-bold font-mono text-white transition-all duration-300">
-              {score}
-            </span>
-            <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest mt-0.5">
-              Score
-            </span>
+      {/* Right panel: findings dashboard */}
+      <div className="w-full md:w-60 bg-[#0F0F0F] rounded-lg p-5 border border-neutral-800 flex flex-col justify-between items-center text-center">
+        <div className="w-full flex flex-col items-center gap-2">
+          <span className="text-[10px] text-neutral-500 uppercase tracking-widest font-mono">
+            Security Score
+          </span>
+          <div className="relative flex items-center justify-center">
+            <svg className="w-24 h-24 transform -rotate-90">
+              <circle cx="48" cy="48" r="38" stroke="#262626" strokeWidth="5" fill="transparent" />
+              <circle
+                cx="48"
+                cy="48"
+                r="38"
+                stroke="#06b6d4"
+                strokeWidth="5"
+                fill="transparent"
+                strokeDasharray="238"
+                strokeDashoffset={238 - (238 * securityScore) / 100}
+                className="transition-all duration-750 ease-out"
+              />
+            </svg>
+            <div className="absolute flex flex-col justify-center items-center">
+              <span className="text-2xl font-bold font-manrope text-white">{securityScore}</span>
+              <span className="text-[9px] text-neutral-400 font-mono">/100</span>
+            </div>
           </div>
         </div>
-        <div className="text-[11px] font-mono text-center px-2 py-0.5 bg-neutral-900 border border-neutral-800 rounded text-neutral-400">
-          Status: {score >= 95 ? "✓ Clean" : score >= 85 ? "⚠ Alert" : "🔒 Action Needed"}
+
+        <div className="w-full mt-4 space-y-2 text-left">
+          <div className="flex justify-between items-center border-b border-neutral-900 pb-1.5">
+            <span className="text-[10px] text-neutral-400 font-mono">Issues:</span>
+            <span className="text-[10px] text-white font-mono font-bold">{findings.length}</span>
+          </div>
+          <div className="space-y-1">
+            {findings.map((f, i) => {
+              let tagColor = "text-cyan-400 bg-cyan-950/20 border-cyan-800/30";
+              if (f.includes("Leak"))
+                tagColor = "text-amber-400 bg-amber-950/20 border-amber-800/30";
+              if (f.includes("Injection"))
+                tagColor = "text-red-400 bg-red-950/20 border-red-800/30";
+              return (
+                <div
+                  key={i}
+                  className={`text-[9px] border rounded px-1.5 py-0.5 font-mono flex items-center gap-1 ${tagColor}`}
+                >
+                  {f}
+                </div>
+              );
+            })}
+            {findings.length === 0 && (
+              <div className="text-[9px] text-neutral-500 italic font-mono">Scans running...</div>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function BenchmarkSection() {
-  const [visible, setVisible] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+export default function HomePage() {
+  const timeLeft = useCountdown("2026-07-01T00:00:00Z");
+  const { activeMenu, handleMouseEnter, handleMouseLeave, forceClose } = useMegaMenu();
+  const [copied, setCopied] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Scroll reveal references for benchmark section animations
+  const [showBenchmarkBars, setShowBenchmarkBars] = useState(false);
+  const benchmarkRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setVisible(true);
-        }
-      },
-      { threshold: 0.1 },
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <section
-      id="benchmark"
-      ref={ref}
-      className="relative w-full max-w-[680px] xl:max-w-[1280px] mx-auto flex flex-col items-center justify-center py-24 px-6"
-    >
-      <div className="w-full flex flex-col items-center gap-10">
-        <div className="flex flex-col items-center gap-3">
-          <h2 className="text-[32px] leading-12 font-normal font-manrope text-white text-center">
-            If You Use AI Agents, Secure Them with RakshEx
-          </h2>
-          <p className="text-neutral-400 font-manrope text-xl leading-8 text-center">
-            Industry leading metrics proven by internal benchmarks & audits.
-          </p>
-        </div>
-        <div className="w-full rounded-lg max-w-[1256px] mx-auto border border-neutral-700 overflow-hidden bg-[#181818]">
-          <div className="flex flex-col xl:flex-row divide-y xl:divide-y-0 xl:divide-x divide-neutral-700">
-            {/* Metric 1 */}
-            <div className="flex flex-col gap-10 px-6 xl:px-8 pt-8 pb-10 flex-1">
-              <div className="flex flex-col">
-                <p className="text-[48px] leading-10 font-inter font-medium italic text-cyan-400 select-none">
-                  2.3x More
-                </p>
-                <p className="text-neutral-400 font-inter text-base mt-2 select-none">
-                  Vulnerabilities Detected
-                </p>
-              </div>
-              <div className="flex flex-col gap-3">
-                <div className="flex flex-row items-center gap-3">
-                  <p className="w-20 text-neutral-300 font-manrope text-xs shrink-0 select-none">
-                    RakshEx
-                  </p>
-                  <div className="h-2 flex-1 max-w-[200px] bg-neutral-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-cyan-500 rounded-full transition-all duration-1000 ease-out"
-                      style={{ width: visible ? "94%" : "0%" }}
-                    />
-                  </div>
-                  <p className="w-10 text-neutral-300 font-manrope text-xs font-semibold select-none">
-                    94%
-                  </p>
-                </div>
-                <div className="flex flex-row items-center gap-3">
-                  <p className="w-20 text-neutral-300 font-manrope text-xs shrink-0 select-none">
-                    Snyk
-                  </p>
-                  <div className="h-2 flex-1 max-w-[200px] bg-neutral-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-neutral-600 rounded-full transition-all duration-1000 ease-out"
-                      style={{ width: visible ? "41%" : "0%" }}
-                    />
-                  </div>
-                  <p className="w-10 text-neutral-400 font-manrope text-xs select-none">41%</p>
-                </div>
-                <div className="flex flex-row items-center gap-3">
-                  <p className="w-20 text-neutral-300 font-manrope text-xs shrink-0 select-none">
-                    Datadog
-                  </p>
-                  <div className="h-2 flex-1 max-w-[200px] bg-neutral-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-neutral-600 rounded-full transition-all duration-1000 ease-out"
-                      style={{ width: visible ? "23%" : "0%" }}
-                    />
-                  </div>
-                  <p className="w-10 text-neutral-400 font-manrope text-xs select-none">23%</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Metric 2 */}
-            <div className="flex flex-col gap-10 px-6 xl:px-8 pt-8 pb-10 flex-1">
-              <div className="flex flex-col">
-                <p className="text-[48px] leading-10 font-inter font-medium italic text-cyan-400 select-none">
-                  9x Fewer
-                </p>
-                <p className="text-neutral-400 font-inter text-base mt-2 select-none">
-                  False Positives Rate (Short is Better)
-                </p>
-              </div>
-              <div className="flex flex-col gap-3">
-                <div className="flex flex-row items-center gap-3">
-                  <p className="w-20 text-neutral-300 font-manrope text-xs shrink-0 select-none">
-                    RakshEx
-                  </p>
-                  <div className="h-2 flex-1 max-w-[200px] bg-neutral-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-cyan-500 rounded-full transition-all duration-1000 ease-out"
-                      style={{ width: visible ? "2.1%" : "0%" }}
-                    />
-                  </div>
-                  <p className="w-10 text-neutral-300 font-manrope text-xs font-semibold select-none">
-                    2.1%
-                  </p>
-                </div>
-                <div className="flex flex-row items-center gap-3">
-                  <p className="w-20 text-neutral-300 font-manrope text-xs shrink-0 select-none">
-                    Snyk
-                  </p>
-                  <div className="h-2 flex-1 max-w-[200px] bg-neutral-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-neutral-600 rounded-full transition-all duration-1000 ease-out"
-                      style={{ width: visible ? "18.4%" : "0%" }}
-                    />
-                  </div>
-                  <p className="w-10 text-neutral-400 font-manrope text-xs select-none">18.4%</p>
-                </div>
-                <div className="flex flex-row items-center gap-3">
-                  <p className="w-20 text-neutral-300 font-manrope text-xs shrink-0 select-none">
-                    Datadog
-                  </p>
-                  <div className="h-2 flex-1 max-w-[200px] bg-neutral-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-neutral-600 rounded-full transition-all duration-1000 ease-out"
-                      style={{ width: visible ? "31.2%" : "0%" }}
-                    />
-                  </div>
-                  <p className="w-10 text-neutral-400 font-manrope text-xs select-none">31.2%</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Metric 3 */}
-            <div className="flex flex-col gap-10 px-6 xl:px-8 pt-8 pb-10 flex-1">
-              <div className="flex flex-col">
-                <p className="text-[48px] leading-10 font-inter font-medium italic text-cyan-400 select-none">
-                  15x Faster
-                </p>
-                <p className="text-neutral-400 font-inter text-base mt-2 select-none">
-                  Time to First Finding
-                </p>
-              </div>
-              <div className="flex flex-col gap-3">
-                <div className="flex flex-row items-center gap-3">
-                  <p className="w-20 text-neutral-300 font-manrope text-xs shrink-0 select-none">
-                    RakshEx
-                  </p>
-                  <div className="h-2 flex-1 max-w-[200px] bg-neutral-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-cyan-500 rounded-full transition-all duration-1000 ease-out"
-                      style={{ width: visible ? "6.4%" : "0%" }} // 3s relative bar width
-                    />
-                  </div>
-                  <p className="w-10 text-neutral-300 font-manrope text-xs font-semibold select-none">
-                    3s
-                  </p>
-                </div>
-                <div className="flex flex-row items-center gap-3">
-                  <p className="w-20 text-neutral-300 font-manrope text-xs shrink-0 select-none">
-                    Snyk
-                  </p>
-                  <div className="h-2 flex-1 max-w-[200px] bg-neutral-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-neutral-600 rounded-full transition-all duration-1000 ease-out"
-                      style={{ width: visible ? "100%" : "0%" }} // 47s relative bar width
-                    />
-                  </div>
-                  <p className="w-10 text-neutral-400 font-manrope text-xs select-none">47s</p>
-                </div>
-                <div className="flex flex-row items-center gap-3">
-                  <p className="w-20 text-neutral-300 font-manrope text-xs shrink-0 select-none">
-                    Datadog
-                  </p>
-                  <div className="h-2 flex-1 max-w-[200px] bg-neutral-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-neutral-700/30 rounded-full"
-                      style={{ width: "0%" }}
-                    />
-                  </div>
-                  <p className="w-10 text-neutral-500 font-manrope text-xs select-none">N/A</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col items-center gap-2">
-          <p className="text-xs text-neutral-500 italic">
-            * Internal benchmarks. 50 real-world API collections. Independent audit Q3 2026.
-          </p>
-          <Link
-            href="/blog/benchmark-methodology"
-            className="text-cyan-400 hover:text-cyan-300 transition-colors text-sm font-medium flex items-center gap-1.5 mt-2"
-          >
-            View benchmark methodology <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function AccordionItem({
-  question,
-  answer,
-  isOpen,
-  onClick,
-}: {
-  question: string;
-  answer: string;
-  isOpen: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <div className="border-b border-neutral-800">
-      <button
-        onClick={onClick}
-        className="w-full flex justify-between items-center py-5 text-left text-white font-manrope text-base sm:text-lg hover:text-cyan-400 transition-colors"
-      >
-        <span>{question}</span>
-        <ChevronRight
-          className={`w-5 h-5 text-neutral-500 transition-transform duration-300 ${isOpen ? "rotate-90 text-cyan-400" : ""}`}
-        />
-      </button>
-      <div
-        className={`overflow-hidden transition-all duration-300 ${isOpen ? "max-h-52 pb-5 opacity-100" : "max-h-0 opacity-0"}`}
-      >
-        <p className="text-neutral-400 text-sm sm:text-base leading-relaxed font-manrope whitespace-pre-line">
-          {faqAnswerCleaner(answer)}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function faqAnswerCleaner(text: string) {
-  return text;
-}
-
-function RollingCounter({
-  target,
-  suffix = "",
-  prefix = "",
-}: {
-  target: number;
-  suffix?: string;
-  prefix?: string;
-}) {
-  const [count, setCount] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    let observer: IntersectionObserver;
-    let active = true;
-
-    const startCount = () => {
-      let current = 0;
-      const steps = 50;
-      const step = target / steps;
-      let stepCount = 0;
-
-      const timer = setInterval(() => {
-        if (!active) return;
-        current += step;
-        stepCount++;
-        if (stepCount >= steps) {
-          setCount(target);
-          clearInterval(timer);
-        } else {
-          setCount(Math.ceil(current));
-        }
-      }, 30);
-    };
-
-    observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          startCount();
+          setShowBenchmarkBars(true);
           observer.disconnect();
         }
       },
       { threshold: 0.1 },
     );
-
-    if (ref.current) observer.observe(ref.current);
-    return () => {
-      active = false;
-      observer.disconnect();
-    };
-  }, [target]);
-
-  return (
-    <div ref={ref} className="font-plex font-medium text-4xl sm:text-5xl text-white select-none">
-      {prefix}
-      {count.toLocaleString()}
-      {suffix}
-    </div>
-  );
-}
-
-export default function LandingPage() {
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const [copied, setCopied] = useState(false);
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const targetDate = new Date("2026-07-01T00:00:00Z");
-    const updateCountdown = () => {
-      const now = new Date();
-      const difference = targetDate.getTime() - now.getTime();
-      if (difference <= 0) {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-        return;
-      }
-      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((difference / 1000 / 60) % 60);
-      const seconds = Math.floor((difference / 1000) % 60);
-      setTimeLeft({ days, hours, minutes, seconds });
-    };
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
-    return () => clearInterval(interval);
+    if (benchmarkRef.current) {
+      observer.observe(benchmarkRef.current);
+    }
+    return () => observer.disconnect();
   }, []);
 
-  const handleCopy = () => {
+  const handleCopyCommand = () => {
     navigator.clipboard.writeText("npx rakshex scan ./collection.json");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -635,59 +338,59 @@ export default function LandingPage() {
   const featureCards = [
     {
       title: "Security Scanner",
-      description: "87-payload library. OWASP API Top 10. PCI DSS v4.0.1.",
+      description: "87-payload library. OWASP Top 10. PCI DSS v4.",
       link: "/features#security-scanner",
       icon: Shield,
-      hoverClass: "animate-pulse-shield text-cyan-400",
+      hoverClass: "hover-shield-pulse text-cyan-400",
     },
     {
       title: "Kill Switch",
-      description: "Sub-second circuit breaker. Trips on budget, anomaly, or score.",
+      description: "Sub-second circuit breaker. Budget, anomaly, score.",
       link: "/features#kill-switch",
       icon: Power,
-      hoverClass: "animate-glow-power text-neutral-400 hover:text-red-500",
+      hoverClass: "hover-power-glow text-neutral-400 hover:text-red-500",
     },
     {
       title: "Cost Monitor",
-      description: "Holt-Winters forecasting. Per-model breakdown. Budget caps.",
+      description: "Holt-Winters forecasting. Per-model breakdown.",
       link: "/features#cost-monitor",
       icon: BarChart,
-      hoverClass: "animate-bounce-graph text-cyan-400",
+      hoverClass: "hover-graph-bounce text-cyan-400",
     },
     {
       title: "Thinking Tokens",
-      description: "World-first reasoning token isolation. Patent NHCE/DEV/2026/002.",
+      description: "World-first reasoning isolation. Patent filed.",
       link: "/features#thinking-tokens",
       icon: Brain,
-      hoverClass: "animate-pulse-brain text-cyan-400",
+      hoverClass: "hover-brain-pulse text-cyan-400",
     },
     {
-      title: "Shadow API Discovery",
-      description: "Static route extraction. Express, FastAPI, Flask, Django, Spring.",
+      title: "Shadow API",
+      description: "Express, FastAPI, Flask, Django, Spring, Laravel.",
       link: "/features#shadow-api",
       icon: Ghost,
-      hoverClass: "animate-fade-ghost text-cyan-400",
+      hoverClass: "hover-ghost-fade text-cyan-400",
     },
     {
       title: "Credential Scanner",
-      description: "AWS, GitHub, OpenAI, Stripe. Aadhaar + PAN for India.",
+      description: "AWS, GitHub, OpenAI, Stripe. Aadhaar + PAN.",
       link: "/features#credentials",
       icon: Key,
-      hoverClass: "animate-rotate-key text-cyan-400",
+      hoverClass: "hover-key-rotate text-cyan-400",
     },
     {
       title: "Compliance Reports",
-      description: "SOC2, PCI DSS, OWASP. JSON, CSV, PDF. Vanta/Drata ready.",
+      description: "SOC2, PCI DSS, OWASP. Vanta/Drata ready.",
       link: "/features#compliance",
       icon: FileText,
-      hoverClass: "animate-draw-check text-cyan-400",
+      hoverClass: "hover-draw-check text-cyan-400",
     },
     {
       title: "MCP Governance",
-      description: "Tool registry, risk scoring, approval workflows per agent.",
+      description: "Tool registry, risk scoring, agent allowlists.",
       link: "/features#mcp",
       icon: Network,
-      hoverClass: "animate-connect-network text-cyan-400",
+      hoverClass: "hover-connect-network text-cyan-400",
     },
   ];
 
@@ -695,42 +398,42 @@ export default function LandingPage() {
     {
       handle: "@devesh_k_r",
       text: "@rakshexhq found a production OpenAI key in our test collection.\nOne that was about to go live. Not a drill.",
-      date: "May 24, 2026",
+      date: "May 2026",
     },
     {
       handle: "@aarti_builds",
       text: "The @rakshexhq kill switch tripped automatically on a runaway agent loop.\nSaved us ~$8K. This feature alone is worth it.",
-      date: "May 22, 2026",
+      date: "May 2026",
     },
     {
       handle: "@siddharth_swe",
-      text: "SOC2 evidence prep used to be 3 days of pain. @rakshexhq generates\nthe bundle in one click. Our auditor was genuinely confused.",
-      date: "May 19, 2026",
+      text: "SOC2 evidence prep used to be 3 days of pain.\n@rakshexhq generates the bundle in one click. Our auditor was genuinely confused.",
+      date: "May 2026",
     },
     {
       handle: "@priya_appsec",
       text: "Thinking token attribution from @rakshexhq is wild. 40% of our Claude\nbill was reasoning tokens from a single misconfigured endpoint.",
-      date: "May 15, 2026",
+      date: "April 2026",
     },
     {
       handle: "@nikhil_founder",
       text: "@rakshexhq in GitHub Actions is a no-brainer. Every PR gets security\nscore + cost delta in USD and INR. Team loves it.",
-      date: "May 11, 2026",
+      date: "April 2026",
     },
     {
       handle: "@arjun_fintech",
       text: "Shadow API discovery found 7 forgotten endpoints. Two had zero auth.\n@rakshexhq is now mandatory before every release.",
-      date: "May 08, 2026",
+      date: "April 2026",
     },
     {
       handle: "@meera_devops",
-      text: "Deployed @rakshexhq in 4 minutes. No config. Scanned 340 endpoints.\nFound a JWT secret we had no idea existed.",
-      date: "May 05, 2026",
+      text: "Deployed @rakshexhq in 4 minutes. Scanned 340 endpoints.\nFound a JWT secret we had no idea existed.",
+      date: "March 2026",
     },
     {
       handle: "@rohan_ml",
       text: "The MCP governance layer from @rakshexhq is exactly what AI agent\nsecurity needed. Nothing else does this.",
-      date: "Apr 28, 2026",
+      date: "March 2026",
     },
   ];
 
@@ -738,232 +441,219 @@ export default function LandingPage() {
     {
       question: "What is RakshEx?",
       answer:
-        "RakshEx is India's first AI runtime governance and security platform. It monitors and secures AI agents and LLM application endpoints at runtime, preventing prompt injection attacks, scanning for exposed credentials (including Indian PAN and Aadhaar formats), detecting shadow APIs, and enforcing budget controls.",
+        "RakshEx is India's first AI Runtime Governance platform. It scans API endpoints for security vulnerabilities, monitors LLM token costs, blocks prompt injection attacks, and generates compliance reports — all in one platform.",
     },
     {
       question: "What AI frameworks does RakshEx support?",
       answer:
-        "We support all major AI frameworks and libraries including LangChain, LlamaIndex, CrewAI, AutoGen, LangGraph, and direct MCP tool integrations, across various development stacks like Next.js, FastAPI, Express, Django, and Spring Boot.",
+        "OpenAI, Anthropic Claude, Google Gemini, Mistral, Cohere, AWS Bedrock, and any LLM accessed via standard API. We also support MCP tool calls.",
     },
     {
       question: "What security checks does RakshEx perform?",
       answer:
-        "RakshEx scans requests and responses for 87+ known prompt injection payloads, checks endpoints against OWASP API Top 10 vulnerabilities, searches for exposed secrets/keys (AWS, GitHub, Stripe, OpenAI, Aadhaar, PAN), maps outbound tool parameters in Model Context Protocol (MCP) registries, and provides instant SOC2 compliance reports.",
+        "87-payload prompt injection library, BOLA/IDOR detection, credential scanning (AWS, GitHub, Stripe, Aadhaar, PAN), shadow API discovery, missing auth detection, PII exposure, and OWASP AI Top 10 mapping.",
     },
     {
       question: "Who should use RakshEx?",
       answer:
-        "Security engineers, application security teams, and developers building AI agent workflows or LLM-enabled web applications who want to ensure safety, governance, cost containment, and compliance in production environments.",
+        "Any team building with AI agents, LLMs, or AI-powered APIs who needs security visibility, cost control, and compliance evidence.",
     },
     {
       question: "Is RakshEx open source?",
       answer:
-        "Yes! RakshEx core scanning engines and SDK packages are fully open source and public. We offer premium enterprise security scanners, advanced compliance dashboards, and cloud deployment runtimes for enterprise teams.",
+        "Our OWASP AI Top 10 detection ruleset is being open sourced. The core platform is commercial. Join the waitlist for early access.",
     },
     {
       question: "How is RakshEx different from Snyk or Datadog?",
       answer:
-        "Snyk and Datadog focus on traditional static code scanning or server infrastructure metrics. RakshEx is built specifically for AI-native workflows, isolating thinking/reasoning token usage bills, scoring agent tool risks, intercepting prompt-level injection payloads, and supplying autonomous circuit breakers at runtime.",
+        "Snyk does code scanning. Datadog does infrastructure monitoring. Neither does prompt injection blocking, thinking token attribution, or AI-specific compliance reporting. RakshEx does all three.",
     },
     {
       question: "What does the kill switch actually do?",
       answer:
-        "The AgentGuard Kill Switch acts as an autonomous circuit breaker. It intercepts agent actions and sub-second triggers to shut down loops or tool execution when cost anomaly thresholds are breached, when malicious injection patterns are matched, or when security scores degrade.",
+        "It's an autonomous circuit breaker. When your LLM spend, anomaly score, or red-team result crosses a threshold, RakshEx automatically returns 402 responses to the agent, stopping runaway cost or attacks.",
     },
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0F0F0F] text-neutral-300 font-sans selection:bg-cyan-500/30 selection:text-white">
-      <JsonLdInjector />
-
-      {/* STEP 1 - Sticky Announcement Countdown Banner */}
-      <div
-        id="event-banner"
-        className="relative z-[100] h-10 shrink-0 w-full border-b border-cyan-500/20 bg-[#0F0F0F]"
-      >
-        <Link href="/changelog" className="block h-full">
-          <div className="mx-auto flex h-full max-w-[1280px] items-center justify-between px-4 sm:px-6">
-            <p className="min-w-0 truncate text-xs sm:text-sm font-manrope font-medium leading-none text-white hover:text-cyan-400 transition-colors flex items-center gap-1.5">
-              <span>🔒 RakshEx Launch Week — India's First AI Runtime Governance Platform →</span>
+    <div className="min-h-screen bg-[#0F0F0F] text-white overflow-x-hidden font-manrope selection:bg-cyan-500 selection:text-black">
+      {/* SECTION 1 — sticky announcement bar */}
+      <div className="sticky top-0 z-[60] left-0 w-full bg-[#0f172a] border-b border-neutral-800/80 backdrop-blur-md">
+        <a className="block" href="/changelog">
+          <div className="mx-auto flex h-10 w-full max-w-[1280px] items-center justify-between px-6">
+            <p className="min-w-0 truncate text-left text-xs font-medium text-neutral-200 sm:text-sm">
+              🔒 RakshEx Launch Week — India's First AI Runtime Governance Platform →
             </p>
-            <div className="flex shrink-0 items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-neutral-400 font-manrope select-none">
-              <span className="hidden sm:inline">Closing in:</span>
+            <span
+              aria-label="Launch countdown"
+              className="flex shrink-0 flex-row items-center gap-1.5 text-xs text-neutral-400"
+            >
+              <span className="hidden md:inline mr-1 text-[11px] uppercase tracking-wider text-neutral-500">
+                Launch in:
+              </span>
               <span className="flex items-center gap-1">
-                <span className="px-1 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-cyan-400 font-bold font-mono">
+                <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-cyan-400">
                   {timeLeft.days}d
                 </span>
                 <span>:</span>
-                <span className="px-1 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-cyan-400 font-bold font-mono">
+                <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-cyan-400">
                   {timeLeft.hours}h
                 </span>
                 <span>:</span>
-                <span className="px-1 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-cyan-400 font-bold font-mono">
+                <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-cyan-400">
                   {timeLeft.minutes}m
                 </span>
                 <span>:</span>
-                <span className="px-1 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-cyan-400 font-bold font-mono">
+                <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-cyan-400">
                   {timeLeft.seconds}s
                 </span>
               </span>
-            </div>
+            </span>
           </div>
-        </Link>
+        </a>
       </div>
 
-      {/* STEP 2 - Navbar Redesign (Mega Menu) */}
-      <nav className="sticky h-12 top-0 left-0 bg-[#0F0F0F]/80 backdrop-blur-md w-full border-b border-neutral-800/80 z-50">
-        <div className="flex justify-between items-center max-w-[1280px] mx-auto h-full px-4 sm:px-6">
-          <div className="flex items-center gap-8 h-full">
-            <Link
-              href="/"
-              className="flex items-center gap-2 no-underline shrink-0 text-white font-manrope font-bold text-lg hover:opacity-90"
-            >
-              <Shield className="w-5 h-5 text-cyan-400 fill-cyan-400/20" />
-              <span>RakshEx</span>
+      {/* SECTION 2 — Navbar Redesign (Mega Menu) */}
+      <nav
+        className="sticky top-10 left-0 bg-[#0F0F0F]/95 backdrop-blur-md w-full z-50 border-b border-neutral-900"
+        onMouseLeave={handleMouseLeave}
+      >
+        <div className="flex justify-between items-center max-w-[1280px] mx-auto px-6 h-14">
+          <div className="flex items-center gap-10">
+            <Link className="flex items-center gap-2 no-underline shrink-0" href="/">
+              <div className="flex items-center gap-2">
+                <Shield className="w-6 h-6 text-cyan-400" />
+                <span className="text-xl font-bold font-manrope tracking-tight text-white">
+                  RakshEx
+                </span>
+              </div>
             </Link>
 
-            <div className="hidden lg:flex items-center gap-6 h-full text-sm font-medium">
-              {/* Products Dropdown */}
-              <div className="relative group h-full flex items-center">
-                <button className="flex items-center gap-1 text-neutral-400 group-hover:text-white transition-colors cursor-pointer select-none">
+            {/* Desktop Navigation Links */}
+            <div className="hidden lg:flex gap-8 items-center ml-10">
+              {/* Products Mega Dropdown */}
+              <div className="relative py-4" onMouseEnter={() => handleMouseEnter("products")}>
+                <div className="flex items-center gap-1 text-white text-sm font-medium opacity-90 hover:opacity-100 cursor-pointer select-none">
                   Products
-                  <ChevronDown className="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" />
-                </button>
-                <div className="absolute top-[48px] left-0 pt-2 transition-all duration-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 z-50">
-                  <div className="bg-[#181818] border border-neutral-800 rounded-xl shadow-2xl p-6 w-[560px] grid grid-cols-2 gap-x-6 gap-y-4">
-                    {/* Col 1 */}
-                    <div className="flex flex-col gap-4">
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${activeMenu === "products" ? "rotate-180" : ""}`}
+                  />
+                </div>
+                <div
+                  className={`absolute top-full left-[-100px] pt-2 transition-all duration-200 ${activeMenu === "products" ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"}`}
+                >
+                  <div className="bg-neutral-900 border border-neutral-850 rounded-xl overflow-hidden shadow-2xl w-[640px] p-6 grid grid-cols-2 gap-6">
+                    {/* Column 1 */}
+                    <div className="space-y-4">
                       <Link
+                        className="flex items-start gap-3 group"
                         href="/features#security-scanner"
-                        className="flex items-start gap-3 group/item"
                       >
-                        <div className="w-9 h-9 rounded bg-neutral-800 group-hover/item:bg-cyan-500/20 flex items-center justify-center text-neutral-400 group-hover/item:text-cyan-400 transition-colors shrink-0">
-                          <Shield className="w-4 h-4" />
+                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-cyan-500 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
+                          <Shield className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="text-white text-xs font-semibold group-hover/item:text-cyan-400 transition-colors">
+                          <p className="text-white text-xs font-semibold group-hover:text-cyan-400 transition-colors">
                             Security Scanner
                           </p>
-                          <p className="text-neutral-500 text-[10px] mt-0.5 leading-normal">
+                          <p className="text-neutral-500 text-[11px] leading-relaxed mt-0.5">
                             87-payload injection library, OWASP Top 10
                           </p>
                         </div>
                       </Link>
-
-                      <Link
-                        href="/features#kill-switch"
-                        className="flex items-start gap-3 group/item"
-                      >
-                        <div className="w-9 h-9 rounded bg-neutral-800 group-hover/item:bg-cyan-500/20 flex items-center justify-center text-neutral-400 group-hover/item:text-cyan-400 transition-colors shrink-0">
-                          <Power className="w-4 h-4" />
+                      <Link className="flex items-start gap-3 group" href="/features#kill-switch">
+                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-cyan-500 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
+                          <Power className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="text-white text-xs font-semibold group-hover/item:text-cyan-400 transition-colors">
+                          <p className="text-white text-xs font-semibold group-hover:text-cyan-400 transition-colors">
                             AgentGuard Kill Switch
                           </p>
-                          <p className="text-neutral-500 text-[10px] mt-0.5 leading-normal">
+                          <p className="text-neutral-500 text-[11px] leading-relaxed mt-0.5">
                             Autonomous circuit breaker, sub-second
                           </p>
                         </div>
                       </Link>
-
-                      <Link
-                        href="/features#shadow-api"
-                        className="flex items-start gap-3 group/item"
-                      >
-                        <div className="w-9 h-9 rounded bg-neutral-800 group-hover/item:bg-cyan-500/20 flex items-center justify-center text-neutral-400 group-hover/item:text-cyan-400 transition-colors shrink-0">
-                          <Ghost className="w-4 h-4" />
+                      <Link className="flex items-start gap-3 group" href="/features#shadow-api">
+                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-cyan-500 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
+                          <Ghost className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="text-white text-xs font-semibold group-hover/item:text-cyan-400 transition-colors">
+                          <p className="text-white text-xs font-semibold group-hover:text-cyan-400 transition-colors">
                             Shadow API Discovery
                           </p>
-                          <p className="text-neutral-500 text-[10px] mt-0.5 leading-normal">
+                          <p className="text-neutral-500 text-[11px] leading-relaxed mt-0.5">
                             Find undocumented endpoints instantly
                           </p>
                         </div>
                       </Link>
-
-                      <Link
-                        href="/features#credentials"
-                        className="flex items-start gap-3 group/item"
-                      >
-                        <div className="w-9 h-9 rounded bg-neutral-800 group-hover/item:bg-cyan-500/20 flex items-center justify-center text-neutral-400 group-hover/item:text-cyan-400 transition-colors shrink-0">
-                          <Key className="w-4 h-4" />
+                      <Link className="flex items-start gap-3 group" href="/features#credentials">
+                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-cyan-500 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
+                          <Key className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="text-white text-xs font-semibold group-hover/item:text-cyan-400 transition-colors">
+                          <p className="text-white text-xs font-semibold group-hover:text-cyan-400 transition-colors">
                             Credential Scanner
                           </p>
-                          <p className="text-neutral-500 text-[10px] mt-0.5 leading-normal">
+                          <p className="text-neutral-500 text-[11px] leading-relaxed mt-0.5">
                             AWS, GitHub, Aadhaar, PAN detection
                           </p>
                         </div>
                       </Link>
                     </div>
-
-                    {/* Col 2 */}
-                    <div className="flex flex-col gap-4">
-                      <Link
-                        href="/features#cost-monitor"
-                        className="flex items-start gap-3 group/item"
-                      >
-                        <div className="w-9 h-9 rounded bg-neutral-800 group-hover/item:bg-cyan-500/20 flex items-center justify-center text-neutral-400 group-hover/item:text-cyan-400 transition-colors shrink-0">
-                          <BarChart className="w-4 h-4" />
+                    {/* Column 2 */}
+                    <div className="space-y-4">
+                      <Link className="flex items-start gap-3 group" href="/features#cost-monitor">
+                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-cyan-500 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
+                          <BarChart className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="text-white text-xs font-semibold group-hover/item:text-cyan-400 transition-colors">
+                          <p className="text-white text-xs font-semibold group-hover:text-cyan-400 transition-colors">
                             Cost Monitor
                           </p>
-                          <p className="text-neutral-500 text-[10px] mt-0.5 leading-normal">
+                          <p className="text-neutral-500 text-[11px] leading-relaxed mt-0.5">
                             Holt-Winters forecasting, anomaly detection
                           </p>
                         </div>
                       </Link>
-
                       <Link
+                        className="flex items-start gap-3 group"
                         href="/features#thinking-tokens"
-                        className="flex items-start gap-3 group/item"
                       >
-                        <div className="w-9 h-9 rounded bg-neutral-800 group-hover/item:bg-cyan-500/20 flex items-center justify-center text-neutral-400 group-hover/item:text-cyan-400 transition-colors shrink-0">
-                          <Brain className="w-4 h-4" />
+                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-cyan-500 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
+                          <Brain className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="text-white text-xs font-semibold group-hover/item:text-cyan-400 transition-colors">
+                          <p className="text-white text-xs font-semibold group-hover:text-cyan-400 transition-colors">
                             Thinking Token Attribution
                           </p>
-                          <p className="text-neutral-500 text-[10px] mt-0.5 leading-normal">
+                          <p className="text-neutral-500 text-[11px] leading-relaxed mt-0.5">
                             World-first reasoning token isolation
                           </p>
                         </div>
                       </Link>
-
-                      <Link
-                        href="/features#compliance"
-                        className="flex items-start gap-3 group/item"
-                      >
-                        <div className="w-9 h-9 rounded bg-neutral-800 group-hover/item:bg-cyan-500/20 flex items-center justify-center text-neutral-400 group-hover/item:text-cyan-400 transition-colors shrink-0">
-                          <FileText className="w-4 h-4" />
+                      <Link className="flex items-start gap-3 group" href="/features#compliance">
+                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-cyan-500 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
+                          <FileText className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="text-white text-xs font-semibold group-hover/item:text-cyan-400 transition-colors">
+                          <p className="text-white text-xs font-semibold group-hover:text-cyan-400 transition-colors">
                             Compliance Reports
                           </p>
-                          <p className="text-neutral-500 text-[10px] mt-0.5 leading-normal">
+                          <p className="text-neutral-500 text-[11px] leading-relaxed mt-0.5">
                             SOC2, PCI DSS, OWASP. One-click PDF
                           </p>
                         </div>
                       </Link>
-
-                      <Link href="/features#mcp" className="flex items-start gap-3 group/item">
-                        <div className="w-9 h-9 rounded bg-neutral-800 group-hover/item:bg-cyan-500/20 flex items-center justify-center text-neutral-400 group-hover/item:text-cyan-400 transition-colors shrink-0">
-                          <Network className="w-4 h-4" />
+                      <Link className="flex items-start gap-3 group" href="/features#mcp">
+                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-cyan-500 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
+                          <Network className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="text-white text-xs font-semibold group-hover/item:text-cyan-400 transition-colors">
+                          <p className="text-white text-xs font-semibold group-hover:text-cyan-400 transition-colors">
                             MCP Governance
                           </p>
-                          <p className="text-neutral-500 text-[10px] mt-0.5 leading-normal">
+                          <p className="text-neutral-500 text-[11px] leading-relaxed mt-0.5">
                             Tool registry, risk scoring, allowlists
                           </p>
                         </div>
@@ -974,34 +664,38 @@ export default function LandingPage() {
               </div>
 
               {/* Compare Dropdown */}
-              <div className="relative group h-full flex items-center">
-                <button className="flex items-center gap-1 text-neutral-400 group-hover:text-white transition-colors cursor-pointer select-none">
+              <div className="relative py-4" onMouseEnter={() => handleMouseEnter("compare")}>
+                <div className="flex items-center gap-1 text-white text-sm font-medium opacity-90 hover:opacity-100 cursor-pointer select-none">
                   Compare
-                  <ChevronDown className="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" />
-                </button>
-                <div className="absolute top-[48px] left-0 pt-2 transition-all duration-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 z-50">
-                  <div className="bg-[#181818] border border-neutral-800 rounded-xl shadow-2xl p-4 w-[240px] flex flex-col gap-2">
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${activeMenu === "compare" ? "rotate-180" : ""}`}
+                  />
+                </div>
+                <div
+                  className={`absolute top-full left-0 pt-2 transition-all duration-200 ${activeMenu === "compare" ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"}`}
+                >
+                  <div className="bg-neutral-900 border border-neutral-850 rounded-xl overflow-hidden shadow-2xl w-56 p-4 flex flex-col gap-1.5 text-left">
                     <Link
+                      className="text-neutral-400 hover:text-cyan-400 text-xs py-1.5 transition-colors border-b border-neutral-800 pb-2"
                       href="/compare/rakshex-vs-snyk"
-                      className="px-3 py-2 text-xs text-neutral-300 hover:text-cyan-400 hover:bg-neutral-800 rounded transition-colors"
                     >
                       RakshEx vs Snyk →
                     </Link>
                     <Link
+                      className="text-neutral-400 hover:text-cyan-400 text-xs py-1.5 transition-colors border-b border-neutral-800 pb-2"
                       href="/compare/rakshex-vs-datadog"
-                      className="px-3 py-2 text-xs text-neutral-300 hover:text-cyan-400 hover:bg-neutral-800 rounded transition-colors"
                     >
                       RakshEx vs Datadog →
                     </Link>
                     <Link
+                      className="text-neutral-400 hover:text-cyan-400 text-xs py-1.5 transition-colors border-b border-neutral-800 pb-2"
                       href="/compare/rakshex-vs-traceable"
-                      className="px-3 py-2 text-xs text-neutral-300 hover:text-cyan-400 hover:bg-neutral-800 rounded transition-colors"
                     >
                       RakshEx vs Traceable AI →
                     </Link>
                     <Link
+                      className="text-neutral-400 hover:text-cyan-400 text-xs py-1.5 transition-colors"
                       href="/compare/rakshex-vs-salt"
-                      className="px-3 py-2 text-xs text-neutral-300 hover:text-cyan-400 hover:bg-neutral-800 rounded transition-colors"
                     >
                       RakshEx vs Salt Security →
                     </Link>
@@ -1010,40 +704,44 @@ export default function LandingPage() {
               </div>
 
               {/* Resources Dropdown */}
-              <div className="relative group h-full flex items-center">
-                <button className="flex items-center gap-1 text-neutral-400 group-hover:text-white transition-colors cursor-pointer select-none">
+              <div className="relative py-4" onMouseEnter={() => handleMouseEnter("resources")}>
+                <div className="flex items-center gap-1 text-white text-sm font-medium opacity-90 hover:opacity-100 cursor-pointer select-none">
                   Resources
-                  <ChevronDown className="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" />
-                </button>
-                <div className="absolute top-[48px] left-0 pt-2 transition-all duration-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 z-50">
-                  <div className="bg-[#181818] border border-neutral-800 rounded-xl shadow-2xl p-3 w-[200px] flex flex-col gap-1">
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${activeMenu === "resources" ? "rotate-180" : ""}`}
+                  />
+                </div>
+                <div
+                  className={`absolute top-full left-0 pt-2 transition-all duration-200 ${activeMenu === "resources" ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"}`}
+                >
+                  <div className="bg-neutral-900 border border-neutral-850 rounded-xl overflow-hidden shadow-2xl w-48 p-4 flex flex-col gap-1.5 text-left">
                     <Link
+                      className="text-neutral-400 hover:text-cyan-400 text-xs py-1 transition-colors"
                       href="/blog"
-                      className="px-3 py-2 text-xs text-neutral-300 hover:text-cyan-400 hover:bg-neutral-800 rounded transition-colors"
                     >
                       Blog
                     </Link>
                     <Link
+                      className="text-neutral-400 hover:text-cyan-400 text-xs py-1 transition-colors"
                       href="/docs"
-                      className="px-3 py-2 text-xs text-neutral-300 hover:text-cyan-400 hover:bg-neutral-800 rounded transition-colors"
                     >
                       Docs
                     </Link>
                     <Link
+                      className="text-neutral-400 hover:text-cyan-400 text-xs py-1 transition-colors"
                       href="/changelog"
-                      className="px-3 py-2 text-xs text-neutral-300 hover:text-cyan-400 hover:bg-neutral-800 rounded transition-colors"
                     >
                       Changelog
                     </Link>
                     <Link
-                      href="/roi"
-                      className="px-3 py-2 text-xs text-neutral-300 hover:text-cyan-400 hover:bg-neutral-800 rounded transition-colors"
+                      className="text-neutral-400 hover:text-cyan-400 text-xs py-1 transition-colors"
+                      href="/roi-calculator"
                     >
                       ROI Calculator
                     </Link>
                     <Link
+                      className="text-neutral-400 hover:text-cyan-400 text-xs py-1 transition-colors"
                       href="/faq"
-                      className="px-3 py-2 text-xs text-neutral-300 hover:text-cyan-400 hover:bg-neutral-800 rounded transition-colors"
                     >
                       FAQ
                     </Link>
@@ -1053,715 +751,911 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* Social links */}
-            <a
-              href="https://discord.gg/rakshex"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-neutral-400 hover:text-white transition-colors p-1"
-              aria-label="Discord"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                fill="currentColor"
-                viewBox="0 0 16 16"
-              >
-                <path d="M13.542 0c.264 0 .497.102.684.286a11.64 11.64 0 0 1 1.708 2.046c.114.183.166.386.166.529 0 .428-.415 4.398-.765 8.21-.084.95-.53 1.706-1.084 2.595a16.5 16.5 0 0 1-5.064 2.595q-.613-.841-1.084-1.785c.67-.183 1.258-.466 1.71-.833a10.6 10.6 0 0 0-.418-.331 15.2 15.2 0 0 1-10.118 0q-.206.171-.418.331c.452.367 1.04.65 1.71.833a16.5 16.5 0 0 1-1.084 1.785A16.5 16.5 0 0 1 .085 15.11C-.27 11.319.41 7.47.825 3.52c.046-.143.1-.346.166-.529A11.64 11.64 0 0 1 2.7 1.3C3.991.69 5.377.25 6.825.0c.18.32.388.753.535 1.097a15.2 15.2 0 0 1 4.573 0c.143-.344.351-.777.53-1.097 1.452.25 2.834.693 4.129 1.3M5.678 10.735c-.988 0-1.798-.922-1.798-2.046 0-1.123.81-2.046 1.798-2.046.99 0 1.798.922 1.798 2.046s-.808 2.046-1.798 2.046m6.644 0c-.988 0-1.798-.922-1.798-2.046 0-1.123.81-2.046 1.798-2.046.99 0 1.798.922 1.798 2.046s-.808 2.046-1.798 2.046" />
-              </svg>
-            </a>
-            <a
-              href="https://github.com/rakshex"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-neutral-400 hover:text-white transition-colors p-1"
-              aria-label="GitHub"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                fill="currentColor"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"
-                />
-              </svg>
-            </a>
-
+          {/* Right Actions */}
+          <div className="flex gap-4 items-center">
             <Link
+              className="text-neutral-400 hover:text-white transition-colors text-sm font-medium hidden md:inline"
               href="/login"
-              className="text-neutral-400 hover:text-white transition-colors text-sm font-medium ml-2"
             >
               Sign In
             </Link>
             <Link
+              className="bg-[#06b6d4] hover:bg-[#0891b2] text-black font-semibold text-xs font-mono uppercase tracking-wider px-4 py-2 rounded shadow-[0_0_15px_rgba(6,182,212,0.2)] transition-all"
               href="/register"
-              className="bg-[#06b6d4] hover:bg-cyan-400 text-neutral-950 px-3 py-1.5 rounded text-xs font-bold font-manrope transition-colors shadow-[0_0_15px_rgba(6,182,212,0.2)]"
             >
               Start Free
             </Link>
             <button
-              className="lg:hidden text-neutral-400 hover:text-white transition-colors p-1"
+              className="lg:hidden text-white"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle Menu"
+              aria-label="Toggle Mobile Menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* Mobile Navigation Menu */}
         {mobileMenuOpen && (
-          <div className="absolute top-12 left-0 w-full bg-[#181818] border-b border-neutral-800 p-6 flex flex-col gap-4 z-40 lg:hidden">
-            <Link href="/features" className="text-neutral-300 font-medium text-sm">
-              Products
-            </Link>
-            <Link href="/compare" className="text-neutral-300 font-medium text-sm">
-              Compare
-            </Link>
-            <Link href="/blog" className="text-neutral-300 font-medium text-sm">
-              Blog
-            </Link>
-            <Link href="/docs" className="text-neutral-300 font-medium text-sm">
-              Docs
-            </Link>
-            <Link href="/pricing" className="text-neutral-300 font-medium text-sm">
-              Pricing
-            </Link>
-            <hr className="border-neutral-800" />
-            <Link href="/login" className="text-neutral-400 text-sm">
-              Sign In
-            </Link>
-            <Link
-              href="/register"
-              className="bg-[#06b6d4] text-neutral-950 px-4 py-2 rounded text-center text-sm font-bold font-manrope"
-            >
-              Start Free
-            </Link>
+          <div className="lg:hidden bg-neutral-950 border-t border-neutral-900 px-6 py-6 space-y-6 animate-fadeIn">
+            <div className="space-y-3">
+              <p className="text-[10px] text-neutral-500 font-mono tracking-widest uppercase">
+                Products
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <Link
+                  className="text-sm text-neutral-300 hover:text-cyan-400"
+                  href="/features#security-scanner"
+                >
+                  Security Scanner
+                </Link>
+                <Link
+                  className="text-sm text-neutral-300 hover:text-cyan-400"
+                  href="/features#kill-switch"
+                >
+                  Kill Switch
+                </Link>
+                <Link
+                  className="text-sm text-neutral-300 hover:text-cyan-400"
+                  href="/features#shadow-api"
+                >
+                  Shadow API
+                </Link>
+                <Link
+                  className="text-sm text-neutral-300 hover:text-cyan-400"
+                  href="/features#credentials"
+                >
+                  Credential Scanner
+                </Link>
+                <Link
+                  className="text-sm text-neutral-300 hover:text-cyan-400"
+                  href="/features#cost-monitor"
+                >
+                  Cost Monitor
+                </Link>
+                <Link
+                  className="text-sm text-neutral-300 hover:text-cyan-400"
+                  href="/features#thinking-tokens"
+                >
+                  Thinking Tokens
+                </Link>
+                <Link
+                  className="text-sm text-neutral-300 hover:text-cyan-400"
+                  href="/features#compliance"
+                >
+                  Compliance
+                </Link>
+                <Link className="text-sm text-neutral-300 hover:text-cyan-400" href="/features#mcp">
+                  MCP Gov
+                </Link>
+              </div>
+            </div>
+            <div className="space-y-3 border-t border-neutral-900 pt-4">
+              <p className="text-[10px] text-neutral-500 font-mono tracking-widest uppercase">
+                Compare
+              </p>
+              <div className="flex flex-col gap-2">
+                <Link className="text-sm text-neutral-300" href="/compare/rakshex-vs-snyk">
+                  RakshEx vs Snyk
+                </Link>
+                <Link className="text-sm text-neutral-300" href="/compare/rakshex-vs-datadog">
+                  RakshEx vs Datadog
+                </Link>
+                <Link className="text-sm text-neutral-300" href="/compare/rakshex-vs-traceable">
+                  RakshEx vs Traceable AI
+                </Link>
+              </div>
+            </div>
+            <div className="space-y-3 border-t border-neutral-900 pt-4">
+              <p className="text-[10px] text-neutral-500 font-mono tracking-widest uppercase">
+                Resources
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                <Link className="text-sm text-neutral-300" href="/blog">
+                  Blog
+                </Link>
+                <Link className="text-sm text-neutral-300" href="/docs">
+                  Docs
+                </Link>
+                <Link className="text-sm text-neutral-300" href="/changelog">
+                  Changelog
+                </Link>
+                <Link className="text-sm text-neutral-300" href="/roi-calculator">
+                  ROI Calc
+                </Link>
+              </div>
+            </div>
+            <div className="border-t border-neutral-900 pt-4 flex gap-4">
+              <Link
+                className="flex-1 text-center bg-neutral-900 text-white border border-neutral-800 py-2.5 rounded font-medium text-sm"
+                href="/login"
+              >
+                Sign In
+              </Link>
+              <Link
+                className="flex-1 text-center bg-cyan-500 text-black py-2.5 rounded font-bold text-sm"
+                href="/register"
+              >
+                Start Free
+              </Link>
+            </div>
           </div>
         )}
       </nav>
 
-      <main className="flex-1 flex flex-col">
-        {/* STEP 3 - Hero Section */}
-        <section
-          id="portal"
-          className="w-full max-w-[1280px] mx-auto pt-24 sm:pt-32 pb-16 px-4 sm:px-6 relative"
-        >
-          <div
-            className="absolute inset-0 pointer-events-none opacity-20"
-            aria-hidden="true"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px)",
-              backgroundSize: "12px 12px",
-            }}
-          />
+      {/* SECTION 3 — HERO SECTION (clones portal exactly) */}
+      <section className="w-full max-w-[1280px] mx-auto pt-28 pb-20 px-6 xl:px-8" id="portal">
+        <div className="w-full flex flex-col gap-16">
+          <div className="flex flex-col xl:flex-row items-center xl:items-start justify-between gap-12">
+            {/* Hero text panel */}
+            <div className="flex flex-col items-start gap-10 w-full max-w-[680px] xl:max-w-[560px] text-left">
+              <div className="flex flex-col items-start gap-6">
+                {/* top badge */}
+                <div className="inline-flex items-center gap-3 rounded-full border border-cyan-950/60 bg-cyan-950/20 px-4 py-2 backdrop-blur-sm">
+                  <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                  <p className="text-xs leading-none font-medium tracking-[0.02em] text-cyan-300 font-manrope">
+                    Backed by 4 Patents · Built in Bengaluru, India
+                  </p>
+                </div>
 
-          <div className="flex flex-col xl:flex-row items-center xl:items-start justify-between gap-12 relative z-10">
-            <div className="flex flex-col items-start gap-8 w-full max-w-[680px] xl:max-w-[560px]">
-              {/* Pill badge */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/20 bg-cyan-950/10 px-4 py-2 backdrop-blur-sm shadow-[0_0_15px_rgba(6,182,212,0.05)]">
-                <span className="w-1.5 h-1.5 bg-[#06b6d4] rounded-full pulse-dot block" />
-                <p className="text-xs leading-none font-medium tracking-[0.02em] text-cyan-400 font-manrope">
-                  Backed by 4 Patents · Built in Bengaluru, India
+                <h1 className="text-[34px] leading-[42px] sm:text-[54px] sm:leading-[64px] text-white font-manrope font-bold">
+                  <span className="block">The AI-native</span>
+                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-400">
+                    security &amp;
+                  </span>
+                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-400">
+                    governance platform
+                  </span>
+                </h1>
+
+                <p className="text-base sm:text-lg leading-relaxed font-normal text-neutral-400 font-manrope">
+                  Prompt injection blocking, LLM cost control, shadow API discovery, and compliance
+                  reporting — all in one platform. 478 tests. 4 patents.
                 </p>
               </div>
-
-              {/* Headline */}
-              <h1 className="text-4xl sm:text-[48px] sm:leading-[1.1] font-bold text-white text-left font-manrope tracking-tight">
-                <span className="block text-neutral-400 font-medium">The AI-native</span>
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-cyan-500 to-teal-400">
-                  security &
-                </span>
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-cyan-500 to-teal-400">
-                  governance platform
-                </span>
-              </h1>
-
-              {/* Subheadline */}
-              <p className="text-base sm:text-lg leading-relaxed text-neutral-400 text-left font-manrope">
-                Prompt injection blocking, LLM cost control, shadow API discovery, and compliance
-                reporting — all in one platform. 478 tests. 4 patents.
-              </p>
 
               {/* CLI Command Box */}
               <div className="w-full flex justify-start">
                 <button
-                  onClick={handleCopy}
-                  className="w-full max-w-[360px] sm:w-auto sm:max-w-full flex items-center justify-between gap-2.5 pl-4 sm:pl-6 pr-2 sm:pr-3 py-2.5 rounded-full border border-neutral-700 bg-neutral-900/60 hover:bg-neutral-800/80 transition-colors cursor-pointer group"
+                  onClick={handleCopyCommand}
+                  className="w-full max-w-[420px] sm:w-auto flex items-center justify-between gap-4 pl-5 pr-3 py-3 rounded-full bg-neutral-900 border border-neutral-800 hover:border-neutral-700 transition-all cursor-pointer group"
                 >
-                  <span className="min-w-0 flex items-center gap-2 sm:gap-4 font-mono text-xs sm:text-sm text-neutral-300">
-                    <span className="shrink-0 text-cyan-500">$</span>
-                    <span className="truncate whitespace-nowrap">
+                  <span className="min-w-0 flex items-center gap-2 font-mono text-xs sm:text-sm text-neutral-300">
+                    <span className="text-cyan-500 font-bold">$</span>
+                    <span className="truncate whitespace-nowrap font-mono">
                       npx rakshex scan ./collection.json
                     </span>
                   </span>
-                  <span className="text-[10px] sm:text-xs font-semibold font-manrope leading-4 px-3 sm:px-4 py-1.5 rounded-full shrink-0 bg-neutral-800 text-cyan-400 group-hover:bg-cyan-500 group-hover:text-black transition-all">
-                    {copied ? "Copied!" : "Copy"}
+                  <span className="text-[11px] font-bold font-mono px-3.5 py-1.5 rounded-full shrink-0 bg-cyan-500 text-black flex items-center gap-1 hover:bg-cyan-400 transition-colors">
+                    {copied ? <Check className="w-3 h-3" /> : <Clipboard className="w-3 h-3" />}
+                    {copied ? "Copied" : "Copy"}
                   </span>
                 </button>
               </div>
-
-              {/* Works perfectly with scrolling marquee */}
-              <div className="flex flex-col items-start gap-4 w-full mt-10">
-                <p className="text-sm font-medium uppercase tracking-wider text-neutral-500 font-manrope">
-                  Works perfectly with
-                </p>
-                <div className="relative w-full overflow-hidden h-10 select-none">
-                  {/* Left fade gradient */}
-                  <div className="absolute left-0 top-0 w-8 h-full z-10 pointer-events-none bg-gradient-to-r from-[#0F0F0F] to-transparent" />
-                  {/* Right fade gradient */}
-                  <div className="absolute right-0 top-0 w-8 h-full z-10 pointer-events-none bg-gradient-to-l from-[#0F0F0F] to-transparent" />
-
-                  <div className="flex items-center gap-10 animate-logo-scroll w-max pr-10">
-                    {[
-                      "OpenAI",
-                      "Anthropic",
-                      "Claude",
-                      "GitHub",
-                      "VS Code",
-                      "Postman",
-                      "Slack",
-                      "Express",
-                      "FastAPI",
-                      "Django",
-                      "Gemini",
-                      "Mistral",
-                    ].map((logo, idx) => (
-                      <span
-                        key={idx}
-                        className="text-sm font-mono font-bold text-neutral-600 hover:text-cyan-400 transition-colors cursor-default tracking-wide uppercase shrink-0"
-                      >
-                        {logo}
-                      </span>
-                    ))}
-                    {/* Double for continuous infinite loop */}
-                    {[
-                      "OpenAI",
-                      "Anthropic",
-                      "Claude",
-                      "GitHub",
-                      "VS Code",
-                      "Postman",
-                      "Slack",
-                      "Express",
-                      "FastAPI",
-                      "Django",
-                      "Gemini",
-                      "Mistral",
-                    ].map((logo, idx) => (
-                      <span
-                        key={`dup-${idx}`}
-                        className="text-sm font-mono font-bold text-neutral-600 hover:text-cyan-400 transition-colors cursor-default tracking-wide uppercase shrink-0"
-                      >
-                        {logo}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
             </div>
 
-            {/* Hero Visual Card */}
-            <div className="w-full max-w-[680px] xl:w-[540px] shrink-0">
+            {/* Hero Visual Card Panel */}
+            <div className="w-full max-w-[680px] flex justify-center">
               <AnimatedHeroVisual />
             </div>
           </div>
-        </section>
 
-        {/* STEP 4 - Product Feature Cards (8 cards in 4-column grid) */}
-        <section id="features" className="relative max-w-[1280px] mx-auto py-20 px-4 sm:px-6">
-          <div className="flex flex-col items-center gap-3 text-center mb-12">
-            <h2 className="text-[32px] font-normal text-white font-manrope">
-              Built-in Protection Modules
+          {/* "Works perfectly with" marquee */}
+          <div className="flex flex-col xl:items-start items-center gap-5 mt-10">
+            <p className="text-xs uppercase tracking-widest text-neutral-500 font-mono">
+              Works perfectly with
+            </p>
+            <div className="relative w-full z-10">
+              <div className="absolute left-0 top-0 w-16 h-full z-10 pointer-events-none bg-gradient-to-r from-[#0F0F0F] to-transparent" />
+              <div className="absolute right-0 top-0 w-16 h-full z-10 pointer-events-none bg-gradient-to-l from-[#0F0F0F] to-transparent" />
+
+              <div className="w-full overflow-hidden">
+                <div className="flex items-center gap-12 animate-logo-scroll w-max pr-12">
+                  {/* Repeated twice for infinite loop */}
+                  {[
+                    "OpenAI",
+                    "Anthropic",
+                    "Claude Code",
+                    "GitHub",
+                    "VS Code",
+                    "Postman",
+                    "Slack",
+                    "Express",
+                    "FastAPI",
+                    "Django",
+                    "Gemini",
+                    "Mistral",
+                    "Cursor",
+                    "GitHub Actions",
+                  ].map((logo, idx) => (
+                    <div
+                      key={idx}
+                      className="shrink-0 text-neutral-400 hover:text-white font-mono text-sm tracking-wider font-bold transition-colors cursor-default select-none border border-neutral-800/80 bg-neutral-900/40 rounded-lg px-4 py-2 flex items-center gap-2"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                      {logo}
+                    </div>
+                  ))}
+                  {[
+                    "OpenAI",
+                    "Anthropic",
+                    "Claude Code",
+                    "GitHub",
+                    "VS Code",
+                    "Postman",
+                    "Slack",
+                    "Express",
+                    "FastAPI",
+                    "Django",
+                    "Gemini",
+                    "Mistral",
+                    "Cursor",
+                    "GitHub Actions",
+                  ].map((logo, idx) => (
+                    <div
+                      key={`repeat-${idx}`}
+                      className="shrink-0 text-neutral-400 hover:text-white font-mono text-sm tracking-wider font-bold transition-colors cursor-default select-none border border-neutral-800/80 bg-neutral-900/40 rounded-lg px-4 py-2 flex items-center gap-2"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                      {logo}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 4 — PRODUCT FEATURE CARDS */}
+      <section className="relative max-w-[1280px] mx-auto py-20 px-6 xl:px-8" id="features">
+        <div className="w-full flex flex-col gap-12">
+          <div className="flex flex-col items-center justify-center text-center max-w-2xl mx-auto gap-3">
+            <h2 className="text-[28px] sm:text-[38px] font-manrope font-bold text-white leading-tight">
+              Everything You Need to Ship Secure AI
             </h2>
-            <p className="text-neutral-400 text-lg max-w-2xl font-manrope">
-              Every governance module is built native to secure agent pipelines and LLM calls.
+            <p className="text-neutral-400 font-manrope text-base sm:text-lg">
+              One platform. Every surface covered.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* 8 cards in 4-column grid (cloning scraped card style) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 items-stretch">
             {featureCards.map((card, idx) => {
-              const IconComp = card.icon;
+              const Icon = card.icon;
               return (
                 <Link
-                  href={card.link}
                   key={idx}
-                  className="group relative overflow-hidden bg-[#181818] border border-neutral-800 hover:border-cyan-500/20 rounded-xl p-6 transition-all duration-300 hover:bg-gradient-to-tr hover:from-cyan-950/10 hover:to-transparent flex flex-col justify-between h-48"
+                  href={card.link}
+                  className={`overflow-hidden rounded-xl border border-neutral-800 bg-[#181818] p-6 hover:bg-neutral-900/30 hover:border-neutral-700 transition-all duration-300 flex flex-col justify-between group ${card.hoverClass}`}
                 >
-                  <div className="flex justify-between items-start">
-                    <div className="p-2.5 rounded bg-neutral-900 border border-neutral-800 group-hover:border-cyan-500/10 group-hover:bg-cyan-950/10 transition-all duration-300">
-                      <IconComp
-                        className={`w-5 h-5 transition-all duration-300 ${card.hoverClass}`}
-                      />
+                  <div className="flex flex-col gap-6 h-full justify-between">
+                    <div className="w-12 h-12 bg-neutral-800 group-hover:bg-cyan-500 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
+                      <Icon className="w-5 h-5 transition-transform group-hover:scale-110" />
                     </div>
-                    <ArrowRight className="w-4 h-4 text-neutral-600 group-hover:text-cyan-400 transition-all transform group-hover:translate-x-1" />
-                  </div>
-                  <div>
-                    <h3 className="text-white font-manrope font-semibold text-base mb-1.5 group-hover:text-cyan-400 transition-colors">
-                      {card.title}
-                    </h3>
-                    <p className="text-neutral-400 text-xs leading-relaxed font-manrope">
-                      {card.description}
-                    </p>
+                    <div className="flex flex-col items-start gap-2">
+                      <h3 className="text-base font-semibold font-manrope text-white group-hover:text-cyan-400 transition-colors">
+                        {card.title}
+                      </h3>
+                      <p className="text-neutral-400 text-xs font-normal leading-relaxed">
+                        {card.description}
+                      </p>
+                    </div>
                   </div>
                 </Link>
               );
             })}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* STEP 5 - Benchmark Section */}
-        <BenchmarkSection />
-
-        {/* STEP 6 - Frameworks Marquee */}
-        <section className="relative w-full max-w-[1280px] mx-auto py-12 px-6 border-t border-neutral-800 select-none">
-          <p className="text-center text-xs font-semibold uppercase tracking-widest text-neutral-500 font-manrope mb-6">
-            Supports Any Framework
-          </p>
-          <div className="relative w-full overflow-hidden h-8">
-            <div className="absolute left-0 top-0 w-12 h-full z-10 pointer-events-none bg-gradient-to-r from-[#0F0F0F] to-transparent" />
-            <div className="absolute right-0 top-0 w-12 h-full z-10 pointer-events-none bg-gradient-to-l from-[#0F0F0F] to-transparent" />
-
-            <div className="flex items-center gap-16 animate-logo-scroll w-max">
-              {[
-                "Next.js",
-                "React",
-                "FastAPI",
-                "Express",
-                "Django",
-                "Flask",
-                "Spring Boot",
-                "Laravel",
-                "Vue",
-                "Svelte",
-                "Nuxt",
-                "NestJS",
-              ].map((f, i) => (
-                <span
-                  key={i}
-                  className="text-xs font-mono font-medium tracking-wide text-neutral-400 hover:text-cyan-400 cursor-default shrink-0"
-                >
-                  {f}
-                </span>
-              ))}
-              {/* Loop Duplicate */}
-              {[
-                "Next.js",
-                "React",
-                "FastAPI",
-                "Express",
-                "Django",
-                "Flask",
-                "Spring Boot",
-                "Laravel",
-                "Vue",
-                "Svelte",
-                "Nuxt",
-                "NestJS",
-              ].map((f, i) => (
-                <span
-                  key={`dup-${i}`}
-                  className="text-xs font-mono font-medium tracking-wide text-neutral-400 hover:text-cyan-400 cursor-default shrink-0"
-                >
-                  {f}
-                </span>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* STEP 7 - Changelog Preview */}
-        <section className="relative max-w-[1280px] mx-auto flex flex-col gap-10 items-center justify-center py-20 px-6 border-t border-neutral-800/50">
-          <div className="flex flex-col gap-2 items-center text-center">
-            <h2 className="text-2xl sm:text-[32px] font-normal text-white font-manrope">
-              Changelog
+      {/* SECTION 5 — BENCHMARK SECTION (Cloned "1.6x Faster" style) */}
+      <section
+        className="relative w-full max-w-[1280px] mx-auto py-20 px-6 xl:px-8"
+        id="benchmark"
+        ref={benchmarkRef}
+      >
+        <div className="w-full flex flex-col items-center gap-12">
+          <div className="flex flex-col items-center gap-3 text-center max-w-2xl">
+            <h2 className="text-[28px] sm:text-[38px] font-bold font-manrope text-white leading-tight">
+              If You Use AI Agents, Secure Them with RakshEx
             </h2>
-            <p className="text-neutral-400 text-base sm:text-lg font-manrope">
-              See what's new in RakshEx
+            <p className="text-neutral-400 font-manrope text-sm sm:text-base leading-relaxed">
+              Tested across 50 real-world agent environments. Lower latency, higher detection rates,
+              fewer errors.
             </p>
           </div>
-          <div className="mx-auto w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Link
-              className="group flex flex-col justify-between p-6 rounded-xl bg-[#181818] border border-neutral-800 hover:border-cyan-500/20 hover:bg-gradient-to-tr hover:from-cyan-950/10 hover:to-transparent transition-all duration-300 h-44"
-              href="/changelog"
-            >
-              <div>
-                <span className="text-neutral-500 text-xs font-mono">May 2026</span>
-                <p className="text-white text-sm font-semibold font-manrope mt-2 group-hover:text-cyan-400 transition-colors line-clamp-3">
-                  Interactive Demo Scanner with real Postman parsing
-                </p>
-              </div>
-              <ChevronRight className="w-4 h-4 text-neutral-600 group-hover:text-cyan-400 transition-colors self-end" />
-            </Link>
 
-            <Link
-              className="group flex flex-col justify-between p-6 rounded-xl bg-[#181818] border border-neutral-800 hover:border-cyan-500/20 hover:bg-gradient-to-tr hover:from-cyan-950/10 hover:to-transparent transition-all duration-300 h-44"
-              href="/changelog"
-            >
-              <div>
-                <span className="text-neutral-500 text-xs font-mono">May 2026</span>
-                <p className="text-white text-sm font-semibold font-manrope mt-2 group-hover:text-cyan-400 transition-colors line-clamp-3">
-                  Waitlist system with email confirmation
-                </p>
-              </div>
-              <ChevronRight className="w-4 h-4 text-neutral-600 group-hover:text-cyan-400 transition-colors self-end" />
-            </Link>
-
-            <Link
-              className="group flex flex-col justify-between p-6 rounded-xl bg-[#181818] border border-neutral-800 hover:border-cyan-500/20 hover:bg-gradient-to-tr hover:from-cyan-950/10 hover:to-transparent transition-all duration-300 h-44"
-              href="/changelog"
-            >
-              <div>
-                <span className="text-neutral-500 text-xs font-mono">April 2026</span>
-                <p className="text-white text-sm font-semibold font-manrope mt-2 group-hover:text-cyan-400 transition-colors line-clamp-3">
-                  AgentGuard Kill Switch engine launched
-                </p>
-              </div>
-              <ChevronRight className="w-4 h-4 text-neutral-600 group-hover:text-cyan-400 transition-colors self-end" />
-            </Link>
-
-            <Link
-              className="group flex flex-col justify-between p-6 rounded-xl bg-[#181818] border border-neutral-800 hover:border-cyan-500/20 hover:bg-gradient-to-tr hover:from-cyan-950/10 hover:to-transparent transition-all duration-300 h-44"
-              href="/changelog"
-            >
-              <div>
-                <span className="text-neutral-500 text-xs font-mono">April 2026</span>
-                <p className="text-white text-sm font-semibold font-manrope mt-2 group-hover:text-cyan-400 transition-colors line-clamp-3">
-                  Four provisional patents filed (NHCE/DEV/2026/001–004)
-                </p>
-              </div>
-              <ChevronRight className="w-4 h-4 text-neutral-600 group-hover:text-cyan-400 transition-colors self-end" />
-            </Link>
-          </div>
-          <Link
-            className="flex items-center gap-1.5 text-neutral-400 hover:text-white transition-colors font-manrope text-sm"
-            href="/changelog"
-          >
-            View all changes <ArrowRight className="w-4 h-4" />
-          </Link>
-        </section>
-
-        {/* STEP 8 - Community Social Proof (Twitter Masonry) */}
-        <section className="relative w-full max-w-[1280px] mx-auto py-20 px-6 border-t border-neutral-800/50 flex flex-col gap-10">
-          <div className="flex flex-col items-center gap-3 text-center">
-            <h2 className="text-[32px] font-normal text-white font-manrope">Join our Community</h2>
-            <p className="text-neutral-400 text-lg font-manrope">
-              See what developers are saying about RakshEx
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 mt-2">
-              <a
-                href="https://github.com/rakshex"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-5 py-2.5 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 rounded transition-all text-sm font-medium font-manrope"
-              >
-                GitHub Discussion
-              </a>
-              <a
-                href="https://discord.gg/rakshex"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-5 py-2.5 bg-[#06b6d4] hover:bg-cyan-400 text-neutral-950 rounded transition-all text-sm font-bold font-manrope"
-              >
-                Join Discord
-              </a>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
-            {tweets.map((tw, idx) => (
-              <div
-                key={idx}
-                className="flex flex-col justify-between p-6 bg-[#181818] border border-neutral-800 hover:border-cyan-500/20 rounded-xl transition-all hover:bg-gradient-to-tr hover:from-cyan-950/10 hover:to-transparent duration-300"
-              >
-                <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-9 h-9 rounded-full bg-cyan-950/30 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-mono font-bold text-xs select-none">
-                      {tw.handle.slice(1, 3).toUpperCase()}
+          <div className="w-full border border-neutral-800 rounded-xl overflow-hidden bg-[#181818] max-w-5xl mx-auto shadow-xl">
+            <div className="flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-neutral-800">
+              {/* Metric 1 */}
+              <div className="flex flex-col gap-10 p-8 flex-1">
+                <div className="flex flex-col">
+                  <p className="text-4xl sm:text-5xl font-inter font-bold italic text-cyan-400 select-none">
+                    2.3x More
+                  </p>
+                  <p className="text-neutral-400 font-manrope text-sm font-semibold tracking-wider uppercase mt-1">
+                    Vulnerabilities Detected
+                  </p>
+                </div>
+                <div className="flex flex-col gap-3 font-mono">
+                  {/* RakshEx Bar */}
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-xs text-neutral-400 font-mono">
+                      <span>RakshEx</span>
+                      <span className="text-cyan-400 font-bold">94%</span>
                     </div>
-                    <div>
-                      <div className="text-white font-medium text-xs sm:text-sm font-manrope">
-                        {tw.handle}
-                      </div>
-                      <div className="text-[10px] text-neutral-500 font-mono mt-0.5">{tw.date}</div>
+                    <div className="w-full bg-neutral-900 rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-cyan-500 h-full rounded-full transition-all duration-1000 ease-out"
+                        style={{ width: showBenchmarkBars ? "94%" : "0%" }}
+                      />
                     </div>
                   </div>
-                  <p className="text-neutral-300 text-xs sm:text-sm leading-relaxed font-manrope whitespace-pre-line">
-                    {tw.text}
+                  {/* Snyk Bar */}
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-xs text-neutral-500 font-mono">
+                      <span>Snyk</span>
+                      <span>41%</span>
+                    </div>
+                    <div className="w-full bg-neutral-900 rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-neutral-700 h-full rounded-full transition-all duration-1000 ease-out"
+                        style={{ width: showBenchmarkBars ? "41%" : "0%" }}
+                      />
+                    </div>
+                  </div>
+                  {/* Datadog Bar */}
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-xs text-neutral-500 font-mono">
+                      <span>Datadog</span>
+                      <span>23%</span>
+                    </div>
+                    <div className="w-full bg-neutral-900 rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-neutral-700 h-full rounded-full transition-all duration-1000 ease-out"
+                        style={{ width: showBenchmarkBars ? "23%" : "0%" }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Metric 2 */}
+              <div className="flex flex-col gap-10 p-8 flex-1">
+                <div className="flex flex-col">
+                  <p className="text-4xl sm:text-5xl font-inter font-bold italic text-cyan-400 select-none">
+                    9x Fewer
                   </p>
+                  <p className="text-neutral-400 font-manrope text-sm font-semibold tracking-wider uppercase mt-1">
+                    False Positives
+                  </p>
+                </div>
+                <div className="flex flex-col gap-3 font-mono">
+                  {/* RakshEx Bar */}
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-xs text-neutral-400 font-mono">
+                      <span>RakshEx</span>
+                      <span className="text-cyan-400 font-bold">2.1% (Lower is Better)</span>
+                    </div>
+                    <div className="w-full bg-neutral-900 rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-cyan-500 h-full rounded-full transition-all duration-1000 ease-out"
+                        style={{ width: showBenchmarkBars ? "2.1%" : "0%" }}
+                      />
+                    </div>
+                  </div>
+                  {/* Snyk Bar */}
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-xs text-neutral-500 font-mono">
+                      <span>Snyk</span>
+                      <span>18.4%</span>
+                    </div>
+                    <div className="w-full bg-neutral-900 rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-neutral-700 h-full rounded-full transition-all duration-1000 ease-out"
+                        style={{ width: showBenchmarkBars ? "18.4%" : "0%" }}
+                      />
+                    </div>
+                  </div>
+                  {/* Datadog Bar */}
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-xs text-neutral-500 font-mono">
+                      <span>Datadog</span>
+                      <span>31.2%</span>
+                    </div>
+                    <div className="w-full bg-neutral-900 rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-neutral-700 h-full rounded-full transition-all duration-1000 ease-out"
+                        style={{ width: showBenchmarkBars ? "31.2%" : "0%" }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Metric 3 */}
+              <div className="flex flex-col gap-10 p-8 flex-1">
+                <div className="flex flex-col">
+                  <p className="text-4xl sm:text-5xl font-inter font-bold italic text-cyan-400 select-none">
+                    15x Faster
+                  </p>
+                  <p className="text-neutral-400 font-manrope text-sm font-semibold tracking-wider uppercase mt-1">
+                    Time to First Finding
+                  </p>
+                </div>
+                <div className="flex flex-col gap-3 font-mono">
+                  {/* RakshEx Bar */}
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-xs text-neutral-400 font-mono">
+                      <span>RakshEx</span>
+                      <span className="text-cyan-400 font-bold">3 seconds</span>
+                    </div>
+                    <div className="w-full bg-neutral-900 rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-cyan-500 h-full rounded-full transition-all duration-1000 ease-out"
+                        style={{ width: showBenchmarkBars ? "6%" : "0%" }}
+                      />
+                    </div>
+                  </div>
+                  {/* Snyk Bar */}
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-xs text-neutral-500 font-mono">
+                      <span>Snyk</span>
+                      <span>47 seconds</span>
+                    </div>
+                    <div className="w-full bg-neutral-900 rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-neutral-700 h-full rounded-full transition-all duration-1000 ease-out"
+                        style={{ width: showBenchmarkBars ? "94%" : "0%" }}
+                      />
+                    </div>
+                  </div>
+                  {/* Datadog Bar */}
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-xs text-neutral-500 font-mono">
+                      <span>Datadog</span>
+                      <span>N/A</span>
+                    </div>
+                    <div className="w-full bg-neutral-900 rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-neutral-700 h-full rounded-full transition-all duration-1000 ease-out"
+                        style={{ width: "0%" }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center space-y-4">
+            <p className="text-xs text-neutral-500 font-mono italic">
+              * Internal benchmarks. 50 real-world API collections. Independent audit Q3 2026.
+            </p>
+            <Link
+              className="inline-flex items-center gap-1.5 text-sm text-neutral-400 hover:text-white transition-colors"
+              href="/blog/benchmark-methodology"
+            >
+              View benchmark methodology
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 6 — FRAMEWORKS MARQUEE (logo support) */}
+      <section
+        className="relative w-full max-w-[1280px] mx-auto py-16 px-6"
+        id="supporting-frameworks"
+      >
+        <div className="flex flex-col items-center gap-6">
+          <p className="text-sm font-semibold uppercase tracking-wider text-neutral-500 font-mono">
+            Secures Any Framework
+          </p>
+          <div className="relative w-full z-10 overflow-hidden">
+            <div className="absolute left-0 top-0 w-16 h-full z-10 pointer-events-none bg-gradient-to-r from-[#0F0F0F] to-transparent" />
+            <div className="absolute right-0 top-0 w-16 h-full z-10 pointer-events-none bg-gradient-to-l from-[#0F0F0F] to-transparent" />
+
+            <div className="flex items-center gap-12 animate-logo-scroll w-max pr-12">
+              {[
+                "Next.js",
+                "React",
+                "FastAPI",
+                "Express",
+                "Django",
+                "Flask",
+                "Spring Boot",
+                "Laravel",
+                "Vue",
+                "Svelte",
+                "NestJS",
+                "Nuxt",
+              ].map((f, i) => (
+                <div
+                  key={i}
+                  className="text-neutral-400 hover:text-white font-mono text-sm tracking-wide font-medium transition-colors bg-neutral-900/60 border border-neutral-800 rounded-lg px-4 py-2 shrink-0 select-none"
+                >
+                  {f}
+                </div>
+              ))}
+              {[
+                "Next.js",
+                "React",
+                "FastAPI",
+                "Express",
+                "Django",
+                "Flask",
+                "Spring Boot",
+                "Laravel",
+                "Vue",
+                "Svelte",
+                "NestJS",
+                "Nuxt",
+              ].map((f, i) => (
+                <div
+                  key={`repeat-${i}`}
+                  className="text-neutral-400 hover:text-white font-mono text-sm tracking-wide font-medium transition-colors bg-neutral-900/60 border border-neutral-800 rounded-lg px-4 py-2 shrink-0 select-none"
+                >
+                  {f}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 7 — CHANGELOG PREVIEW */}
+      <section className="relative max-w-[1280px] mx-auto py-20 px-6 xl:px-8">
+        <div className="w-full flex flex-col gap-10 items-center justify-center">
+          <div className="flex flex-col items-center gap-2 text-center">
+            <h2 className="text-3xl font-bold font-manrope text-white">Changelog</h2>
+            <p className="text-neutral-400 text-sm">See what's new in RakshEx</p>
+          </div>
+
+          <div className="w-full max-w-3xl space-y-3 font-mono">
+            {[
+              { date: "May 2026", text: "Interactive Demo Scanner with real Postman parsing" },
+              { date: "May 2026", text: "Waitlist system with email confirmation" },
+              { date: "April 2026", text: "AgentGuard Kill Switch engine launched" },
+              {
+                date: "April 2026",
+                text: "Four provisional patents filed (NHCE/DEV/2026/001–004)",
+              },
+            ].map((entry, idx) => (
+              <div
+                key={idx}
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-neutral-900/60 border border-neutral-800/80 rounded-xl hover:border-neutral-700/80 transition-all font-mono"
+              >
+                <span className="text-cyan-400 font-bold shrink-0 text-xs sm:text-sm">
+                  {entry.date}
+                </span>
+                <span className="text-neutral-300 text-xs sm:text-sm text-left flex-1">
+                  {entry.text}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <Link
+            className="inline-flex items-center gap-1 text-sm text-neutral-400 hover:text-white transition-all font-mono"
+            href="/changelog"
+          >
+            View all changes
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </section>
+
+      {/* SECTION 8 — COMMUNITY SOCIAL PROOF (Twitter Card Masonry) */}
+      <section className="w-full max-w-[1280px] mx-auto py-20 px-6 xl:px-8 flex flex-col items-center gap-12">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <h2 className="text-[28px] sm:text-[38px] font-bold font-manrope text-white leading-tight">
+            Join our Community
+          </h2>
+          <div className="flex gap-4">
+            <a
+              href="https://github.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-neutral-900 border border-neutral-800 hover:border-neutral-700 text-white text-xs font-mono tracking-wider px-5 py-2.5 rounded font-semibold transition-all"
+            >
+              GitHub Discussions
+            </a>
+            <a
+              href="https://discord.gg"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-mono tracking-wider px-5 py-2.5 rounded font-bold transition-all"
+            >
+              Join Discord
+            </a>
+          </div>
+        </div>
+
+        {/* Masonry Tweets layout */}
+        <div className="columns-1 md:columns-2 xl:columns-3 gap-4 w-full max-w-6xl mx-auto space-y-4">
+          {tweets.map((tw, idx) => (
+            <div
+              key={idx}
+              className="break-inside-avoid bg-[#181818] border border-neutral-800 rounded-xl p-5 hover:border-neutral-700 transition-colors flex flex-col gap-4"
+            >
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-cyan-950 flex items-center justify-center text-cyan-400 font-mono font-bold text-xs uppercase">
+                    {tw.handle.charAt(1)}
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-white leading-none">{tw.handle}</p>
+                    <p className="text-[10px] text-neutral-500 font-mono mt-0.5">{tw.date}</p>
+                  </div>
+                </div>
+                <span className="text-neutral-500">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-neutral-300 whitespace-pre-line text-left leading-relaxed font-manrope">
+                {tw.text}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* SECTION 9 — FAQ SECTION */}
+      <section className="w-full max-w-[1280px] mx-auto py-20 px-6 xl:px-8" id="faq">
+        <div className="flex flex-col lg:flex-row gap-12 max-w-5xl mx-auto items-start">
+          {/* FAQ sidebar */}
+          <div className="lg:w-1/3 flex flex-col gap-4 text-left">
+            <h2 className="text-[28px] sm:text-[36px] font-bold text-white font-manrope leading-tight">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-neutral-400 text-sm sm:text-base leading-relaxed">
+              Questions? We've got answers. If you don't find what you need, feel free to read our
+              docs.
+            </p>
+            <Link
+              className="inline-flex items-center gap-1.5 text-cyan-400 hover:text-cyan-300 text-sm font-semibold transition-all mt-2"
+              href="/docs"
+            >
+              or check out our Documentation
+              <ArrowRight className="w-4 h-4 animate-pulse" />
+            </Link>
+          </div>
+
+          {/* Accordions */}
+          <div className="w-full lg:w-2/3 rounded-xl bg-[#181818] border border-neutral-800 divide-y divide-neutral-800 shadow-lg">
+            {faqs.map((faq, idx) => (
+              <div key={idx} className="border-b border-neutral-800 last:border-b-0">
+                <h3 className="flex">
+                  <button
+                    onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                    className="flex flex-1 items-center justify-between p-6 text-sm sm:text-base font-semibold text-white transition-all hover:text-cyan-400 cursor-pointer text-left gap-4"
+                  >
+                    <span>{faq.question}</span>
+                    <ChevronRight
+                      className={`h-5 w-5 shrink-0 text-neutral-500 transition-transform duration-300 ${openFaq === idx ? "rotate-90 text-cyan-400" : ""}`}
+                    />
+                  </button>
+                </h3>
+                <div
+                  className={`overflow-hidden transition-all duration-300 ease-in-out text-neutral-400 text-xs sm:text-sm leading-relaxed px-6 ${openFaq === idx ? "max-h-[300px] pb-6" : "max-h-0"}`}
+                >
+                  <p className="text-left whitespace-pre-line">{faq.answer}</p>
                 </div>
               </div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* STEP 9 - FAQ Section */}
-        <section
-          id="faq"
-          className="relative w-full max-w-[800px] mx-auto py-20 px-6 border-t border-neutral-800/50"
-        >
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-            <div>
-              <h2 className="text-[32px] font-normal text-white font-manrope">
-                Frequently Asked Questions
-              </h2>
-              <p className="text-neutral-400 text-sm sm:text-base font-manrope mt-1">
-                Questions? We've got answers
-              </p>
-            </div>
-            <Link
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-cyan-400 hover:text-cyan-300 font-manrope text-sm font-medium shrink-0"
-              href="/docs"
-            >
-              Documentation <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-          <div className="flex flex-col bg-[#181818] border border-neutral-800 rounded-xl px-6 py-2">
-            {faqs.map((faq, i) => (
-              <AccordionItem
-                key={i}
-                question={faq.question}
-                answer={faq.answer}
-                isOpen={openFaq === i}
-                onClick={() => setOpenFaq(openFaq === i ? null : i)}
-              />
-            ))}
-          </div>
-        </section>
-
-        {/* STEP 10 - Ask AI Section */}
-        <section className="relative w-full max-w-[1280px] mx-auto py-20 px-6 border-t border-neutral-800/50 flex flex-col gap-8 items-center text-center">
-          <div>
-            <h2 className="text-[32px] font-normal text-white font-manrope">
+      {/* SECTION 10 — ASK AI SECTION */}
+      <section
+        className="w-full max-w-[1280px] mx-auto py-20 px-6 pb-28 border-b border-neutral-900"
+        id="deeplink"
+      >
+        <div className="flex flex-col items-center justify-center gap-8 text-center max-w-xl mx-auto">
+          <div className="space-y-2">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white font-manrope">
               What's RakshEx? Ask AI.
             </h2>
-            <p className="text-neutral-400 text-sm sm:text-base font-manrope mt-2">
-              Get an instant explanation from your preferred AI.
+            <p className="text-neutral-400 text-sm">
+              Get an instant explanation from your preferred AI assistant.
             </p>
           </div>
-          <div className="flex flex-wrap justify-center gap-3">
+
+          <div className="flex flex-row flex-wrap items-center justify-center gap-8">
             {[
               {
                 name: "Gemini",
                 url: "https://gemini.google.com/app?q=Explain+RakshEx+(rakshex.in)+to+a+security+engineer.+Cover+API+security+scanning,+LLM+cost+monitoring,+prompt+injection+blocking,+and+compliance+reporting.+Summarize+from+https://rakshex.in",
+                logo: "G",
+                color: "text-blue-400 hover:border-blue-500",
               },
               {
                 name: "ChatGPT",
                 url: "https://chat.openai.com?q=Explain+RakshEx+(rakshex.in)+to+a+security+engineer.+Cover+API+security+scanning,+LLM+cost+monitoring,+prompt+injection+blocking,+and+compliance+reporting.+Summarize+from+https://rakshex.in",
+                logo: "O",
+                color: "text-emerald-400 hover:border-emerald-500",
               },
               {
                 name: "Claude",
                 url: "https://claude.ai/new?q=Explain+RakshEx+(rakshex.in)+to+a+security+engineer.+Cover+API+security+scanning,+LLM+cost+monitoring,+prompt+injection+blocking,+and+compliance+reporting.+Summarize+from+https://rakshex.in",
+                logo: "C",
+                color: "text-amber-500 hover:border-amber-600",
               },
               {
                 name: "Grok",
-                url: "https://grok.com?q=Explain+RakshEx+(rakshex.in)+to+a+security+engineer.",
+                url: "https://grok.com?q=Explain+RakshEx+(rakshex.in)+to+a+security+engineer.+Cover+API+security+scanning,+LLM+cost+monitoring,+prompt+injection+blocking,+and+compliance+reporting.+Summarize+from+https://rakshex.in",
+                logo: "X",
+                color: "text-white hover:border-white",
               },
               {
                 name: "Perplexity",
-                url: "https://perplexity.ai?q=Explain+RakshEx+(rakshex.in)+to+a+security+engineer.",
+                url: "https://perplexity.ai?q=Explain+RakshEx+(rakshex.in)+to+a+security+engineer.+Cover+API+security+scanning,+LLM+cost+monitoring,+prompt+injection+blocking,+and+compliance+reporting.+Summarize+from+https://rakshex.in",
+                logo: "P",
+                color: "text-cyan-400 hover:border-cyan-500",
               },
-            ].map((ai, i) => (
+            ].map((ai, idx) => (
               <a
-                key={i}
+                key={idx}
                 href={ai.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 px-5 py-3 bg-[#181818] border border-neutral-800 hover:border-cyan-500/30 hover:bg-neutral-800/50 rounded-xl transition-all duration-300 text-xs sm:text-sm font-semibold font-manrope text-white"
+                className={`w-10 h-10 rounded-full border border-neutral-800 bg-[#121212] flex items-center justify-center text-sm font-mono font-bold transition-all shadow-md ${ai.color}`}
+                title={`Ask ${ai.name}`}
               >
-                <span>{ai.name}</span>
-                <ExternalLink className="w-3.5 h-3.5 text-neutral-500 group-hover:text-white" />
+                {ai.logo}
               </a>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* STEP 11 - Platform Statistics */}
-        <section className="relative w-full max-w-[1280px] mx-auto py-20 px-6 border-t border-neutral-800/50 flex flex-col gap-10">
-          <div className="flex flex-col items-center gap-2 text-center">
-            <h2 className="text-[32px] font-normal text-white font-manrope">Platform Statistics</h2>
-            <p className="text-neutral-400 text-sm sm:text-base font-manrope">
-              Securing AI agents across production ecosystems globally
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-            <div className="flex flex-col gap-3 p-6 bg-[#181818] border border-neutral-800 rounded-xl">
-              <span className="text-[10px] text-neutral-500 font-mono tracking-widest uppercase">
-                COLLECTIONS SCANNED
-              </span>
-              <RollingCounter target={12847} />
-            </div>
+      {/* SECTION 11 — PLATFORM STATISTICS */}
+      <section className="PlatformStatsShowcase_section__FNJKE">
+        <h2 className="sr-only">Platform statistics</h2>
+        <div className="PlatformStatsShowcase_grid__AIRBY">
+          <StatsCard label="COLLECTIONS SCANNED" targetValue="12,847" />
+          <StatsCard label="VULNERABILITIES FOUND" targetValue="94,231" />
+          <StatsCard label="TOKENS SAVED" targetValue="2.4B" />
+          <StatsCard label="ENGINEERS ON WAITLIST" targetValue="1,247" />
+        </div>
+      </section>
 
-            <div className="flex flex-col gap-3 p-6 bg-[#181818] border border-neutral-800 rounded-xl">
-              <span className="text-[10px] text-neutral-500 font-mono tracking-widest uppercase">
-                VULNERABILITIES FOUND
-              </span>
-              <RollingCounter target={94231} />
-            </div>
+      {/* SECTION 12 — FINAL CTA SECTION */}
+      <section className="w-full max-w-[1280px] mx-auto px-6 py-24 text-center" id="cta">
+        <div className="max-w-xl mx-auto flex flex-col items-center gap-8 bg-gradient-to-b from-[#181818] to-neutral-950 p-8 sm:p-12 border border-neutral-800 rounded-2xl shadow-xl">
+          <h2 className="text-[28px] sm:text-[38px] font-bold font-manrope text-white leading-tight">
+            Start Securing Your AI Agents
+          </h2>
+          <p className="text-neutral-400 text-sm leading-relaxed">
+            Protect your reasoning tokens, stop prompt injections, discover shadow APIs, and export
+            compliance data. Join the waitlist now.
+          </p>
 
-            <div className="flex flex-col gap-3 p-6 bg-[#181818] border border-neutral-800 rounded-xl">
-              <span className="text-[10px] text-neutral-500 font-mono tracking-widest uppercase">
-                TOKENS SAVED
-              </span>
-              <RollingCounter target={2.4} suffix="B" />
-            </div>
-
-            <div className="flex flex-col gap-3 p-6 bg-[#181818] border border-neutral-800 rounded-xl">
-              <span className="text-[10px] text-neutral-500 font-mono tracking-widest uppercase">
-                ENGINEERS ON WAITLIST
-              </span>
-              <RollingCounter target={1247} />
-            </div>
-          </div>
-        </section>
-
-        {/* STEP 12 - Final CTA Section */}
-        <section className="relative w-full max-w-[1280px] mx-auto py-24 px-6 border-t border-neutral-800/50 flex flex-col gap-8 items-center justify-center">
-          <div className="flex flex-col gap-3 items-center text-center">
-            <h2 className="text-3xl sm:text-4xl font-normal font-manrope">
-              <span className="text-white">Start Securing </span>
-              <span className="text-cyan-400">Your AI Agents</span>
-            </h2>
-            <p className="text-neutral-400 text-sm sm:text-base max-w-lg font-manrope">
-              Join the waitlist to receive priority access or schedule a session to configure
-              runtime guardrails today.
-            </p>
-          </div>
-          <div className="w-full max-w-md mt-2">
+          <div className="w-full">
             <WaitlistForm />
           </div>
-          <div className="flex flex-row gap-4 mt-2">
+
+          <div className="flex flex-col sm:flex-row gap-4 w-full justify-center mt-2 border-t border-neutral-900 pt-6">
             <Link
               href="/register"
-              className="text-neutral-400 hover:text-white transition-colors text-sm font-semibold underline underline-offset-4"
+              className="flex-1 text-center bg-cyan-500 hover:bg-cyan-400 text-black py-2.5 rounded font-bold text-xs uppercase tracking-wider font-mono shadow-[0_0_15px_rgba(6,182,212,0.3)]"
             >
               Try Free — No Credit Card
             </Link>
-            <span className="text-neutral-700">|</span>
             <Link
               href="/demo"
-              className="text-neutral-400 hover:text-white transition-colors text-sm font-semibold underline underline-offset-4"
+              className="flex-1 text-center bg-neutral-900 hover:bg-neutral-850 text-white border border-neutral-800 py-2.5 rounded font-medium text-xs uppercase tracking-wider font-mono"
             >
               Book a Demo
             </Link>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
 
-      {/* STEP 13 - Footer */}
-      <footer className="w-full bg-[#0F0F0F] py-12 border-t border-neutral-900 z-10">
-        <div className="max-w-[1280px] mx-auto px-6 flex flex-col gap-10">
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 border-b border-neutral-900 pb-8">
-            <div className="flex items-center gap-6">
-              <Link
-                href="/"
-                className="flex items-center gap-2 text-white font-manrope font-bold text-base hover:opacity-90"
-              >
-                <Shield className="w-5 h-5 text-cyan-400 fill-cyan-400/20" />
-                <span>RakshEx</span>
-              </Link>
-              <div className="w-px h-5 bg-neutral-800" />
-              <div className="flex items-center gap-4 text-neutral-400">
-                <a
-                  href="https://discord.gg/rakshex"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white transition-colors"
-                  aria-label="Discord"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
+      {/* SECTION 13 — FOOTER */}
+      <footer className="w-full bg-[#0F0F0F] py-10 border-t border-neutral-900 z-5">
+        <div className="min-h-[112px] max-w-[1280px] mx-auto px-6 sm:px-10 flex flex-col justify-between gap-y-10">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-start">
+            <div className="flex flex-col items-start justify-between">
+              <div className="flex flex-row flex-wrap items-center gap-x-6 gap-y-4">
+                <Link className="flex items-center gap-2 no-underline shrink-0" href="/">
+                  <div className="flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-cyan-400" />
+                    <span className="text-lg font-bold font-manrope text-white">RakshEx</span>
+                  </div>
+                </Link>
+                <div className="w-px h-6 bg-neutral-800" />
+                <div className="flex flex-row gap-4 items-center justify-start">
+                  <a
+                    href="https://discord.gg"
+                    className="text-neutral-500 hover:text-white transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    <path d="M13.542 0c.264 0 .497.102.684.286a11.64 11.64 0 0 1 1.708 2.046c.114.183.166.386.166.529 0 .428-.415 4.398-.765 8.21-.084.95-.53 1.706-1.084 2.595a16.5 16.5 0 0 1-5.064 2.595q-.613-.841-1.084-1.785c.67-.183 1.258-.466 1.71-.833a10.6 10.6 0 0 0-.418-.331 15.2 15.2 0 0 1-10.118 0q-.206.171-.418.331c.452.367 1.04.65 1.71.833a16.5 16.5 0 0 1-1.084 1.785A16.5 16.5 0 0 1 .085 15.11C-.27 11.319.41 7.47.825 3.52c.046-.143.1-.346.166-.529A11.64 11.64 0 0 1 2.7 1.3C3.991.69 5.377.25 6.825.0c.18.32.388.753.535 1.097a15.2 15.2 0 0 1 4.573 0c.143-.344.351-.777.53-1.097 1.452.25 2.834.693 4.129 1.3M5.678 10.735c-.988 0-1.798-.922-1.798-2.046 0-1.123.81-2.046 1.798-2.046.99 0 1.798.922 1.798 2.046s-.808 2.046-1.798 2.046m6.644 0c-.988 0-1.798-.922-1.798-2.046 0-1.123.81-2.046 1.798-2.046.99 0 1.798.922 1.798 2.046s-.808 2.046-1.798 2.046" />
-                  </svg>
-                </a>
-                <a
-                  href="https://github.com/rakshex"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white transition-colors"
-                  aria-label="GitHub"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
+                    Discord
+                  </a>
+                  <a
+                    href="https://github.com"
+                    className="text-neutral-500 hover:text-white transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"
-                    />
-                  </svg>
-                </a>
-                <a
-                  href="https://twitter.com/rakshexhq"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white transition-colors"
-                  aria-label="Twitter"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="14"
-                    height="14"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
+                    GitHub
+                  </a>
+                  <a
+                    href="https://twitter.com"
+                    className="text-neutral-500 hover:text-white transition-colors"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z" />
-                  </svg>
-                </a>
+                    Twitter
+                  </a>
+                </div>
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-medium text-neutral-400">
-              <Link href="/blog" className="hover:text-white transition-colors">
+            <div className="flex flex-wrap justify-start gap-x-8 gap-y-4 sm:gap-x-10 lg:justify-end xl:gap-x-12">
+              <Link
+                className="w-fit text-sm text-neutral-400 hover:text-white transition-all font-manrope"
+                href="/blog"
+              >
                 Blog
               </Link>
-              <Link href="/docs" className="hover:text-white transition-colors">
+              <Link
+                className="w-fit text-sm text-neutral-400 hover:text-white transition-all font-manrope"
+                href="/docs"
+              >
                 Docs
               </Link>
-              <Link href="/pricing" className="hover:text-white transition-colors">
+              <Link
+                className="w-fit text-sm text-neutral-400 hover:text-white transition-all font-manrope"
+                href="/pricing"
+              >
                 Pricing
               </Link>
-              <Link href="/contact" className="hover:text-white transition-colors">
+              <Link
+                className="w-fit text-sm text-neutral-400 hover:text-white transition-all font-manrope"
+                href="/contact"
+              >
                 Contact
               </Link>
-              <Link href="/privacy" className="hover:text-white transition-colors">
+              <Link
+                className="w-fit text-sm text-neutral-400 hover:text-white transition-all font-manrope"
+                href="/privacy"
+              >
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="hover:text-white transition-colors">
-                Terms
+              <Link
+                className="w-fit text-sm text-neutral-400 hover:text-white transition-all font-manrope"
+                href="/terms"
+              >
+                Terms &amp; Conditions
               </Link>
-              <Link href="/trust" className="hover:text-white transition-colors">
+              <Link
+                className="w-fit text-sm text-neutral-400 hover:text-white transition-all font-manrope"
+                href="/trust"
+              >
                 Trust Center
               </Link>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-neutral-500">
-            <p>© 2026 RakshEx by Rashi Technologies. Bengaluru, India.</p>
-            <Link
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-6 border-t border-neutral-900">
+            <p className="text-sm font-normal text-neutral-500 font-manrope">
+              © 2026 RakshEx by Rashi Technologies. Bengaluru, India.
+            </p>
+            <a
+              className="flex items-center gap-2 text-xs text-neutral-400 font-manrope hover:text-white transition-colors"
               href="/status"
-              className="flex items-center gap-2 hover:text-neutral-400 transition-colors"
             >
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse block" />
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
               <span>All systems operational</span>
-            </Link>
+            </a>
           </div>
         </div>
       </footer>

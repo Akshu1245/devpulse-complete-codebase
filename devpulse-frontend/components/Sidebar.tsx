@@ -32,13 +32,6 @@ const navItems: NavItem[] = [
   { label: "Admin", href: "/admin", icon: "build", group: "account" },
 ];
 
-const GROUP_LABELS: Record<string, string> = {
-  main: "Overview",
-  security: "Security",
-  ai: "AI Governance",
-  account: "Account",
-};
-
 interface SidebarProps {
   open: boolean;
   onClose: () => void;
@@ -53,169 +46,121 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
     return pathname.startsWith(href);
   };
 
-  const groups = ["main", "security", "ai", "account"];
-
   return (
     <>
       {open && <div className="fixed inset-0 bg-black/60 z-30 md:hidden" onClick={onClose} />}
 
       <aside
         className={`fixed top-0 left-0 h-full w-64 z-40 flex flex-col transform transition-transform duration-300
-          bg-surface-container-low/95 backdrop-blur-2xl border-r border-outline-variant/20
+          bg-surface-base border-r border-glass
           ${open ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between px-5 py-5 border-b border-outline-variant/20">
-          <Link href="/dashboard" className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-primary-container rounded flex items-center justify-center">
-              <span
-                className="material-symbols-outlined text-on-primary-container"
-                style={{ fontVariationSettings: "'FILL' 1", fontSize: "18px" }}
-              >
-                security
-              </span>
+        <div className="p-6">
+          <Link href="/dashboard" className="flex items-center gap-3 mb-10">
+            <div className="w-8 h-8 bg-primary rounded flex items-center justify-center text-surface-base font-bold">
+              <span className="material-symbols-outlined text-[18px] font-bold">shield</span>
             </div>
             <div>
-              <h1
-                className="font-display-lg text-headline-md text-primary leading-none"
-                style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "18px",
-                }}
-              >
-                Rakshex
-              </h1>
-              <p
-                className="font-label-caps text-on-surface-variant mt-0.5"
-                style={{ fontSize: "9px", letterSpacing: "0.2em" }}
-              >
-                System Alpha-9
-              </p>
+              <div className="font-headline-md text-headline-md font-bold tracking-tight text-primary leading-none">
+                RAKSHEX
+              </div>
+              <div className="text-[10px] uppercase tracking-[0.2em] text-on-surface-variant font-semibold mt-1">
+                Elite API Security
+              </div>
             </div>
           </Link>
-          <button
-            onClick={onClose}
-            className="md:hidden text-on-surface-variant hover:text-on-surface p-1 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: "20px" }}>
-              close
-            </span>
-          </button>
+
+          {/* Nav */}
+          <nav className="flex flex-col gap-1">
+            {navItems.map((item) => {
+              const active = isActive(item.href);
+              // Hide group headings, make it a single unified menu list like in the mockup
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={onClose}
+                  className={`flex items-center gap-3 px-4 py-3 rounded transition-all duration-200
+                    ${
+                      active
+                        ? "text-primary bg-primary/10 border-r-2 border-primary font-semibold"
+                        : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low"
+                    }`}
+                >
+                  <span
+                    className="material-symbols-outlined"
+                    style={{
+                      fontSize: "20px",
+                      fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0",
+                    }}
+                  >
+                    {item.icon}
+                  </span>
+                  <span className="font-button-text text-button-text">{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
-        {/* Nav */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-0.5">
-          {groups.map((group) => {
-            const groupItems = navItems.filter((i) => i.group === group);
-            return (
-              <div key={group} className="mb-3">
-                <p
-                  className="font-label-caps text-on-surface-variant/50 px-3 mb-1.5"
-                  style={{ fontSize: "9px", letterSpacing: "0.15em" }}
-                >
-                  {GROUP_LABELS[group]}
-                </p>
-                {groupItems.map((item) => {
-                  const active = isActive(item.href);
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={onClose}
-                      className={`flex items-center gap-3 px-3 min-h-[44px] text-body-md transition-all duration-200 mb-0.5 rounded
-                        ${
-                          active
-                            ? "bg-primary-container/20 text-primary border-l-2 border-primary font-bold"
-                            : "text-on-surface-variant hover:bg-surface-variant/30 hover:text-on-surface"
-                        }`}
-                    >
-                      <span
-                        className="material-symbols-outlined"
-                        style={{
-                          fontSize: "20px",
-                          fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0",
-                        }}
-                      >
-                        {item.icon}
-                      </span>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px" }}>
-                        {item.label}
-                      </span>
-                    </Link>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </nav>
-
         {/* Bottom links */}
-        <div className="border-t border-outline-variant/10 px-3 py-3 space-y-0.5">
+        <div className="mt-auto p-6 flex flex-col gap-1 border-t border-glass bg-surface-base/50">
+          {user && (
+            <button className="w-full py-3 mb-4 bg-primary text-on-primary font-bold rounded text-sm hover:brightness-110 active:scale-[0.98] transition-all">
+              Upgrade Protection
+            </button>
+          )}
+
           <Link
             href="/docs"
-            className="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface transition-colors"
+            className="flex items-center gap-3 px-4 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors"
           >
-            <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>
-              description
-            </span>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px" }}>
-              Documentation
-            </span>
+            <span className="material-symbols-outlined text-[20px]">description</span>
+            <span className="font-button-text text-button-text">Documentation</span>
           </Link>
           <Link
             href="/support"
-            className="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:text-on-surface transition-colors"
+            className="flex items-center gap-3 px-4 py-2 rounded text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors"
           >
-            <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>
-              support_agent
-            </span>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "12px" }}>
-              Support
-            </span>
+            <span className="material-symbols-outlined text-[20px]">help</span>
+            <span className="font-button-text text-button-text">Support</span>
           </Link>
-        </div>
 
-        {/* User footer */}
-        <div className="border-t border-outline-variant/20 p-4">
-          {user ? (
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-primary-container/30 border border-primary/30 flex items-center justify-center text-primary font-bold text-sm">
-                {(user.name || user.email || "U")[0].toUpperCase()}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p
-                  className="text-on-surface font-bold truncate"
-                  style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px" }}
+          {/* User footer */}
+          <div className="border-t border-glass pt-4 mt-2">
+            {user ? (
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full border border-primary/20 bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+                  {(user.name || user.email || "U")[0].toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-white truncate font-body-md leading-tight">
+                    {user.name || user.email}
+                  </p>
+                  <p className="text-[10px] text-on-surface-variant uppercase font-label-mono mt-0.5">
+                    {user.plan || "free"} plan
+                  </p>
+                </div>
+                <button
+                  onClick={logout}
+                  className="text-on-surface-variant hover:text-status-error transition-colors p-1"
+                  title="Sign out"
                 >
-                  {user.name || user.email}
-                </p>
-                <p
-                  className="text-on-surface-variant capitalize"
-                  style={{ fontSize: "10px", letterSpacing: "0.1em" }}
-                >
-                  {user.plan || "free"} plan
-                </p>
+                  <span className="material-symbols-outlined" style={{ fontSize: "16px" }}>
+                    logout
+                  </span>
+                </button>
               </div>
-              <button
-                onClick={logout}
-                className="text-on-surface-variant hover:text-error transition-colors p-1"
-                title="Sign out"
+            ) : (
+              <Link
+                href="/login"
+                className="text-on-surface-variant hover:text-primary transition-colors text-xs font-bold font-body-md block"
               >
-                <span className="material-symbols-outlined" style={{ fontSize: "18px" }}>
-                  logout
-                </span>
-              </button>
-            </div>
-          ) : (
-            <Link
-              href="/login"
-              className="text-on-surface-variant hover:text-primary transition-colors"
-              style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px" }}
-            >
-              Sign in →
-            </Link>
-          )}
+                Sign in →
+              </Link>
+            )}
+          </div>
         </div>
       </aside>
     </>

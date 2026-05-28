@@ -171,7 +171,7 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Scraped InsForge Animations */
+/* Scraped Animations */
 @keyframes logo-scroll-anim {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
