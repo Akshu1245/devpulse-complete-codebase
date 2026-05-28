@@ -7,7 +7,7 @@ export default function ROICalculator() {
   // Inputs with requested default values
   const [monthlySpend, setMonthlySpend] = useState<number>(500);
   const [agentCount, setAgentCount] = useState<number>(5);
-  const [incidentCost, setIncidentCost] = useState<number>(50,000);
+  const [incidentCost, setIncidentCost] = useState<number>(50000);
   const [teamSize, setTeamSize] = useState<number>(3);
   const [manualAuditHours, setManualAuditHours] = useState<number>(4);
 
