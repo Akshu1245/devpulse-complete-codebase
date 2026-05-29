@@ -158,13 +158,13 @@ function WaitlistForm() {
           placeholder="Enter your work email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="flex-1 px-4 py-3 bg-[#0F1419] border border-[#2D3E50] focus:border-teal-accent focus:ring-1 focus:ring-teal-accent rounded-lg focus:outline-none text-white text-sm font-sans transition-all duration-200"
+          className="flex-1 px-4 py-3 bg-white text-[#0A0E1A] placeholder-[#94A3B8] rounded-lg focus:outline-none focus:shadow-[0_0_0_3px_rgba(6,214,160,0.2)] text-sm font-sans transition-all duration-200"
           disabled={joinMutation.isPending}
         />
         <button
           type="submit"
           disabled={joinMutation.isPending}
-          className="bg-teal-accent hover:bg-[#0D9488] text-white hover:scale-[1.02] active:scale-[0.98] font-bold px-6 py-3 text-xs tracking-wider uppercase font-sans rounded-lg disabled:opacity-50 transition-all duration-200 shrink-0 transform"
+          className="bg-[#0A0E1A] hover:bg-[#1E293B] text-white hover:scale-[1.02] active:scale-[0.98] font-bold px-6 py-3 text-xs tracking-wider uppercase font-sans rounded-lg disabled:opacity-50 transition-all duration-200 shrink-0 transform"
         >
           {joinMutation.isPending ? "Joining..." : "Get Access"}
         </button>
@@ -464,7 +464,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-transparent text-white overflow-x-hidden font-manrope selection:bg-teal-accent selection:text-black">
+    <div className="min-h-screen bg-transparent text-white overflow-x-hidden font-inter selection:bg-teal-accent selection:text-black">
       {/* SECTION 3 — HERO SECTION & LOGOMARQUEE */}
       <HeroSection />
 
@@ -595,7 +595,7 @@ export default function HomePage() {
                 {tw.text}
               </p>
               {/* Star Rating badges */}
-              <div className="flex gap-0.5 text-teal-accent mt-1 text-xs select-none">
+              <div className="flex gap-0.5 text-amber-gold mt-1 text-xs select-none">
                 <span>★</span>
                 <span>★</span>
                 <span>★</span>
@@ -670,31 +670,24 @@ export default function HomePage() {
 
       {/* SECTION 12 — FINAL CTA SECTION */}
       <section className="w-full max-w-[1280px] mx-auto px-6 py-24 text-center" id="cta">
-        <div className="max-w-xl mx-auto flex flex-col items-center gap-8 bg-[#0F1419] border border-[#2D3E50] hover:border-teal-accent p-8 sm:p-12 rounded-3xl shadow-lg relative overflow-hidden group transition-all duration-500">
-          <h2 className="text-3xl sm:text-[40px] font-extrabold font-sans text-white leading-[1.2] tracking-[-0.02em]">
-            Start Securing Your AI Agents
+        <div className="max-w-xl mx-auto flex flex-col items-center gap-8 bg-gradient-to-r from-amber-gold to-teal-accent p-8 sm:p-12 rounded-3xl shadow-lg relative overflow-hidden group transition-all duration-500">
+          <h2 className="text-3xl sm:text-[40px] font-extrabold font-sora text-[#0A0E1A] leading-[1.2] tracking-[-0.02em]">
+            Ready to Secure Your AI Stack?
           </h2>
-          <p className="text-slate-400 text-sm leading-relaxed max-w-[480px]">
-            Protect your reasoning tokens, stop prompt injections, discover shadow APIs, and export
-            compliance data. Join the waitlist now.
+          <p className="text-[#0A0E1A]/80 text-base leading-relaxed max-w-[480px] font-inter">
+            Join 500+ developers already using RakshEx
           </p>
 
           <div className="w-full z-10">
             <WaitlistForm />
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 w-full justify-center mt-2 border-t border-[#2D3E50] pt-6 z-10">
+          <div className="flex flex-col sm:flex-row gap-4 w-full justify-center items-center mt-2 border-t border-[#0A0E1A]/10 pt-6 z-10">
             <Link
               href="/register"
-              className="flex-1 text-center bg-teal-accent hover:bg-[#0D9488] text-white hover:scale-[1.02] active:scale-[0.98] py-3 rounded-lg font-bold text-xs uppercase tracking-wider font-sans transition-all duration-200 transform"
+              className="text-[#0A0E1A] hover:text-[#1E293B] font-bold text-xs uppercase tracking-wider font-sora underline underline-offset-4 transition-colors"
             >
               Try Free — No Credit Card
-            </Link>
-            <Link
-              href="/demo"
-              className="flex-1 text-center bg-transparent hover:bg-teal-accent/10 text-teal-accent border-2 border-teal-accent py-3 rounded-lg font-bold text-xs uppercase tracking-wider font-sans transition-all duration-200 transform"
-            >
-              Book a Demo
             </Link>
           </div>
         </div>

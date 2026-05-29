@@ -8,16 +8,17 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "teal-accent": "#14B8A6",
-        "electric-cyan": "#14B8A6",
-        "amber-gold": "#64748B",
+        "teal-accent": "#06D6A0",
+        "electric-cyan": "#00F0FF",
+        "amber-gold": "#FDB022",
         "slate-dark": "#1E293B",
+        "deep-navy": "#0A0E1A",
         "on-error": "#690005",
         "surface": "#131313",
         "on-tertiary-container": "#006274",
         "inverse-surface": "#e5e2e1",
-        "surface-base": "#0F1419",
-        "background": "#0F1419",
+        "surface-base": "#0A0E1A",
+        "background": "#0A0E1A",
         "surface-container-lowest": "#0e0e0e",
         "surface-container-low": "#1c1b1b",
         "secondary-container": "#03c6b2",
@@ -80,12 +81,14 @@ module.exports = {
         "container-margin": "24px"
       },
       fontFamily: {
-        "body-lg": ["Manrope", "sans-serif"],
-        "headline-lg": ["Manrope", "sans-serif"],
-        "headline-xl": ["Manrope", "sans-serif"],
-        "body-md": ["Manrope", "sans-serif"],
-        "button-text": ["Manrope", "sans-serif"],
-        "headline-md": ["Manrope", "sans-serif"],
+        "sora": ["Sora", "sans-serif"],
+        "inter": ["Inter", "sans-serif"],
+        "body-lg": ["Inter", "sans-serif"],
+        "headline-lg": ["Sora", "sans-serif"],
+        "headline-xl": ["Sora", "sans-serif"],
+        "body-md": ["Inter", "sans-serif"],
+        "button-text": ["Inter", "sans-serif"],
+        "headline-md": ["Sora", "sans-serif"],
         "label-mono": ["IBM Plex Mono", "monospace"],
         "code": ["JetBrains Mono", "monospace"]
       },

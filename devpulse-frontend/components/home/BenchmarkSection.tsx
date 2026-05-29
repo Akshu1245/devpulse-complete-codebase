@@ -62,14 +62,14 @@ export function BenchmarkSection() {
         </div>
 
         {/* Comparison Table */}
-        <div className="w-full overflow-x-auto rounded-xl border border-[#2D3E50] shadow-lg bg-[#0F1419]">
+        <div className="w-full overflow-x-auto rounded-xl border border-[#2D3E50] shadow-lg bg-[#0A0E1A]">
           <table className="w-full border-collapse text-left min-w-[700px]">
             <thead>
               <tr className="bg-[#0E1318] border-b border-[#2D3E50]">
                 <th className="p-5 text-sm font-semibold uppercase tracking-wider text-slate-400">
                   Metric
                 </th>
-                <th className="p-5 text-sm font-semibold uppercase tracking-wider text-teal-accent border-l-4 border-teal-accent bg-teal-accent/5">
+                <th className="p-5 text-sm font-semibold uppercase tracking-wider text-teal-accent border-l-[6px] border-teal-accent bg-slate-dark/40">
                   RakshEx
                 </th>
                 <th className="p-5 text-sm font-semibold uppercase tracking-wider text-slate-400">
@@ -84,7 +84,7 @@ export function BenchmarkSection() {
               {metrics.map((m, idx) => (
                 <tr
                   key={idx}
-                  className="border-b border-[#2D3E50]/40 transition-colors duration-200 hover:bg-teal-accent/5 group"
+                  className="border-b border-[#2D3E50]/40 transition-colors duration-200 hover:bg-teal-accent/10 group"
                 >
                   <td className="p-5 font-sans">
                     <div className="font-semibold text-white group-hover:text-teal-accent transition-colors">
@@ -92,7 +92,7 @@ export function BenchmarkSection() {
                     </div>
                     <div className="text-xs text-slate-500 mt-1">{m.desc}</div>
                   </td>
-                  <td className="p-5 font-sans font-bold text-teal-accent border-l-4 border-teal-accent bg-teal-accent/5">
+                  <td className="p-5 font-sans font-bold text-teal-accent border-l-[6px] border-teal-accent bg-slate-dark/40">
                     {m.rakshex}
                   </td>
                   <td className="p-5 font-sans text-slate-400">{m.snyk}</td>

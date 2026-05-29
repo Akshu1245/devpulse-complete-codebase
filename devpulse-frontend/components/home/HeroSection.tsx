@@ -39,14 +39,14 @@ export function HeroSection() {
           </div>
 
           {/* Headline */}
-          <h1 className="hero-headline font-sans font-extrabold tracking-[-0.02em] text-left flex flex-col text-5xl md:text-[72px] leading-[1.1] mb-6">
+          <h1 className="hero-headline font-sora font-extrabold tracking-[-0.02em] text-left flex flex-col text-5xl md:text-[72px] leading-[1.1] mb-6">
             <span className="text-white">The AI-native</span>
             <span className="text-teal-accent">security &amp;</span>
             <span className="text-teal-accent">governance platform</span>
           </h1>
 
           {/* Subtext */}
-          <p className="hero-subtext font-sans text-lg max-w-[800px] text-slate-400 mb-10 leading-[1.6]">
+          <p className="hero-subtext font-inter text-lg max-w-[800px] text-slate-400 mb-10 leading-[1.6]">
             Prompt injection blocking, LLM cost control, shadow API discovery, and compliance
             reporting &mdash; all in one platform. 478 tests. 4 patents.
           </p>
@@ -55,20 +55,20 @@ export function HeroSection() {
           <div className="hero-buttons flex flex-wrap items-center gap-4 w-full mb-12">
             <Link
               href="/register"
-              className="px-7 py-3.5 bg-teal-accent hover:bg-[#0D9488] text-white font-bold text-sm rounded-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-center flex items-center justify-center gap-2 transform"
+              className="px-7 py-3.5 bg-gradient-to-r from-teal-accent to-electric-cyan text-[#0A0E1A] font-sora font-semibold text-sm rounded-lg hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(6,214,160,0.3)] active:scale-[0.98] transition-all duration-200 ease-out text-center flex items-center justify-center gap-2 transform"
             >
               Start your project &rarr;
             </Link>
             <Link
               href="/docs"
-              className="px-7 py-3.5 bg-transparent border-2 border-teal-accent text-teal-accent font-semibold text-sm rounded-lg hover:bg-teal-accent/10 transition-all duration-200 text-center flex items-center justify-center"
+              className="px-7 py-3.5 bg-transparent border-2 border-teal-accent text-teal-accent font-sora font-semibold text-sm rounded-lg hover:bg-teal-accent/10 hover:border-electric-cyan hover:text-electric-cyan active:bg-teal-accent/20 active:border-electric-cyan transition-all duration-200 text-center flex items-center justify-center"
             >
               Read the docs
             </Link>
           </div>
 
           {/* CLI Command Pill */}
-          <div className="hero-cli-pill bg-[#0F1419] border border-[#2D3E50]">
+          <div className="hero-cli-pill bg-[#0A0E1A] border border-[#2D3E50]">
             <span className="cli-text text-teal-accent">$ npx rakshex scan ./collection.json</span>
             <button
               onClick={handleCopyCommand}

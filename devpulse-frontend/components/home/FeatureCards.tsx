@@ -13,13 +13,13 @@ function FeatureCard({ title, description, link, iconSvg }: FeatureCardProps) {
   return (
     <Link
       href={link}
-      className="relative group block w-full h-[340px] bg-slate-dark/20 hover:bg-slate-dark/40 border border-[#2D3E50] border-t-[3px] border-t-teal-accent hover:border-teal-accent rounded-xl p-8 overflow-hidden select-none transition-all duration-300 transform hover:-translate-y-2"
+      className="relative group block w-full h-[340px] bg-slate-dark/20 hover:bg-slate-dark/40 border border-[#2D3E50] border-t-[3px] border-t-teal-accent hover:border-teal-accent rounded-xl p-8 overflow-hidden select-none transition-all duration-300 transform hover:-translate-y-3 hover:shadow-[0_8px_24px_rgba(6,214,160,0.12)]"
     >
       {/* Subtle Teal Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-teal-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
       {/* Top isometric 3D wireframe icon */}
-      <div className="w-[80px] h-[80px] text-teal-accent/60 group-hover:text-teal-accent transition-all duration-500 transform group-hover:scale-105">
+      <div className="w-[80px] h-[80px] text-teal-accent/60 group-hover:text-electric-cyan transition-all duration-[600ms] ease-out transform group-hover:rotate-[360deg]">
         <div dangerouslySetInnerHTML={{ __html: iconSvg }} />
       </div>
 
@@ -29,7 +29,7 @@ function FeatureCard({ title, description, link, iconSvg }: FeatureCardProps) {
           <h3 className="text-white font-sans text-xl font-semibold tracking-tight group-hover:text-teal-accent transition-colors">
             {title}
           </h3>
-          <span className="text-teal-accent transform group-hover:translate-x-1.5 transition-all duration-200 font-bold">
+          <span className="text-teal-accent transform group-hover:translate-x-[5px] transition-all duration-200 font-bold">
             &rarr;
           </span>
         </div>
