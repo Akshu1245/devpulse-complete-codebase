@@ -3,6 +3,7 @@ import { AgentCard } from "./AgentCard";
 function ConnectorVertical() {
   return (
     <div
+      className="connector-vertical"
       style={{
         position: "absolute",
         left: "50%",
