@@ -465,7 +465,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0F1419] text-white overflow-x-hidden font-sans selection:bg-[#14B8A6] selection:text-black">
+    <div className="min-h-screen bg-transparent text-white overflow-x-hidden font-sans selection:bg-[#14B8A6] selection:text-black">
       {/* SECTION 3 & 4 — HERO SECTION & LOGOMARQUEE */}
       <HeroSection />
 
@@ -479,7 +479,7 @@ export default function HomePage() {
 
       {/* SECTION 7 — FRAMEWORK SUPPORT */}
       <section
-        className="relative w-full max-w-[1280px] mx-auto py-16 px-6 bg-[#0F1419]"
+        className="relative w-full max-w-[1280px] mx-auto py-16 px-6 bg-transparent"
         id="supporting-frameworks"
       >
         <div className="flex flex-col items-center gap-6">
@@ -542,7 +542,7 @@ export default function HomePage() {
       <ChangelogSection />
 
       {/* SECTION 9 — COMMUNITY SECTION */}
-      <section className="w-full max-w-[1280px] mx-auto py-16 px-6 xl:px-8 flex flex-col items-center gap-6 bg-[#0F1419]">
+      <section className="w-full max-w-[1280px] mx-auto py-16 px-6 xl:px-8 flex flex-col items-center gap-6 bg-transparent">
         <div className="flex flex-col items-center gap-4 text-center">
           <h2 className="text-3xl sm:text-[36px] font-bold font-sans text-white leading-tight tracking-[-0.02em]">
             Join our Community
@@ -572,7 +572,7 @@ export default function HomePage() {
       <TestimonialsSection />
 
       {/* SECTION 11 — FAQ SECTION */}
-      <section className="w-full max-w-[1280px] mx-auto py-20 px-6 xl:px-8 bg-[#0F1419]" id="faq">
+      <section className="w-full max-w-[1280px] mx-auto py-20 px-6 xl:px-8 bg-transparent" id="faq">
         <div className="flex flex-col lg:flex-row gap-12 max-w-5xl mx-auto items-start">
           {/* FAQ sidebar */}
           <div className="lg:w-1/3 flex flex-col gap-4 text-left">
@@ -622,7 +622,7 @@ export default function HomePage() {
       <AskAISection />
 
       {/* SECTION 11B — PLATFORM STATISTICS */}
-      <section className="py-20 px-6 xl:px-8 max-w-[1280px] mx-auto bg-[#0F1419]">
+      <section className="py-20 px-6 xl:px-8 max-w-[1280px] mx-auto bg-transparent">
         <h2 className="sr-only">Platform statistics</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatsCard label="COLLECTIONS SCANNED" targetValue="12,847" />
@@ -634,7 +634,7 @@ export default function HomePage() {
 
       {/* SECTION 12 — FINAL CTA SECTION */}
       <section
-        className="w-full max-w-[1280px] mx-auto px-6 py-24 text-center bg-[#0F1419]"
+        className="w-full max-w-[1280px] mx-auto px-6 py-24 text-center bg-transparent"
         id="cta"
       >
         <div className="max-w-xl mx-auto flex flex-col items-center gap-8 bg-[#1A1F2E] border border-[#14B8A6]/20 p-8 sm:p-12 rounded-2xl shadow-md relative overflow-hidden group transition-all duration-300">

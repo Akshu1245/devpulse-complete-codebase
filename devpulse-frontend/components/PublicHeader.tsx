@@ -74,7 +74,7 @@ export function PublicHeader() {
 
       {/* SECTION 2 — Navbar Redesign (Mega Menu) */}
       <nav
-        className="bg-[#0F1419] w-full border-b border-[#1A1F2E]"
+        className="bg-[#0F1419]/90 backdrop-blur-md w-full border-b border-[#1A1F2E]"
         onMouseLeave={handleMouseLeave}
       >
         <div className="flex justify-between items-center max-w-[1280px] mx-auto px-6 h-14">

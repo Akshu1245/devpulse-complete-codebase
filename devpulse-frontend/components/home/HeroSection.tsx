@@ -16,7 +16,7 @@ export function HeroSection() {
   };
 
   return (
-    <section className="hero-section relative w-full bg-[#0F1419] overflow-hidden">
+    <section className="hero-section relative w-full bg-transparent overflow-hidden">
       {/* Subtle professional radial glow behind contents */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(20,184,166,0.08),transparent_70%)] pointer-events-none z-0" />
 

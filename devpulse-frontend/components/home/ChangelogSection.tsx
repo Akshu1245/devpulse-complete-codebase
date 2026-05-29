@@ -29,7 +29,7 @@ export function ChangelogSection() {
   ];
 
   return (
-    <section className="relative w-full max-w-[800px] mx-auto py-24 px-6 select-none bg-[#0F1419]">
+    <section className="relative w-full max-w-[800px] mx-auto py-24 px-6 select-none bg-transparent">
       <div className="w-full flex flex-col gap-12">
         {/* Section Header */}
         <div className="flex flex-col gap-3 items-center text-center mb-6">
@@ -52,11 +52,14 @@ export function ChangelogSection() {
           {entries.map((entry, idx) => (
             <div key={idx} className="relative group text-left">
               {/* Dot: 8px circle, teal background, white border */}
-              <div className="absolute -left-[33px] md:-left-[41px] top-1.5 w-[8px] h-[8px] rounded-full bg-[#14B8A6] border border-white group-hover:scale-150 group-hover:bg-white group-hover:border-[#14B8A6] transition-all duration-200" />
+              <div className="absolute -left-[33px] md:-left-[41px] top-4.5 w-[8px] h-[8px] rounded-full bg-[#14B8A6] border border-white group-hover:scale-150 group-hover:bg-white group-hover:border-[#14B8A6] transition-all duration-200" />
 
               {/* Content block */}
-              <Link href={entry.link} className="block">
-                <div className="flex flex-col gap-1 group-hover:translate-x-1.5 transform transition-all duration-200">
+              <Link
+                href={entry.link}
+                className="block p-3 rounded-lg hover:bg-[#14B8A6]/5 hover:translate-x-1 transition-all duration-200"
+              >
+                <div className="flex flex-col gap-1">
                   {/* Date: teal, 12px */}
                   <span className="text-[#14B8A6] font-mono text-[12px] font-semibold tracking-wider">
                     {entry.date}

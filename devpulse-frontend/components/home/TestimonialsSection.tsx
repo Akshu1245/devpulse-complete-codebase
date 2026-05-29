@@ -40,7 +40,7 @@ export function TestimonialsSection() {
   ];
 
   return (
-    <section className="relative w-full max-w-[1280px] mx-auto py-20 px-6 xl:px-8 bg-[#0F1419]">
+    <section className="relative w-full max-w-[1280px] mx-auto py-20 px-6 xl:px-8 bg-transparent">
       <div className="flex flex-col items-center gap-12">
         {/* Section Title */}
         <div className="flex flex-col items-center gap-3 text-center">
