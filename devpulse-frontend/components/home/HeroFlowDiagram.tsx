@@ -23,7 +23,7 @@ function ConnectorVertical() {
           width: "2px",
           height: "100%",
           background:
-            "repeating-linear-gradient(to bottom, #00d4aa 0px, #00d4aa 6px, transparent 6px, transparent 12px)",
+            "repeating-linear-gradient(to bottom, #14B8A6 0px, #14B8A6 6px, transparent 6px, transparent 12px)",
         }}
       />
       {/* Animated traveling dot */}
@@ -49,7 +49,7 @@ function ConnectorHorizontal() {
           width: "100%",
           height: "2px",
           background:
-            "repeating-linear-gradient(to right, #00d4aa 0px, #00d4aa 4px, transparent 4px, transparent 9px)",
+            "repeating-linear-gradient(to right, #14B8A6 0px, #14B8A6 4px, transparent 4px, transparent 9px)",
         }}
       />
       <div className="traveling-dot-h" />
@@ -137,8 +137,8 @@ export function HeroFlowDiagram() {
 
           {/* Mini bar chart */}
           <div className="mini-chart">
-            <div className="chart-bar" style={{ height: "40px", background: "#00d4aa" }} />
-            <div className="chart-bar" style={{ height: "28px", background: "#f59e0b" }} />
+            <div className="chart-bar" style={{ height: "40px", background: "#14B8A6" }} />
+            <div className="chart-bar" style={{ height: "28px", background: "#64748B" }} />
             <div className="chart-bar" style={{ height: "20px", background: "#ef4444" }} />
           </div>
 

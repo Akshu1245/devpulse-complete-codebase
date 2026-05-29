@@ -8,16 +8,16 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "teal-accent": "#06D6A0",
-        "electric-cyan": "#00F0FF",
-        "amber-gold": "#FDB022",
+        "teal-accent": "#14B8A6",
+        "electric-cyan": "#14B8A6",
+        "amber-gold": "#64748B",
         "slate-dark": "#1E293B",
         "on-error": "#690005",
         "surface": "#131313",
         "on-tertiary-container": "#006274",
         "inverse-surface": "#e5e2e1",
-        "surface-base": "#0F0F0F",
-        "background": "#0a0a0a",
+        "surface-base": "#0F1419",
+        "background": "#0F1419",
         "surface-container-lowest": "#0e0e0e",
         "surface-container-low": "#1c1b1b",
         "secondary-container": "#03c6b2",

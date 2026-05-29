@@ -62,10 +62,10 @@ export function BenchmarkSection() {
         </div>
 
         {/* Comparison Table */}
-        <div className="w-full overflow-x-auto rounded-xl border border-[#2D3E50] shadow-[0_4px_30px_rgba(6,214,160,0.05)] bg-[#0c101d]/60">
+        <div className="w-full overflow-x-auto rounded-xl border border-[#2D3E50] shadow-lg bg-[#0F1419]">
           <table className="w-full border-collapse text-left min-w-[700px]">
             <thead>
-              <tr className="bg-[#0A0E1A] border-b border-[#2D3E50]">
+              <tr className="bg-[#0E1318] border-b border-[#2D3E50]">
                 <th className="p-5 text-sm font-semibold uppercase tracking-wider text-slate-400">
                   Metric
                 </th>
@@ -106,7 +106,7 @@ export function BenchmarkSection() {
         {/* Footer info */}
         <div className="text-center flex flex-col items-center gap-3">
           <Link
-            className="inline-flex items-center gap-2 text-sm text-teal-accent hover:text-electric-cyan transition-colors font-sans font-medium"
+            className="inline-flex items-center gap-2 text-sm text-teal-accent hover:text-[#0D9488] transition-colors font-sans font-medium"
             href="/blog/benchmark-methodology"
           >
             View full benchmark report

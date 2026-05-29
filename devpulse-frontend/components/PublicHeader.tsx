@@ -50,19 +50,19 @@ export function PublicHeader() {
                   Launch in:
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-cyan-400">
+                  <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-teal-accent">
                     {timeLeft.days}d
                   </span>
                   <span>:</span>
-                  <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-cyan-400">
+                  <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-teal-accent">
                     {timeLeft.hours}h
                   </span>
                   <span>:</span>
-                  <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-cyan-400">
+                  <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-teal-accent">
                     {timeLeft.minutes}m
                   </span>
                   <span>:</span>
-                  <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-cyan-400">
+                  <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-teal-accent">
                     {timeLeft.seconds}s
                   </span>
                 </span>
@@ -81,7 +81,7 @@ export function PublicHeader() {
           <div className="flex items-center gap-10">
             <Link className="flex items-center gap-2 no-underline shrink-0" href="/">
               <div className="flex items-center gap-2">
-                <Shield className="w-6 h-6 text-cyan-400" />
+                <Shield className="w-6 h-6 text-teal-accent" />
                 <span className="text-xl font-bold font-manrope tracking-tight text-white">
                   RakshEx
                 </span>
@@ -109,11 +109,11 @@ export function PublicHeader() {
                         href="/features#security-scanner"
                         onClick={forceClose}
                       >
-                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-cyan-500 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
+                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-teal-accent rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
                           <Shield className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="text-white text-xs font-semibold group-hover:text-cyan-400 transition-colors">
+                          <p className="text-white text-xs font-semibold group-hover:text-teal-accent transition-colors">
                             Security Scanner
                           </p>
                           <p className="text-neutral-500 text-[11px] leading-relaxed mt-0.5">
@@ -126,11 +126,11 @@ export function PublicHeader() {
                         href="/features#kill-switch"
                         onClick={forceClose}
                       >
-                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-cyan-500 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
+                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-teal-accent rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
                           <Power className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="text-white text-xs font-semibold group-hover:text-cyan-400 transition-colors">
+                          <p className="text-white text-xs font-semibold group-hover:text-teal-accent transition-colors">
                             AgentGuard Kill Switch
                           </p>
                           <p className="text-neutral-500 text-[11px] leading-relaxed mt-0.5">
@@ -143,11 +143,11 @@ export function PublicHeader() {
                         href="/features#shadow-api"
                         onClick={forceClose}
                       >
-                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-cyan-500 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
+                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-teal-accent rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
                           <Ghost className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="text-white text-xs font-semibold group-hover:text-cyan-400 transition-colors">
+                          <p className="text-white text-xs font-semibold group-hover:text-teal-accent transition-colors">
                             Shadow API Discovery
                           </p>
                           <p className="text-neutral-500 text-[11px] leading-relaxed mt-0.5">
@@ -160,11 +160,11 @@ export function PublicHeader() {
                         href="/features#credentials"
                         onClick={forceClose}
                       >
-                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-cyan-500 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
+                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-teal-accent rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
                           <Key className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="text-white text-xs font-semibold group-hover:text-cyan-400 transition-colors">
+                          <p className="text-white text-xs font-semibold group-hover:text-teal-accent transition-colors">
                             Credential Scanner
                           </p>
                           <p className="text-neutral-500 text-[11px] leading-relaxed mt-0.5">
@@ -180,11 +180,11 @@ export function PublicHeader() {
                         href="/features#cost-monitor"
                         onClick={forceClose}
                       >
-                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-cyan-500 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
+                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-teal-accent rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
                           <BarChart className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="text-white text-xs font-semibold group-hover:text-cyan-400 transition-colors">
+                          <p className="text-white text-xs font-semibold group-hover:text-teal-accent transition-colors">
                             Cost Monitor
                           </p>
                           <p className="text-neutral-500 text-[11px] leading-relaxed mt-0.5">
@@ -197,11 +197,11 @@ export function PublicHeader() {
                         href="/features#thinking-tokens"
                         onClick={forceClose}
                       >
-                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-cyan-500 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
+                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-teal-accent rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
                           <Brain className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="text-white text-xs font-semibold group-hover:text-cyan-400 transition-colors">
+                          <p className="text-white text-xs font-semibold group-hover:text-teal-accent transition-colors">
                             Thinking Token Attribution
                           </p>
                           <p className="text-neutral-500 text-[11px] leading-relaxed mt-0.5">
@@ -214,11 +214,11 @@ export function PublicHeader() {
                         href="/features#compliance"
                         onClick={forceClose}
                       >
-                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-cyan-500 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
+                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-teal-accent rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
                           <FileText className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="text-white text-xs font-semibold group-hover:text-cyan-400 transition-colors">
+                          <p className="text-white text-xs font-semibold group-hover:text-teal-accent transition-colors">
                             Compliance Reports
                           </p>
                           <p className="text-neutral-500 text-[11px] leading-relaxed mt-0.5">
@@ -231,11 +231,11 @@ export function PublicHeader() {
                         href="/features#mcp"
                         onClick={forceClose}
                       >
-                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-cyan-500 rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
+                        <div className="w-10 h-10 bg-neutral-800 group-hover:bg-teal-accent rounded-lg flex items-center justify-center text-neutral-400 group-hover:text-black transition-colors shrink-0">
                           <Network className="w-5 h-5" />
                         </div>
                         <div>
-                          <p className="text-white text-xs font-semibold group-hover:text-cyan-400 transition-colors">
+                          <p className="text-white text-xs font-semibold group-hover:text-teal-accent transition-colors">
                             MCP Governance
                           </p>
                           <p className="text-neutral-500 text-[11px] leading-relaxed mt-0.5">
@@ -261,28 +261,28 @@ export function PublicHeader() {
                 >
                   <div className="bg-neutral-900 border border-neutral-850 rounded-xl overflow-hidden shadow-2xl w-56 p-4 flex flex-col gap-1.5 text-left">
                     <Link
-                      className="text-neutral-400 hover:text-cyan-400 text-xs py-1.5 transition-colors border-b border-neutral-800 pb-2"
+                      className="text-neutral-400 hover:text-teal-accent text-xs py-1.5 transition-colors border-b border-neutral-800 pb-2"
                       href="/compare/rakshex-vs-snyk"
                       onClick={forceClose}
                     >
                       RakshEx vs Snyk →
                     </Link>
                     <Link
-                      className="text-neutral-400 hover:text-cyan-400 text-xs py-1.5 transition-colors border-b border-neutral-800 pb-2"
+                      className="text-neutral-400 hover:text-teal-accent text-xs py-1.5 transition-colors border-b border-neutral-800 pb-2"
                       href="/compare/rakshex-vs-datadog"
                       onClick={forceClose}
                     >
                       RakshEx vs Datadog →
                     </Link>
                     <Link
-                      className="text-neutral-400 hover:text-cyan-400 text-xs py-1.5 transition-colors border-b border-neutral-800 pb-2"
+                      className="text-neutral-400 hover:text-teal-accent text-xs py-1.5 transition-colors border-b border-neutral-800 pb-2"
                       href="/compare/rakshex-vs-traceable"
                       onClick={forceClose}
                     >
                       RakshEx vs Traceable AI →
                     </Link>
                     <Link
-                      className="text-neutral-400 hover:text-cyan-400 text-xs py-1.5 transition-colors"
+                      className="text-neutral-400 hover:text-teal-accent text-xs py-1.5 transition-colors"
                       href="/compare/rakshex-vs-salt"
                       onClick={forceClose}
                     >
@@ -305,35 +305,35 @@ export function PublicHeader() {
                 >
                   <div className="bg-neutral-900 border border-neutral-850 rounded-xl overflow-hidden shadow-2xl w-48 p-4 flex flex-col gap-1.5 text-left">
                     <Link
-                      className="text-neutral-400 hover:text-cyan-400 text-xs py-1 transition-colors"
+                      className="text-neutral-400 hover:text-teal-accent text-xs py-1 transition-colors"
                       href="/blog"
                       onClick={forceClose}
                     >
                       Blog
                     </Link>
                     <Link
-                      className="text-neutral-400 hover:text-cyan-400 text-xs py-1 transition-colors"
+                      className="text-neutral-400 hover:text-teal-accent text-xs py-1 transition-colors"
                       href="/docs"
                       onClick={forceClose}
                     >
                       Docs
                     </Link>
                     <Link
-                      className="text-neutral-400 hover:text-cyan-400 text-xs py-1 transition-colors"
+                      className="text-neutral-400 hover:text-teal-accent text-xs py-1 transition-colors"
                       href="/changelog"
                       onClick={forceClose}
                     >
                       Changelog
                     </Link>
                     <Link
-                      className="text-neutral-400 hover:text-cyan-400 text-xs py-1 transition-colors"
+                      className="text-neutral-400 hover:text-teal-accent text-xs py-1 transition-colors"
                       href="/roi-calculator"
                       onClick={forceClose}
                     >
                       ROI Calculator
                     </Link>
                     <Link
-                      className="text-neutral-400 hover:text-cyan-400 text-xs py-1 transition-colors"
+                      className="text-neutral-400 hover:text-teal-accent text-xs py-1 transition-colors"
                       href="/faq"
                       onClick={forceClose}
                     >
@@ -354,7 +354,7 @@ export function PublicHeader() {
               Sign In
             </Link>
             <Link
-              className="bg-[#06b6d4] hover:bg-[#0891b2] text-black font-semibold text-xs font-mono uppercase tracking-wider px-4 py-2 rounded shadow-[0_0_15px_rgba(6,182,212,0.2)] transition-all"
+              className="bg-teal-accent hover:bg-[#0D9488] text-white font-semibold text-xs font-mono uppercase tracking-wider px-4 py-2 rounded transition-all"
               href="/register"
             >
               Start Free
@@ -378,56 +378,56 @@ export function PublicHeader() {
               </p>
               <div className="grid grid-cols-2 gap-3">
                 <Link
-                  className="text-sm text-neutral-300 hover:text-cyan-400"
+                  className="text-sm text-neutral-300 hover:text-teal-accent"
                   href="/features#security-scanner"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Security Scanner
                 </Link>
                 <Link
-                  className="text-sm text-neutral-300 hover:text-cyan-400"
+                  className="text-sm text-neutral-300 hover:text-teal-accent"
                   href="/features#kill-switch"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Kill Switch
                 </Link>
                 <Link
-                  className="text-sm text-neutral-300 hover:text-cyan-400"
+                  className="text-sm text-neutral-300 hover:text-teal-accent"
                   href="/features#shadow-api"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Shadow API
                 </Link>
                 <Link
-                  className="text-sm text-neutral-300 hover:text-cyan-400"
+                  className="text-sm text-neutral-300 hover:text-teal-accent"
                   href="/features#credentials"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Credential Scanner
                 </Link>
                 <Link
-                  className="text-sm text-neutral-300 hover:text-cyan-400"
+                  className="text-sm text-neutral-300 hover:text-teal-accent"
                   href="/features#cost-monitor"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Cost Monitor
                 </Link>
                 <Link
-                  className="text-sm text-neutral-300 hover:text-cyan-400"
+                  className="text-sm text-neutral-300 hover:text-teal-accent"
                   href="/features#thinking-tokens"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Thinking Tokens
                 </Link>
                 <Link
-                  className="text-sm text-neutral-300 hover:text-cyan-400"
+                  className="text-sm text-neutral-300 hover:text-teal-accent"
                   href="/features#compliance"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Compliance
                 </Link>
                 <Link
-                  className="text-sm text-neutral-300 hover:text-cyan-400"
+                  className="text-sm text-neutral-300 hover:text-teal-accent"
                   href="/features#mcp"
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -507,7 +507,7 @@ export function PublicHeader() {
                 Sign In
               </Link>
               <Link
-                className="flex-1 text-center bg-cyan-500 text-black py-2.5 rounded font-bold text-sm"
+                className="flex-1 text-center bg-teal-accent text-white hover:bg-[#0D9488] py-2.5 rounded font-bold text-sm"
                 href="/register"
                 onClick={() => setMobileMenuOpen(false)}
               >

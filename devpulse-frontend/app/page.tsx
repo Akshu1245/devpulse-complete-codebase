@@ -103,7 +103,7 @@ function StatsCard({ label, targetValue }: { label: string; targetValue: string 
   return (
     <article
       ref={containerRef}
-      className="PlatformStatsShowcase_card__DyDV_ border border-[#2D3E50] hover:border-teal-accent bg-slate-dark/30 hover:bg-slate-dark/50 rounded-xl p-6 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(6,214,160,0.15)] flex flex-col items-center gap-2 before:content-none"
+      className="PlatformStatsShowcase_card__DyDV_ border border-[#2D3E50] hover:border-teal-accent bg-slate-dark/30 hover:bg-slate-dark/50 rounded-xl p-6 transition-all duration-300 transform hover:-translate-y-1 flex flex-col items-center gap-2 before:content-none"
     >
       <p className="PlatformStatsShowcase_label__dAs7X !text-slate-400 font-sans text-xs tracking-wider uppercase font-semibold">
         {label}
@@ -143,7 +143,7 @@ function WaitlistForm() {
 
   if (success) {
     return (
-      <div className="p-4 bg-cyan-950/20 border border-cyan-500/30 rounded-lg text-cyan-400 text-sm font-mono text-center shadow-[0_0_15px_rgba(6,182,212,0.1)]">
+      <div className="p-4 bg-teal-accent/10 border border-teal-accent/30 rounded-lg text-teal-accent text-sm font-mono text-center">
         ✓ You have been added to the waitlist!
       </div>
     );
@@ -158,13 +158,13 @@ function WaitlistForm() {
           placeholder="Enter your work email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="flex-1 px-4 py-3 bg-[#0F1419] border border-[#2D3E50] focus:border-teal-accent focus:shadow-[0_0_15px_rgba(6,214,160,0.2)] rounded-lg focus:outline-none text-white text-sm font-sans transition-all duration-200"
+          className="flex-1 px-4 py-3 bg-[#0F1419] border border-[#2D3E50] focus:border-teal-accent focus:ring-1 focus:ring-teal-accent rounded-lg focus:outline-none text-white text-sm font-sans transition-all duration-200"
           disabled={joinMutation.isPending}
         />
         <button
           type="submit"
           disabled={joinMutation.isPending}
-          className="bg-gradient-to-r from-teal-accent to-electric-cyan text-[#0A0E1A] hover:shadow-[0_0_20px_rgba(6,214,160,0.4)] hover:scale-[1.02] active:scale-[0.98] font-bold px-6 py-3 text-xs tracking-wider uppercase font-sans rounded-lg disabled:opacity-50 transition-all duration-200 shrink-0 transform"
+          className="bg-teal-accent hover:bg-[#0D9488] text-white hover:scale-[1.02] active:scale-[0.98] font-bold px-6 py-3 text-xs tracking-wider uppercase font-sans rounded-lg disabled:opacity-50 transition-all duration-200 shrink-0 transform"
         >
           {joinMutation.isPending ? "Joining..." : "Get Access"}
         </button>
@@ -239,10 +239,10 @@ function AnimatedHeroVisual() {
         <div className="space-y-2 flex-1 overflow-y-auto">
           {terminalLines.slice(0, scanStep).map((line, idx) => {
             let color = "text-neutral-300";
-            if (line.startsWith("✓")) color = "text-cyan-400";
-            else if (line.startsWith("⚠")) color = "text-amber-400";
-            else if (line.startsWith("🔒")) color = "text-red-400";
-            else if (line.startsWith("💰")) color = "text-emerald-400";
+            if (line.startsWith("✓")) color = "text-teal-accent";
+            else if (line.startsWith("⚠")) color = "text-slate-400";
+            else if (line.startsWith("🔒")) color = "text-teal-accent";
+            else if (line.startsWith("💰")) color = "text-teal-accent";
             return (
               <p key={idx} className={`${color} font-mono leading-relaxed`}>
                 {line}
@@ -250,7 +250,7 @@ function AnimatedHeroVisual() {
             );
           })}
           {scanStep < terminalLines.length && (
-            <span className="inline-block w-1.5 h-3 bg-cyan-400 animate-pulse ml-1" />
+            <span className="inline-block w-1.5 h-3 bg-teal-accent ml-1" />
           )}
         </div>
       </div>
@@ -268,7 +268,7 @@ function AnimatedHeroVisual() {
                 cx="48"
                 cy="48"
                 r="38"
-                stroke="#06b6d4"
+                stroke="#14B8A6"
                 strokeWidth="5"
                 fill="transparent"
                 strokeDasharray="238"
@@ -290,11 +290,10 @@ function AnimatedHeroVisual() {
           </div>
           <div className="space-y-1">
             {findings.map((f, i) => {
-              let tagColor = "text-cyan-400 bg-cyan-950/20 border-cyan-800/30";
-              if (f.includes("Leak"))
-                tagColor = "text-amber-400 bg-amber-950/20 border-amber-800/30";
+              let tagColor = "text-teal-accent bg-teal-accent/10 border-teal-accent/20";
+              if (f.includes("Leak")) tagColor = "text-slate-400 bg-slate-900/50 border-slate-800";
               if (f.includes("Injection"))
-                tagColor = "text-red-400 bg-red-950/20 border-red-800/30";
+                tagColor = "text-teal-accent bg-teal-accent/10 border-teal-accent/20";
               return (
                 <div
                   key={i}
@@ -305,7 +304,7 @@ function AnimatedHeroVisual() {
               );
             })}
             {findings.length === 0 && (
-              <div className="text-[9px] text-neutral-500 italic font-mono">Scans running...</div>
+              <div className="text-[9px] text-neutral-555 italic font-mono">Scans running...</div>
             )}
           </div>
         </div>
@@ -330,7 +329,7 @@ export default function HomePage() {
       description: "87-payload library. OWASP Top 10. PCI DSS v4.",
       link: "/features#security-scanner",
       icon: Shield,
-      hoverClass: "hover-shield-pulse text-cyan-400",
+      hoverClass: "hover-shield-pulse text-teal-accent",
     },
     {
       title: "Kill Switch",
@@ -344,42 +343,42 @@ export default function HomePage() {
       description: "Holt-Winters forecasting. Per-model breakdown.",
       link: "/features#cost-monitor",
       icon: BarChart,
-      hoverClass: "hover-graph-bounce text-cyan-400",
+      hoverClass: "hover-graph-bounce text-teal-accent",
     },
     {
       title: "Thinking Tokens",
       description: "World-first reasoning isolation. Patent filed.",
       link: "/features#thinking-tokens",
       icon: Brain,
-      hoverClass: "hover-brain-pulse text-cyan-400",
+      hoverClass: "hover-brain-pulse text-teal-accent",
     },
     {
       title: "Shadow API",
       description: "Express, FastAPI, Flask, Django, Spring, Laravel.",
       link: "/features#shadow-api",
       icon: Ghost,
-      hoverClass: "hover-ghost-fade text-cyan-400",
+      hoverClass: "hover-ghost-fade text-teal-accent",
     },
     {
       title: "Credential Scanner",
       description: "AWS, GitHub, OpenAI, Stripe. Aadhaar + PAN.",
       link: "/features#credentials",
       icon: Key,
-      hoverClass: "hover-key-rotate text-cyan-400",
+      hoverClass: "hover-key-rotate text-teal-accent",
     },
     {
       title: "Compliance Reports",
       description: "SOC2, PCI DSS, OWASP. Vanta/Drata ready.",
       link: "/features#compliance",
       icon: FileText,
-      hoverClass: "hover-draw-check text-cyan-400",
+      hoverClass: "hover-draw-check text-teal-accent",
     },
     {
       title: "MCP Governance",
       description: "Tool registry, risk scoring, agent allowlists.",
       link: "/features#mcp",
       icon: Network,
-      hoverClass: "hover-connect-network text-cyan-400",
+      hoverClass: "hover-connect-network text-teal-accent",
     },
   ];
 
@@ -465,7 +464,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-transparent text-white overflow-x-hidden font-manrope selection:bg-cyan-500 selection:text-black">
+    <div className="min-h-screen bg-transparent text-white overflow-x-hidden font-manrope selection:bg-teal-accent selection:text-black">
       {/* SECTION 3 — HERO SECTION & LOGOMARQUEE */}
       <HeroSection />
 
@@ -552,7 +551,7 @@ export default function HomePage() {
               href="https://github.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-[#0A0E1A] hover:bg-[#1E293B]/30 text-teal-accent border-2 border-teal-accent hover:border-electric-cyan hover:text-electric-cyan text-xs font-mono tracking-wider px-5 py-2.5 rounded-lg font-semibold transition-all duration-200"
+              className="bg-transparent hover:bg-teal-accent/10 text-teal-accent border-2 border-teal-accent text-xs font-mono tracking-wider px-5 py-2.5 rounded-lg font-semibold transition-all duration-200"
             >
               GitHub Discussions
             </a>
@@ -560,7 +559,7 @@ export default function HomePage() {
               href="https://discord.gg"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-gradient-to-r from-teal-accent to-electric-cyan text-[#0A0E1A] hover:shadow-[0_0_20px_rgba(6,214,160,0.4)] hover:scale-[1.02] active:scale-[0.98] text-xs font-mono tracking-wider px-5 py-2.5 rounded-lg font-bold transition-all duration-200 transform"
+              className="bg-teal-accent hover:bg-[#0D9488] text-white hover:scale-[1.02] active:scale-[0.98] text-xs font-mono tracking-wider px-5 py-2.5 rounded-lg font-bold transition-all duration-200 transform"
             >
               Join Discord
             </a>
@@ -572,7 +571,7 @@ export default function HomePage() {
           {tweets.map((tw, idx) => (
             <div
               key={idx}
-              className="break-inside-avoid bg-slate-dark/30 border border-[#2D3E50] rounded-xl p-5 hover:border-teal-accent hover:shadow-[0_8px_30px_rgba(6,214,160,0.15)] transition-all duration-300 flex flex-col gap-4 group"
+              className="break-inside-avoid bg-slate-dark/30 border border-[#2D3E50] rounded-xl p-5 hover:border-teal-accent transition-all duration-300 flex flex-col gap-4 group"
             >
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
@@ -596,7 +595,7 @@ export default function HomePage() {
                 {tw.text}
               </p>
               {/* Star Rating badges */}
-              <div className="flex gap-0.5 text-amber-gold mt-1 text-xs select-none">
+              <div className="flex gap-0.5 text-teal-accent mt-1 text-xs select-none">
                 <span>★</span>
                 <span>★</span>
                 <span>★</span>
@@ -621,7 +620,7 @@ export default function HomePage() {
               docs.
             </p>
             <Link
-              className="inline-flex items-center gap-1.5 text-teal-accent hover:text-electric-cyan text-sm font-semibold transition-all mt-2"
+              className="inline-flex items-center gap-1.5 text-teal-accent hover:text-[#0D9488] text-sm font-semibold transition-all mt-2"
               href="/docs"
             >
               or check out our Documentation
@@ -671,11 +670,7 @@ export default function HomePage() {
 
       {/* SECTION 12 — FINAL CTA SECTION */}
       <section className="w-full max-w-[1280px] mx-auto px-6 py-24 text-center" id="cta">
-        <div className="max-w-xl mx-auto flex flex-col items-center gap-8 bg-gradient-to-br from-slate-dark/30 to-black/80 border border-[#2D3E50] hover:border-teal-accent p-8 sm:p-12 rounded-3xl shadow-2xl relative overflow-hidden group transition-all duration-500">
-          {/* Subtle background glow filters */}
-          <div className="absolute -top-24 -left-24 w-48 h-48 bg-teal-accent/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-teal-accent/20 transition-all duration-500" />
-          <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-amber-gold/5 rounded-full blur-[80px] pointer-events-none group-hover:bg-amber-gold/15 transition-all duration-500" />
-
+        <div className="max-w-xl mx-auto flex flex-col items-center gap-8 bg-[#0F1419] border border-[#2D3E50] hover:border-teal-accent p-8 sm:p-12 rounded-3xl shadow-lg relative overflow-hidden group transition-all duration-500">
           <h2 className="text-3xl sm:text-[40px] font-extrabold font-sans text-white leading-[1.2] tracking-[-0.02em]">
             Start Securing Your AI Agents
           </h2>
@@ -691,13 +686,13 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row gap-4 w-full justify-center mt-2 border-t border-[#2D3E50] pt-6 z-10">
             <Link
               href="/register"
-              className="flex-1 text-center bg-gradient-to-r from-amber-gold to-teal-accent hover:shadow-[0_0_20px_rgba(253,176,34,0.4)] hover:scale-[1.02] active:scale-[0.98] text-[#0A0E1A] py-3 rounded-lg font-bold text-xs uppercase tracking-wider font-sans transition-all duration-200 transform"
+              className="flex-1 text-center bg-teal-accent hover:bg-[#0D9488] text-white hover:scale-[1.02] active:scale-[0.98] py-3 rounded-lg font-bold text-xs uppercase tracking-wider font-sans transition-all duration-200 transform"
             >
               Try Free — No Credit Card
             </Link>
             <Link
               href="/demo"
-              className="flex-1 text-center bg-transparent hover:bg-[#1E293B]/30 text-teal-accent border-2 border-teal-accent hover:border-electric-cyan hover:text-electric-cyan py-3 rounded-lg font-bold text-xs uppercase tracking-wider font-sans transition-all duration-200 transform"
+              className="flex-1 text-center bg-transparent hover:bg-teal-accent/10 text-teal-accent border-2 border-teal-accent py-3 rounded-lg font-bold text-xs uppercase tracking-wider font-sans transition-all duration-200 transform"
             >
               Book a Demo
             </Link>

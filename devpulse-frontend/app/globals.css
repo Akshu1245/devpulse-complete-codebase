@@ -6,7 +6,7 @@
 @tailwind utilities;
 
 html, body {
-  background-color: #0a0a0a;
+  background-color: #0F1419;
 }
 
 body {
@@ -50,8 +50,7 @@ body {
 }
 
 .glass-card:hover {
-  border-color: rgba(207, 188, 255, 0.3);
-  box-shadow: 0 0 15px rgba(207, 188, 255, 0.1);
+  border-color: rgba(20, 184, 166, 0.3);
 }
 
 .glass-panel {
@@ -105,8 +104,8 @@ body {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0px rgba(207, 188, 255, 0); }
-  50% { box-shadow: 0 0 15px rgba(207, 188, 255, 0.3); }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
 }
 
 .pulse-glow {
@@ -144,26 +143,26 @@ body {
 
 /* Custom Rakshex Animations & Classes */
 .emerald-glow {
-  box-shadow: 0 0 15px rgba(110, 231, 183, 0.15);
+  border: 1px solid #14B8A6;
 }
 .emerald-border-active {
-  border: 1px solid #6EE7B7;
+  border: 1px solid #14B8A6;
 }
 .pulse-emerald {
   animation: pulse-emerald-anim 2s infinite;
 }
 @keyframes pulse-emerald-anim {
   0% { transform: scale(0.95); opacity: 0.8; }
-  50% { transform: scale(1.1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 1; }
   100% { transform: scale(0.95); opacity: 0.8; }
 }
 .pulse-dot {
   animation: pulse-dot-anim 2s infinite;
 }
 @keyframes pulse-dot-anim {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(110, 231, 183, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(110, 231, 183, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(110, 231, 183, 0); }
+  0% { transform: scale(0.95); opacity: 0.7; }
+  70% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.7; }
 }
 .stream-fade-in {
   animation: fadeInStream 0.5s ease-out forwards;
@@ -196,8 +195,8 @@ body {
   animation: shield-pulse-anim 1.5s infinite ease-in-out;
 }
 @keyframes shield-pulse-anim {
-  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(6, 182, 212, 0.4)); }
-  50% { transform: scale(1.08); filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.8)); }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
 }
 
 .group:hover .animate-glow-power {
@@ -205,8 +204,8 @@ body {
   color: #ef4444 !important;
 }
 @keyframes power-glow-anim {
-  0%, 100% { filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.4)); }
-  50% { filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.9)); }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
 }
 
 .group:hover .animate-bounce-graph {
@@ -255,15 +254,15 @@ body {
 }
 
 .text-cyan-accent {
-  color: #06b6d4;
+  color: #14B8A6;
 }
 
 .bg-cyan-accent {
-  background-color: #06b6d4;
+  background-color: #14B8A6;
 }
 
 .border-cyan-accent {
-  border-color: rgba(6, 182, 212, 0.2);
+  border-color: rgba(20, 184, 166, 0.2);
 }
 
 /* Logo Marquee Styling */
@@ -291,7 +290,7 @@ body {
 .marquee-active-name {
   font-size: 15px;
   font-weight: 600;
-  color: #00d4aa;
+  color: #14B8A6;
   transition: opacity 0.3s ease;
   min-width: 120px;
 }
@@ -432,7 +431,7 @@ body {
 .hero-marquee-label-container .marquee-active-name {
   font-size: 15px;
   font-weight: 600;
-  color: #00d4aa;
+  color: #14B8A6;
 }
 
 .marquee-full-width {
@@ -515,7 +514,7 @@ body {
 .connector-line-solid {
   width: 2px;
   flex: 1;
-  background: #00d4aa;
+  background: #14B8A6;
 }
 
 .connector-arrowhead {
@@ -523,7 +522,7 @@ body {
   height: 0;
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
-  border-top: 8px solid #00d4aa;
+  border-top: 8px solid #14B8A6;
 }
 
 /* BOTTOM ROW */
@@ -541,7 +540,7 @@ body {
 /* CARD 2 — RakshEx main */
 .card-main {
   flex: 1;
-  border-color: rgba(0, 212, 170, 0.5) !important;
+  border-color: rgba(20, 184, 166, 0.5) !important;
   z-index: 2;
   position: relative;
 }
@@ -557,7 +556,7 @@ body {
 .connector-dots {
   width: 60px;
   height: 2px;
-  background-image: radial-gradient(circle, #00d4aa 1.5px, transparent 1.5px);
+  background-image: radial-gradient(circle, #14B8A6 1.5px, transparent 1.5px);
   background-size: 10px 2px;
   background-repeat: repeat-x;
 }
@@ -575,12 +574,11 @@ body {
   position: absolute;
   width: 10px;
   height: 10px;
-  background: #00d4aa;
+  background: #14B8A6;
   border-radius: 50%;
   left: -4px;
   top: 0;
   animation: travel-down 2s ease-in-out infinite;
-  box-shadow: 0 0 8px #00d4aa;
 }
 
 /* CARD 3 — Report */
@@ -615,9 +613,9 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(0,212,170,0.15);
-  border: 1px solid rgba(0,212,170,0.35);
-  color: #00d4aa;
+  background: rgba(20,184,166,0.15);
+  border: 1px solid rgba(20,184,166,0.35);
+  color: #14B8A6;
   font-size: 12px;
   font-weight: 500;
   padding: 4px 12px;
@@ -628,7 +626,7 @@ body {
 .badge-dot {
   width: 6px;
   height: 6px;
-  background: #00d4aa;
+  background: #14B8A6;
   border-radius: 50%;
 }
 
@@ -650,8 +648,8 @@ body {
 .card-row:last-child { border-bottom: none; }
 .row-label { flex: 1; color: rgba(255,255,255,0.6); }
 .row-value { font-weight: 600; font-size: 13px; }
-.row-value.green { color: #00d4aa; }
-.row-value.yellow { color: #f59e0b; }
+.row-value.green { color: #14B8A6; }
+.row-value.yellow { color: #94A3B8; }
 .row-value.red { color: #ef4444; }
 
 .skeleton-bars {
@@ -691,7 +689,7 @@ body {
 .score-value {
   font-size: 18px;
   font-weight: 700;
-  color: #00d4aa;
+  color: #14B8A6;
   text-align: center;
 }
 
@@ -735,12 +733,11 @@ body {
   position: absolute;
   width: 10px;
   height: 10px;
-  background: #00d4aa;
+  background: #14B8A6;
   border-radius: 50%;
   left: 50%;
   top: 0;
   transform: translateX(-50%);
-  box-shadow: 0 0 10px #00d4aa, 0 0 4px #00d4aa;
   animation: travel-down 1.8s ease-in-out infinite;
 }
 
@@ -765,12 +762,11 @@ body {
   position: absolute;
   width: 8px;
   height: 8px;
-  background: #00d4aa;
+  background: #14B8A6;
   border-radius: 50%;
   top: 50%;
   left: 0;
   transform: translateY(-50%);
-  box-shadow: 0 0 8px #00d4aa;
   animation: travel-right 1.8s ease-in-out infinite 0.6s;
 }
 
@@ -895,15 +891,14 @@ body {
 .status-dot {
   width: 8px;
   height: 8px;
-  background: #00d4aa;
+  background: #14B8A6;
   border-radius: 50%;
-  box-shadow: 0 0 6px #00d4aa;
   animation: pulse-dot 2s ease-in-out infinite;
 }
 
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; box-shadow: 0 0 6px #00d4aa; }
-  50% { opacity: 0.7; box-shadow: 0 0 12px #00d4aa; }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 @media (max-width: 768px) {
@@ -974,13 +969,18 @@ body {
 }
 
 .docs-cta {
-  background: #00d4aa;
-  color: #000;
+  background: #14B8A6;
+  color: #fff;
   font-size: 14px;
   font-weight: 600;
   padding: 8px 18px;
   border-radius: 8px;
   text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.docs-cta:hover {
+  background: #0D9488;
 }
 
 .docs-tabs {
@@ -1003,7 +1003,7 @@ body {
 
 .docs-tab.active {
   color: white;
-  border-bottom-color: #00d4aa;
+  border-bottom-color: #14B8A6;
 }
 
 .docs-body {
@@ -1047,8 +1047,8 @@ body {
 }
 
 .sidenav-item.active {
-  background: rgba(0,212,170,0.12);
-  color: #00d4aa;
+  background: rgba(20,184,166,0.12);
+  color: #14B8A6;
 }
 
 .sidenav-icon {
@@ -1134,7 +1134,7 @@ body {
 
 .docs-breadcrumb {
   font-size: 13px;
-  color: #00d4aa;
+  color: #14B8A6;
   font-weight: 500;
   margin-bottom: 8px;
 }
@@ -1220,7 +1220,7 @@ body {
 }
 
 .docs-link {
-  color: #00d4aa;
+  color: #14B8A6;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -1264,7 +1264,7 @@ body {
 
 .toc-link:hover,
 .toc-link.active {
-  color: #00d4aa;
-  border-left-color: #00d4aa;
+  color: #14B8A6;
+  border-left-color: #14B8A6;
 }
 

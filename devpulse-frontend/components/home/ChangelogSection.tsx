@@ -62,11 +62,11 @@ export function ChangelogSection() {
             <Link
               key={idx}
               href={entry.link}
-              className="group flex flex-col md:flex-row gap-6 p-7 rounded-xl bg-slate-dark/30 hover:bg-slate-dark/50 border border-[#2D3E50] hover:border-teal-accent border-l-4 border-l-teal-accent hover:border-l-electric-cyan transition-all duration-300 transform hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(6,214,160,0.1)]"
+              className="group flex flex-col md:flex-row gap-6 p-7 rounded-xl bg-slate-dark/20 hover:bg-slate-dark/40 border border-[#2D3E50] hover:border-teal-accent border-l-4 border-l-teal-accent transition-all duration-300 transform hover:-translate-y-1"
             >
               {/* Left Side: Icon */}
               <div className="flex items-start shrink-0">
-                <div className="p-3.5 rounded-lg bg-[#0c101d] text-teal-accent group-hover:text-electric-cyan transition-colors border border-[#2D3E50]">
+                <div className="p-3.5 rounded-lg bg-[#0c101d] text-teal-accent transition-colors border border-[#2D3E50]">
                   <Icon className="w-6 h-6" />
                 </div>
               </div>
@@ -74,7 +74,7 @@ export function ChangelogSection() {
               {/* Right Side: Content */}
               <div className="flex-1 flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-500 font-mono text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="text-teal-accent font-mono text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5" />
                     {entry.date}
                   </span>
@@ -97,7 +97,7 @@ export function ChangelogSection() {
       {/* Footer Link */}
       <div className="text-center mt-4">
         <Link
-          className="inline-flex items-center gap-2 text-sm text-teal-accent hover:text-electric-cyan transition-all font-sans font-medium"
+          className="inline-flex items-center gap-2 text-sm text-teal-accent hover:text-[#0D9488] transition-all font-sans font-medium"
           href="/changelog"
         >
           View all changes

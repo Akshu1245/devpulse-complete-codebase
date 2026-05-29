@@ -55,13 +55,13 @@ export function HeroSection() {
           <div className="hero-buttons flex flex-wrap items-center gap-4 w-full mb-12">
             <Link
               href="/register"
-              className="px-7 py-3.5 bg-gradient-to-r from-teal-accent to-electric-cyan text-[#0A0E1A] font-bold text-sm rounded-lg hover:shadow-[0_0_20px_rgba(6,214,160,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-center flex items-center justify-center gap-2 transform"
+              className="px-7 py-3.5 bg-teal-accent hover:bg-[#0D9488] text-white font-bold text-sm rounded-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-center flex items-center justify-center gap-2 transform"
             >
               Start your project &rarr;
             </Link>
             <Link
               href="/docs"
-              className="px-7 py-3.5 bg-transparent border-2 border-teal-accent text-teal-accent font-semibold text-sm rounded-lg hover:bg-teal-accent/10 hover:text-electric-cyan hover:border-electric-cyan transition-all duration-200 text-center flex items-center justify-center"
+              className="px-7 py-3.5 bg-transparent border-2 border-teal-accent text-teal-accent font-semibold text-sm rounded-lg hover:bg-teal-accent/10 transition-all duration-200 text-center flex items-center justify-center"
             >
               Read the docs
             </Link>
@@ -69,10 +69,10 @@ export function HeroSection() {
 
           {/* CLI Command Pill */}
           <div className="hero-cli-pill bg-[#0F1419] border border-[#2D3E50]">
-            <span className="cli-text text-emerald-400">$ npx rakshex scan ./collection.json</span>
+            <span className="cli-text text-teal-accent">$ npx rakshex scan ./collection.json</span>
             <button
               onClick={handleCopyCommand}
-              className="cli-copy-btn text-teal-accent hover:text-electric-cyan font-semibold transition-colors"
+              className="cli-copy-btn text-teal-accent hover:text-[#0D9488] font-semibold transition-colors"
             >
               {copied ? "Copied!" : "Copy"}
             </button>
