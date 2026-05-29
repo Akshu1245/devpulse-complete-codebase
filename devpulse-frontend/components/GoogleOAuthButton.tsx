@@ -1,7 +1,5 @@
 "use client";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-
 interface GoogleOAuthButtonProps {
   label?: string;
   className?: string;
@@ -13,7 +11,7 @@ export function GoogleOAuthButton({
 }: GoogleOAuthButtonProps) {
   return (
     <a
-      href={`${APP_URL}/api/oauth/google`}
+      href="/api/oauth/google"
       className={`w-full py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors flex items-center justify-center gap-3 ${className}`}
     >
       <svg className="w-5 h-5" viewBox="0 0 24 24">

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCountdown } from "@/lib/animations/countdown";
 import { useMegaMenu } from "@/lib/animations/megamenu";
 import {
@@ -23,6 +23,14 @@ export function PublicHeader() {
   const timeLeft = useCountdown("2026-06-15T00:00:00Z");
   const { activeMenu, handleMouseEnter, handleMouseLeave, forceClose } = useMegaMenu();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isZero =
+    timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0;
 
   return (
     <div className="fixed top-0 left-0 right-0 w-full z-50 flex flex-col">
@@ -33,31 +41,33 @@ export function PublicHeader() {
             <p className="min-w-0 truncate text-left text-xs font-medium text-neutral-200 sm:text-sm">
               🔒 RakshEx Launch Week — India's First AI Runtime Governance Platform →
             </p>
-            <span
-              aria-label="Launch countdown"
-              className="flex shrink-0 flex-row items-center gap-1.5 text-xs text-neutral-400"
-            >
-              <span className="hidden md:inline mr-1 text-[11px] uppercase tracking-wider text-neutral-500">
-                Launch in:
+            {mounted && !isZero && (
+              <span
+                aria-label="Launch countdown"
+                className="flex shrink-0 flex-row items-center gap-1.5 text-xs text-neutral-400"
+              >
+                <span className="hidden md:inline mr-1 text-[11px] uppercase tracking-wider text-neutral-500">
+                  Launch in:
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-cyan-400">
+                    {timeLeft.days}d
+                  </span>
+                  <span>:</span>
+                  <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-cyan-400">
+                    {timeLeft.hours}h
+                  </span>
+                  <span>:</span>
+                  <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-cyan-400">
+                    {timeLeft.minutes}m
+                  </span>
+                  <span>:</span>
+                  <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-cyan-400">
+                    {timeLeft.seconds}s
+                  </span>
+                </span>
               </span>
-              <span className="flex items-center gap-1">
-                <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-cyan-400">
-                  {timeLeft.days}d
-                </span>
-                <span>:</span>
-                <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-cyan-400">
-                  {timeLeft.hours}h
-                </span>
-                <span>:</span>
-                <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-cyan-400">
-                  {timeLeft.minutes}m
-                </span>
-                <span>:</span>
-                <span className="rounded bg-neutral-800/60 border border-neutral-700/50 px-1 py-0.5 font-bold font-mono text-cyan-400">
-                  {timeLeft.seconds}s
-                </span>
-              </span>
-            </span>
+            )}
           </div>
         </Link>
       </div>

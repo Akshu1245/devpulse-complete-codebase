@@ -120,10 +120,10 @@ export default function RegisterPage() {
           <div className="text-center text-gray-400 text-sm space-y-2">
             <p>Free plan includes:</p>
             <ul className="text-gray-500 text-xs space-y-1">
-              <li>2 API collections</li>
-              <li>Basic security scanning</li>
-              <li>Kill switch & budget alerts</li>
-              <li>1 team member</li>
+              <li>2 Collections & 3 Scans/day</li>
+              <li>Up to 5 API endpoints scanned</li>
+              <li>100 LLM calls/day via gateway</li>
+              <li>1 Team Member</li>
             </ul>
           </div>
 
