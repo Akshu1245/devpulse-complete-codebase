@@ -42,6 +42,13 @@ function rewrite(content, filePath) {
   const relRe = /((?:import|export)\s+(?:[^"']*\s+from\s+)?["'])(\.\/[^"']+|\.\.\/[^"']+)(["'])/g;
   content = content.replace(relRe, (_match, prefix, specifier, suffix) => {
     if (/\.(?:js|json|mjs|cjs)$/i.test(specifier)) return _match;
+
+    // Check if the relative path resolves to a directory
+    const targetPath = path.resolve(fileDir, specifier);
+    if (fs.existsSync(targetPath) && fs.statSync(targetPath).isDirectory()) {
+      return `${prefix}${specifier}/index.js${suffix}`;
+    }
+
     return `${prefix}${specifier}.js${suffix}`;
   });
 
