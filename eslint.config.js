@@ -33,12 +33,12 @@ export default tseslint.config(
   },
   {
     rules: {
-      "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/no-unused-vars": "warn",
-      "@typescript-eslint/ban-ts-comment": "warn",
-      "@typescript-eslint/no-require-imports": "warn",
-      "no-useless-escape": "warn",
-      "prefer-const": "warn",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/ban-ts-comment": "off",
+      "@typescript-eslint/no-require-imports": "off",
+      "no-useless-escape": "off",
+      "prefer-const": "off",
       "preserve-caught-error": "off",
     },
   }

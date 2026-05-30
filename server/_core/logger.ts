@@ -86,7 +86,6 @@ export const logger: Logger = pino({
  * `req.log` are properly typed everywhere.
  */
 declare module "http" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface IncomingMessage {
     id?: string;
     correlationId?: string;

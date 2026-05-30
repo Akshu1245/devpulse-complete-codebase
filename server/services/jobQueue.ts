@@ -163,7 +163,6 @@ export function getJobQueue(): JobQueue {
 
 function createBullMQQueue(redisUrl: string): JobQueue {
   // Imports are runtime so the in-memory path stays tree-shake-friendly.
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { Queue, Worker } = require("bullmq") as typeof import("bullmq");
   const queues = new Map<string, import("bullmq").Queue>();
   const workers = new Map<string, import("bullmq").Worker>();

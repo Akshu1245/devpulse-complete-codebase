@@ -618,7 +618,7 @@ export function handleWebhookEvent(payload: RazorpayWebhookPayload): {
   data: any;
 } {
   const event = payload.event;
-  let result: any = { event, data: payload };
+  const result: any = { event, data: payload };
 
   switch (event) {
     case "subscription.activated":
