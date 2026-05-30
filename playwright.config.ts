@@ -43,7 +43,7 @@ export default defineConfig({
   // Automatically start the Next.js dev server before running tests
   webServer: {
     command: "npm run dev",
-    cwd: "./rakshex-frontend",
+    cwd: "./devpulse-frontend",
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
