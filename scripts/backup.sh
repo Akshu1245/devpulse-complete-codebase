@@ -19,9 +19,9 @@ mkdir -p ${BACKUP_DIR}
 
 echo "[$(date)] Starting ${BACKUP_TYPE} backup..."
 
-# Create MySQL dump
+# Create PostgreSQL dump
 BACKUP_FILE="${BACKUP_DIR}/${DB_NAME}_${BACKUP_TYPE}_${TIMESTAMP}.sql.gz"
-mysqldump -h ${DB_HOST} -u ${DB_USER} -p${DB_PASS} ${DB_NAME} | gzip > ${BACKUP_FILE}
+PGPASSWORD=${DB_PASS} pg_dump -h ${DB_HOST} -U ${DB_USER} -d ${DB_NAME} | gzip > ${BACKUP_FILE}
 
 echo "[$(date)] Backup created: ${BACKUP_FILE}"
 

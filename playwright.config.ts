@@ -62,7 +62,7 @@ export default defineConfig({
       env: {
         PORT: "3001",
         DATABASE_URL:
-          process.env.DATABASE_URL || "mysql://root:devpulse@127.0.0.1:3306/devpulse_test",
+          process.env.DATABASE_URL || "postgresql://root:devpulse@127.0.0.1:5432/devpulse_test",
         REDIS_URL: process.env.REDIS_URL || "redis://127.0.0.1:6379",
         JWT_SECRET: process.env.JWT_SECRET || "test-secret-ci",
       },

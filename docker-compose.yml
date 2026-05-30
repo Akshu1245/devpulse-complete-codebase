@@ -40,14 +40,14 @@ services:
     container_name: rakshex-worker
     restart: unless-stopped
     environment:
-      - DATABASE_URL=mysql://rakshex:rakshex@mysql:3306/rakshex
+      - DATABASE_URL=postgresql://rakshex:rakshex@postgres:5432/rakshex
       - REDIS_URL=redis://redis:6379
       - JWT_SECRET=${JWT_SECRET:-dev-secret-do-not-use-in-production}
       - INTERNAL_SERVICE_SECRET=${INTERNAL_SERVICE_SECRET:-}
       - NODE_ENV=${NODE_ENV:-production}
       - WORKER_CONCURRENCY=${WORKER_CONCURRENCY:-3}
     depends_on:
-      mysql:
+      postgres:
         condition: service_healthy
       redis:
         condition: service_healthy

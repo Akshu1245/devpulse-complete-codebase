@@ -2,25 +2,16 @@ version: "3.8"
 
 services:
   db:
-    image: mysql:8.0
+    image: postgres:15-alpine
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-changeme_in_production}
-      MYSQL_DATABASE: rakshex_db
+      POSTGRES_USER: rakshex
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme_in_production}
+      POSTGRES_DB: rakshex_db
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test:
-        [
-          "CMD",
-          "mysqladmin",
-          "ping",
-          "-h",
-          "localhost",
-          "-u",
-          "root",
-          "-p${MYSQL_ROOT_PASSWORD:-changeme_in_production}",
-        ]
+      test: ["CMD-SHELL", "pg_isready -U rakshex -d rakshex_db"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -56,7 +47,7 @@ services:
       APP_URL: ${APP_URL}
 
       # ── Database ─────────────────────────────────────────────────
-      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-changeme_in_production}@db:3306/rakshex_db
+      DATABASE_URL: postgresql://rakshex:${POSTGRES_PASSWORD:-changeme_in_production}@db:5432/rakshex_db
 
       # ── Redis Cache ───────────────────────────────────────────────────────
       REDIS_URL: redis://redis:6379
@@ -131,11 +122,11 @@ services:
       S3_BACKUP_BUCKET: ${S3_BACKUP_BUCKET:-rakshex-backups}
       DB_HOST: db
       DB_NAME: rakshex_db
-      DB_USER: root
-      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:-changeme_in_production}
+      DB_USER: rakshex
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-changeme_in_production}
     command: >
       sh -c "
-        yum install -y mysql gzip &&
+        yum install -y postgresql gzip &&
         echo '0 2 * * * /scripts/backup.sh daily' | crontab - &&
         echo '0 3 1 * * /scripts/backup.sh monthly' | crontab - &&
         crond -f
@@ -146,7 +137,7 @@ services:
       - rakshex-network
 
 volumes:
-  mysql_data:
+  postgres_data:
   redis_data:
 
 networks:
