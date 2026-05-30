@@ -79,14 +79,9 @@ export function PublicHeader() {
       >
         <div className="flex justify-between items-center max-w-[1280px] mx-auto px-6 h-14">
           <div className="flex items-center gap-10">
-            <Link className="flex items-center gap-2 no-underline shrink-0" href="/">
-              <div className="flex items-center gap-2">
-                <Shield className="w-6 h-6 text-white" />
-                <span className="text-xl font-bold font-manrope tracking-tight text-white">
-                  RakshEx
-                </span>
-              </div>
-            </Link>
+            <a href="/" className="flex items-center">
+              <img src="/navbar-logo.png" alt="Rakshex" style={{ height: "40px", width: "auto" }} />
+            </a>
 
             {/* Desktop Navigation Links */}
             <div className="hidden lg:flex gap-8 items-center ml-10">

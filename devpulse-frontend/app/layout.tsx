@@ -36,6 +36,14 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   alternates: { canonical: "/" },
   robots: { index: true, follow: true },
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
   openGraph: {
     title: "Rakshex — Secure Your APIs & Control LLM Costs",
     description:
@@ -43,12 +51,21 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Rakshex",
     locale: "en_US",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Rakshex — API Security & LLM Cost Intelligence",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Rakshex — API Security & LLM Cost Intelligence",
     description: "API Security & LLM Cost Intelligence.",
     creator: "@rakshexhq",
+    images: ["/og-image.png"],
   },
 };
 
@@ -72,6 +89,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@600;700&display=swap"
         />
+        {/* Favicons */}
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/site.webmanifest" />
+        <meta name="theme-color" content="#0d1f1a" />
+        <meta name="msapplication-TileColor" content="#0d1f1a" />
+        <meta property="og:image" content="https://rakshex.in/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:alt" content="Rakshex — AI Runtime Governance Platform" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="https://rakshex.in/og-image.png" />
+        <meta name="twitter:image:alt" content="Rakshex — AI Runtime Governance Platform" />
       </head>
       <body className={inter.className} style={{ backgroundColor: "#0a0a0a" }}>
         <TRPCProvider>

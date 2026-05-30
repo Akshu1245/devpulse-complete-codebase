@@ -55,12 +55,9 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           bg-surface-base border-r border-glass
           ${open ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
-        {/* Logo */}
         <div className="p-6">
           <Link href="/dashboard" className="flex items-center gap-3 mb-10">
-            <div className="w-8 h-8 bg-primary rounded flex items-center justify-center text-surface-base font-bold">
-              <span className="material-symbols-outlined text-[18px] font-bold">shield</span>
-            </div>
+            <img src="/icon-mark-128.png" alt="RakshEx Mark" className="w-8 h-8 object-contain" />
             <div>
               <div className="font-headline-md text-headline-md font-bold tracking-tight text-primary leading-none">
                 RAKSHEX

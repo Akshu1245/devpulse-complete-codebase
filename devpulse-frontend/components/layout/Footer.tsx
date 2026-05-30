@@ -8,24 +8,14 @@ export function Footer() {
       <div className="max-w-[1280px] mx-auto">
         {/* 4-Column Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12 text-left">
-          {/* Column 1: Logo & Company info */}
           <div className="flex flex-col gap-4">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-white font-sans font-bold text-lg hover:text-[#14B8A6] transition-colors"
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#14B8A6"
-                strokeWidth="2"
-              >
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
-              <span>RakshEx</span>
-            </Link>
+            <a href="/">
+              <img
+                src="/logo-dark-bg.png"
+                alt="Rakshex"
+                style={{ height: "36px", width: "auto" }}
+              />
+            </a>
             <p className="text-[#6B7280] text-xs leading-relaxed">
               India's first AI Runtime Governance platform. Securing the agentic future.
             </p>
