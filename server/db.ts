@@ -130,7 +130,7 @@ export async function getDb() {
         uri: process.env.DATABASE_URL,
         connectionLimit: 20,
         queueLimit: 0,
-      });
+      } as any);
       _db = drizzle(pool);
     } catch (error) {
       logger.warn({ err: error }, "[Database] Failed to connect");
@@ -3864,7 +3864,9 @@ export async function getWaitlistCount(): Promise<number> {
   return Number((rows as unknown as Array<Record<string, unknown>>)[0]?.count ?? 0);
 }
 
-export async function getAllWaitlistEntries(): Promise<Array<{ id: number; email: string; plan: string; source: string; createdAt: Date }>> {
+export async function getAllWaitlistEntries(): Promise<
+  Array<{ id: number; email: string; plan: string; source: string; createdAt: Date }>
+> {
   const db = await getDb();
   if (!db) return [];
   return db.select().from(waitlist).orderBy(desc(waitlist.createdAt));

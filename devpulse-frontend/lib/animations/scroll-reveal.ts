@@ -8,10 +8,9 @@ export function useScrollReveal(
   const elementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let observer: IntersectionObserver;
     let active = true;
 
-    observer = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && active) {
           setIsRevealed(true);

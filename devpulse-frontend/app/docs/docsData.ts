@@ -491,38 +491,4 @@ import { RakshexInterceptor } from '@rakshex/nestjs';
 export class AppModule {}</code></pre>
     `,
   },
-  credentials: {
-    title: "Credential Scanner & PII Redaction",
-    breadcrumb: "Products / Security",
-    lead: "Protect developer secrets and client personally identifiable information (PII).",
-    contentHtml: `
-      <p>The Credential Scanner actively intercepts prompt inputs to find secrets before they leave your system. When a pattern is matched, the scanner replaces the sensitive details with a safe redact indicator (e.g. <code>[REDACTED_AADHAAR]</code>).</p>
-      
-      <h2>PCI DSS Compliance</h2>
-      <p>Ensures prompt strings do not accidentally hold plain text primary account numbers (PAN), credit card details, CVVs, or expirations. Logs details in compliance audit history.</p>
-    `,
-  },
-  compliance: {
-    title: "Compliance Reports",
-    breadcrumb: "Products / Compliance",
-    lead: "Generate security posture compliance evidence in a single click.",
-    contentHtml: `
-      <p>The Compliance module continuously tracks your scan findings and checks control maps against your actual system records, making security preparation easy.</p>
-      <h2>Evidence Exports</h2>
-      <p>Export options include detailed logs for:</p>
-      <ul>
-        <li>SOC 2 Trust Services Criteria mapping</li>
-        <li>PCI DSS Requirement compliance checklists</li>
-        <li>OWASP LLM Security conformance scorecards</li>
-      </ul>
-    `,
-  },
-  mcp: {
-    title: "Model Context Protocol (MCP) Governance",
-    breadcrumb: "Products / Compliance",
-    lead: "Set logical boundaries on tools exposed to agentic frameworks.",
-    contentHtml: `
-      <p>Enforce strict security filters on tools, schemas, and queries executed by Model Context Protocol (MCP) integrations, preventing dangerous command execution.</p>
-    `,
-  },
 };

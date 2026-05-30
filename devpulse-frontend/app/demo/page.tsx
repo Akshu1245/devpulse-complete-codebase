@@ -102,11 +102,11 @@ function parseYAML(text: string) {
   const lines = text.split("\n");
   let currentPath = "";
   for (const line of lines) {
-    const pathMatch = line.match(/^  (\/[a-zA-Z0-9_\-\/{}\[\]]+):/);
+    const pathMatch = line.match(/^ {2}(\/[a-zA-Z0-9_\-/{}[\]]+):/);
     if (pathMatch) {
       currentPath = pathMatch[1];
     } else if (currentPath) {
-      const methodMatch = line.match(/^    (get|post|put|delete|patch|options|head):/i);
+      const methodMatch = line.match(/^ {4}(get|post|put|delete|patch|options|head):/i);
       if (methodMatch) {
         list.push({
           method: methodMatch[1].toUpperCase(),
@@ -241,7 +241,7 @@ function scanEndpoints(
 }
 
 const generatePDF = (score: number, endpoints: any[], findings: any[], fileName: string) => {
-  let textLines = [
+  const textLines = [
     "RakshEx API Security Scan Report",
     "====================================",
     `Target File: ${fileName}`,

@@ -8,7 +8,6 @@ export function useRollingCounter(
   const elementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let observer: IntersectionObserver;
     let active = true;
 
     const startCount = () => {
@@ -33,7 +32,7 @@ export function useRollingCounter(
       requestAnimationFrame(animate);
     };
 
-    observer = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           startCount();
