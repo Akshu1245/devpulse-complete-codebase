@@ -220,16 +220,16 @@ export function validateEnv(): {
   if (!ENV.cookieSecret) errors.push("JWT_SECRET is not set — authentication will not work");
   if (!ENV.databaseUrl) errors.push("DATABASE_URL is not set — database connection will fail");
 
-  // Production-only critical checks
+  // Production-only warnings (not fatal — the app can run without these)
   if (ENV.isProduction) {
-    if (!ENV.googleClientId) errors.push("GOOGLE_CLIENT_ID is not set — OAuth login will fail");
+    if (!ENV.googleClientId) warnings.push("GOOGLE_CLIENT_ID is not set — OAuth login will fail");
     if (!ENV.googleClientSecret)
-      errors.push("GOOGLE_CLIENT_SECRET is not set — OAuth login will fail");
-    if (!ENV.razorpayKeyId) errors.push("RAZORPAY_KEY_ID is not set — payments will not work");
+      warnings.push("GOOGLE_CLIENT_SECRET is not set — OAuth login will fail");
+    if (!ENV.razorpayKeyId) warnings.push("RAZORPAY_KEY_ID is not set — payments will not work");
     if (!ENV.razorpayKeySecret)
-      errors.push("RAZORPAY_KEY_SECRET is not set — payments will not work");
+      warnings.push("RAZORPAY_KEY_SECRET is not set — payments will not work");
     if (!ENV.razorpayWebhookSecret)
-      errors.push("RAZORPAY_WEBHOOK_SECRET is not set — webhook verification will fail");
+      warnings.push("RAZORPAY_WEBHOOK_SECRET is not set — webhook verification will fail");
     if (!ENV.smtpHost) warnings.push("SMTP_HOST is not set — team invite emails will not be sent");
     if (!ENV.sentryDsn) warnings.push("SENTRY_DSN is not set — error monitoring disabled");
   }

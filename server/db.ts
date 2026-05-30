@@ -1,8 +1,8 @@
 import crypto from "crypto";
 import { eq, and, desc, gte, lt, sql } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/mysql2";
-import type { MySql2Database } from "drizzle-orm/mysql2";
-import mysql from "mysql2/promise";
+import { drizzle } from "drizzle-orm/node-postgres";
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 
 /** Generate a cryptographically secure ID with a prefix — replaces Math.random() */
 function secureId(prefix: string): string {
@@ -120,17 +120,16 @@ export type SubscriptionStatus = Subscription["status"];
 export type PaymentStatus = Payment["status"];
 export type RefundStatus = NonNullable<Payment["refundStatus"]>;
 
-let _db: MySql2Database<Record<string, unknown>> | null = null;
+let _db: NodePgDatabase<Record<string, unknown>> | null = null;
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      const pool = mysql.createPool({
-        uri: process.env.DATABASE_URL,
-        connectionLimit: 20,
-        queueLimit: 0,
-      } as any);
+      const pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+        max: 20,
+      });
       _db = drizzle(pool);
     } catch (error) {
       logger.warn({ err: error }, "[Database] Failed to connect");
@@ -194,7 +193,8 @@ export async function upsertUser(user: InsertUser): Promise<{ isNew: boolean }> 
       updateSet.lastSignedIn = new Date();
     }
 
-    await db.insert(users).values(values).onDuplicateKeyUpdate({
+    await db.insert(users).values(values).onConflictDoUpdate({
+      target: users.openId,
       set: updateSet,
     });
 
@@ -235,10 +235,10 @@ export async function getUserByOpenId(openId: string) {
 // In-memory TTL cache for getUserById / getUserPlan.
 //
 // Every authenticated tRPC request goes through `protectedProcedure`, which
-// re-reads the user record from MySQL. On a busy dashboard that's dozens of
+// re-reads the user record from PostgreSQL. On a busy dashboard that's dozens of
 // identical SELECTs per page view. The user row is small, bounded, and
 // changes infrequently, so a 30-second in-memory cache gives us a visible
-// latency win (MySQL round-trip + JSON serialize) at negligible staleness
+// latency win (PostgreSQL round-trip + JSON serialize) at negligible staleness
 // risk.
 //
 // Invalidated explicitly on writes (plan change, password update,
@@ -2591,7 +2591,8 @@ export async function setTokenBudget(
       dailyTokenLimit,
       mode,
     })
-    .onDuplicateKeyUpdate({
+    .onConflictDoUpdate({
+      target: tokenBudgets.userId,
       set: { dailyTokenLimit, mode },
     });
 }

@@ -17,8 +17,8 @@
  */
 
 import "dotenv/config";
-import { drizzle } from "drizzle-orm/mysql2";
-import mysql from "mysql2/promise";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Client } from "pg";
 import * as schema from "../drizzle/schema";
 import { hashPassword } from "../server/utils/password";
 
@@ -29,8 +29,9 @@ async function seed() {
     process.exit(1);
   }
 
-  const connection = await mysql.createConnection(dbUrl);
-  const db = drizzle(connection, { schema, mode: "default" });
+  const client = new Client({ connectionString: dbUrl });
+  await client.connect();
+  const db = drizzle(client, { schema });
 
   console.log("🌱 Seeding demo data...");
 

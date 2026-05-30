@@ -43,13 +43,50 @@ function rewrite(content, filePath) {
   content = content.replace(relRe, (_match, prefix, specifier, _sub, suffix) => {
     if (/\.(?:js|json|mjs|cjs)$/i.test(specifier)) return _match;
 
-    // Check if the relative path resolves to a directory
     const targetPath = path.resolve(fileDir, specifier);
+
+    // Prioritize file matches (e.g. someName.js) over directory index matches (someName/index.js)
+    // because TypeScript/Node.js prioritize files over directories of the same name.
+    let foundFileExt = "";
+    for (const ext of [".js", ".json", ".mjs", ".cjs"]) {
+      if (fs.existsSync(targetPath + ext)) {
+        foundFileExt = ext;
+        break;
+      }
+    }
+    if (foundFileExt) {
+      return `${prefix}${specifier}${foundFileExt}${suffix}`;
+    }
+
+    // Check if the relative path resolves to a directory
     if (fs.existsSync(targetPath) && fs.statSync(targetPath).isDirectory()) {
       const cleanSpecifier = specifier.endsWith("/") ? specifier.slice(0, -1) : specifier;
       return `${prefix}${cleanSpecifier}/index.js${suffix}`;
     }
 
+    return `${prefix}${specifier}.js${suffix}`;
+  });
+
+  // 3. Rewrite dynamic imports (await import("../foo") → await import("../foo.js"))
+  const dynRe = /(import\s*\(\s*["'])(\.\.?(\/[^"']*)?)(["']\s*\))/g;
+  content = content.replace(dynRe, (_match, prefix, specifier, _sub, suffix) => {
+    if (/\.(?:js|json|mjs|cjs)$/i.test(specifier)) return _match;
+
+    const targetPath = path.resolve(fileDir, specifier);
+    let foundFileExt = "";
+    for (const ext of [".js", ".json", ".mjs", ".cjs"]) {
+      if (fs.existsSync(targetPath + ext)) {
+        foundFileExt = ext;
+        break;
+      }
+    }
+    if (foundFileExt) {
+      return `${prefix}${specifier}${foundFileExt}${suffix}`;
+    }
+    if (fs.existsSync(targetPath) && fs.statSync(targetPath).isDirectory()) {
+      const cleanSpecifier = specifier.endsWith("/") ? specifier.slice(0, -1) : specifier;
+      return `${prefix}${cleanSpecifier}/index.js${suffix}`;
+    }
     return `${prefix}${specifier}.js${suffix}`;
   });
 
