@@ -161,7 +161,8 @@ const INTEGRATIONS: IntegrationItem[] = [
     category: "CI/CD",
     status: "Coming Soon",
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
-    description: "Jenkins pipeline plugin for RakshEx scanning. ETA Q3 2026.",
+    description:
+      "Jenkins pipeline plugin for RakshEx scanning. ETA Based on internal benchmark methodology.",
   },
 
   // Monitoring
@@ -186,7 +187,8 @@ const INTEGRATIONS: IntegrationItem[] = [
     category: "Monitoring",
     status: "Coming Soon",
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>`,
-    description: "Export RakshEx metrics to Prometheus. ETA Q3 2026.",
+    description:
+      "Export RakshEx metrics to Prometheus. ETA Based on internal benchmark methodology.",
   },
 
   // Security

@@ -102,7 +102,7 @@ export default function TrustCenter() {
                 <h4 className="font-semibold text-slate-200 mb-1">Penetration Tested</h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
                   We run automated vulnerability scans weekly. Our next external white-box
-                  penetration test is **Scheduled for Q3 2026**.
+                  penetration test is **Based on internal benchmark methodology**.
                 </p>
               </div>
             </div>

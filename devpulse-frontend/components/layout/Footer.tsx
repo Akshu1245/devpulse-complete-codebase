@@ -10,22 +10,28 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12 text-left">
           {/* Column 1: Logo & Company info */}
           <div className="flex flex-col gap-4">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-white font-sans font-bold text-lg hover:text-[#14B8A6] transition-colors"
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#14B8A6"
-                strokeWidth="2"
+            <a href="/" className="flex items-center gap-3" style={{ textDecoration: "none" }}>
+              <img
+                src="/icon-mark-128.png"
+                alt="RaksHex"
+                style={{
+                  height: "40px",
+                  width: "40px",
+                  objectFit: "contain",
+                  filter: "brightness(1.4) contrast(1.1)",
+                }}
+              />
+              <span
+                style={{
+                  fontSize: "20px",
+                  fontWeight: "700",
+                  color: "#d4a853",
+                  letterSpacing: "0.5px",
+                }}
               >
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
-              <span>RakshEx</span>
-            </Link>
+                RaksHex
+              </span>
+            </a>
             <p className="text-[#6B7280] text-xs leading-relaxed">
               India's first AI Runtime Governance platform. Securing the agentic future.
             </p>
@@ -165,9 +171,14 @@ export function Footer() {
 
         {/* Bottom copyright row */}
         <div className="border-t border-[#1A1F2E] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="text-[#6B7280] text-[12px] font-sans">
-            &copy; 2026 RakshEx by Rashi Technologies. Bengaluru, India. All rights reserved.
-          </span>
+          <div className="flex flex-col">
+            <p style={{ fontSize: "13px", color: "#64748b", marginTop: "8px" }}>
+              © 2026 RaksHex by Rashi Technologies, Bengaluru, India. All rights reserved.
+            </p>
+            <p style={{ fontSize: "12px", color: "#475569", marginTop: "4px" }}>
+              Provisional Patents: NHCE/DEV/2026/001–004 · Contact: akshay@rakshex.in
+            </p>
+          </div>
           <Link
             href="/status"
             className="inline-flex items-center gap-2 text-[#6B7280] hover:text-white text-[12px] transition-colors duration-150 font-sans"

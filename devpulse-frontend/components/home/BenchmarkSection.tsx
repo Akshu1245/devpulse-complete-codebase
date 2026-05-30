@@ -57,7 +57,8 @@ export function BenchmarkSection() {
             Why Teams Choose RakshEx
           </h2>
           <p className="text-slate-400 font-sans text-base max-w-2xl mt-1 leading-relaxed">
-            Independent audit Q3 2026. Tested across 50 real-world production agent environments.
+            Based on internal benchmark methodology. Tested across real-world production agent
+            environments.
           </p>
         </div>
 
